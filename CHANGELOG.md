@@ -3,6 +3,10 @@
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
 ## [0.3.0] - 2026-10-23
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Deployment Preview v0.3.0: [https://81ab38f4.mediville-manager.pages.dev](https://81ab38f4.mediville-manager.pages.dev)
+
 ### Adicionado
 - **Economia Aprofundada & Tabela SIGTAP/SUS (Prompt 6)**:
   - Integração da tabela oficial de procedimentos do SUS em `src/data/sigtap.json` com códigos SIGTAP reais (`03.01.01.007-2` para consulta médica, `03.01.01.004-8` para dispensação farmacêutica e `02.14.01.001-5` para triagem/acolhimento).
