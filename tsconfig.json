@@ -1,0 +1,28 @@
+{
+  /*
+   * Arquivo: tsconfig.json
+   * O que faz: Configura o TypeScript em modo estrito (sem any implícito, índices checados) para todo o projeto.
+   * Por que existe: O GDD exige TypeScript estrito e zero uso de any na simulação e na interface.
+   * Como modificar/debugar: Rode `npm run typecheck`. Se um erro de índice aparecer, trate o undefined em vez de desligar noUncheckedIndexedAccess.
+   * Conecta-se com: vite.config.ts, eslint.config.js, src/**, tests/**
+   */
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src", "tests", "vite.config.ts"]
+}

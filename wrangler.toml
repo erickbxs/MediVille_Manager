@@ -1,0 +1,8 @@
+# Arquivo: wrangler.toml
+# O que faz: Configura o projeto do Cloudflare Pages e aponta a pasta estática gerada pelo Vite.
+# Por que existe: Permite `npm run deploy` (wrangler pages deploy dist --project-name=mediville-manager).
+# Como modificar/debugar: Rode `npx wrangler whoami` para conferir a conta. Mude `name` se o projeto tiver outro nome.
+# Conecta-se com: package.json, dist/, public/_headers
+name = "mediville-manager"
+compatibility_date = "2026-10-01"
+pages_build_output_dir = "dist"

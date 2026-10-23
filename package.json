@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "description": "Manifesto npm do MediVille Manager: dependências, versão semântica e scripts de verificação, build e deploy no Cloudflare Pages.",
+    "connectedFiles": [
+      "vite.config.ts",
+      "tsconfig.json",
+      "eslint.config.js",
+      "wrangler.toml",
+      "scripts/check-bundle-size.mjs"
+    ]
+  },
+  "name": "mediville-manager",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "build": "tsc --noEmit && vite build && node scripts/check-bundle-size.mjs",
+    "preview": "vite preview --host",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "deploy": "npm run verify && wrangler pages deploy dist --project-name=mediville-manager"
+  },
+  "dependencies": {
+    "pixi.js": "^8.22.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5",
+    "wrangler": "^4.152.0"
+  }
+}

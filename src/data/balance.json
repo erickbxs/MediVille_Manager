@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "description": "Parâmetros de balanceamento do MediVille Manager (GDD pág. 5 a 7). Todo número de regra de jogo vem daqui. Valores propostos, sem base em dados reais: ajuste após os testes com jogadores.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/core/config-types.ts",
+      "src/core/new-game.ts",
+      "src/core/simulation.ts",
+      "src/core/game-loop.ts",
+      "src/state/game-state.ts",
+      "src/systems/arrival-system.ts",
+      "src/systems/case-system.ts",
+      "src/systems/consultation-system.ts",
+      "src/systems/decision-system.ts",
+      "src/systems/day-system.ts",
+      "src/systems/economy-system.ts",
+      "src/systems/grid-system.ts",
+      "src/systems/queue-system.ts",
+      "src/systems/reputation-system.ts",
+      "src/systems/satisfaction-system.ts",
+      "src/systems/staff-system.ts",
+      "src/systems/advisor-system.ts",
+      "src/ui/speed-control.ts",
+      "tests/formulas.test.ts",
+      "tests/simulation.test.ts"
+    ]
+  },
+  "time": {
+    "fixedStepSec": 0.1,
+    "maxFrameDeltaSec": 0.25,
+    "dayDurationSec": 60,
+    "speedLevels": [0, 1, 2, 3],
+    "initialSpeed": 1
+  },
+  "economy": {
+    "startingCash": 100000,
+    "revenuePerPatient": 900,
+    "pharmacyRevenue": 150,
+    "removeRefundRatio": 0.5
+  },
+  "arrival": {
+    "baseIntervalSec": 15,
+    "initialProgress": 0.7,
+    "sectorGrowthFactor": 0.1,
+    "reputationDemandFactor": 0.3,
+    "reputationReference": 50
+  },
+  "consultation": {
+    "baseTimeSec": 20,
+    "skillReductionPerLevel": 0.05,
+    "skillMin": 1,
+    "skillMax": 5,
+    "decisionTimeoutSec": 25,
+    "correctSuggestionChance": 0.65
+  },
+  "queue": {
+    "patienceSec": 90,
+    "alertRatio": 0.75,
+    "intensityLevels": [
+      { "id": "leve", "labelKey": "intensity.leve", "patienceFactor": 1 },
+      { "id": "moderada", "labelKey": "intensity.moderada", "patienceFactor": 0.8 }
+    ]
+  },
+  "population": {
+    "femaleChance": 0.5,
+    "comorbidityChance": 0.25
+  },
+  "satisfaction": {
+    "min": 0,
+    "max": 100,
+    "initial": 50,
+    "waitPenalty": 20,
+    "errorPenalty": 15,
+    "abandonedSatisfaction": 10,
+    "turnedAwaySatisfaction": 20,
+    "missingPharmacyPenalty": 10
+  },
+  "reputation": {
+    "initial": 50,
+    "learningRate": 0.1
+  },
+  "defeat": {
+    "graceDays": 7,
+    "minReputation": 10,
+    "minCash": 0
+  },
+  "grid": {
+    "cols": 12,
+    "rows": 12
+  },
+  "starterRooms": [
+    { "typeId": "reception", "col": 1, "row": 1, "rotated": false },
+    { "typeId": "consultation", "col": 6, "row": 1, "rotated": false }
+  ],
+  "advisor": {
+    "maxSuggestions": 3,
+    "cashWarningThreshold": 20000,
+    "queueWarningThreshold": 4,
+    "treatedPatientsPharmacyWarning": 2
+  }
+}

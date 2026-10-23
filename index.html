@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>MediVille Manager — Gestão Hospitalar & SUS</title>
+    <meta name="description" content="Administre seu hospital e aprenda condutas médicas reais com protocolos do SUS. Protótipo jogável no navegador." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="relative w-screen h-screen overflow-hidden bg-slate-100 select-none">
+    <!-- Camada de Canvas do PixiJS -->
+    <div id="game-canvas-container" class="absolute inset-0 z-0 w-full h-full"></div>
+
+    <!-- Camada de Interface de Usuário (HUD e Menus) -->
+    <div id="ui-root" class="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 sm:p-5">
+      <!-- HUD Superior -->
+      <div id="hud-container" class="w-full max-w-5xl mx-auto"></div>
+
+      <!-- Alertas Contextuais (Canto Superior Direito) -->
+      <div id="advisor-container" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-20"></div>
+
+      <!-- Barra de Construção Inferior -->
+      <div id="build-menu-container" class="w-full flex justify-center pb-1"></div>
+    </div>
+
+    <!-- Modais e Telas de Decisão -->
+    <div id="modal-container" class="pointer-events-auto"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

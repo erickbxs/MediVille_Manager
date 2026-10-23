@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "description": "Catálogo de salas construíveis no protótipo (fase 1, hospital pequeno). Tamanho em células da grade, custo de construção, manutenção diária (já inclui o salário da equipe da sala) e capacidade de pacientes.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/entities/room.ts",
+      "src/systems/grid-system.ts",
+      "src/systems/economy-system.ts",
+      "src/systems/queue-system.ts",
+      "src/render/rooms-view.ts",
+      "src/render/ghost-view.ts",
+      "src/render/patient-layout.ts",
+      "src/ui/build-menu.ts",
+      "src/ui/room-sheet.ts",
+      "src/i18n/pt.json"
+    ]
+  },
+  "rooms": [
+    {
+      "id": "reception",
+      "role": "entry",
+      "nameKey": "room.reception",
+      "icon": "🛎️",
+      "width": 3,
+      "height": 2,
+      "cost": 8000,
+      "dailyUpkeep": 600,
+      "capacity": 4,
+      "hasStaff": false,
+      "color": "#38bdf8"
+    },
+    {
+      "id": "waiting",
+      "role": "queue",
+      "nameKey": "room.waiting",
+      "icon": "🪑",
+      "width": 3,
+      "height": 3,
+      "cost": 5000,
+      "dailyUpkeep": 200,
+      "capacity": 8,
+      "hasStaff": false,
+      "color": "#a78bfa"
+    },
+    {
+      "id": "consultation",
+      "role": "treatment",
+      "nameKey": "room.consultation",
+      "icon": "🩺",
+      "width": 2,
+      "height": 2,
+      "cost": 15000,
+      "dailyUpkeep": 1500,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#34d399"
+    },
+    {
+      "id": "pharmacy",
+      "role": "dispense",
+      "nameKey": "room.pharmacy",
+      "icon": "💊",
+      "width": 2,
+      "height": 2,
+      "cost": 12000,
+      "dailyUpkeep": 900,
+      "capacity": 0,
+      "hasStaff": false,
+      "color": "#fbbf24"
+    }
+  ]
+}

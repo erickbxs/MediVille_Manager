@@ -1,0 +1,249 @@
+{
+  "_meta": {
+    "description": "Fichas dos 5 casos clínicos iniciais do protótipo (subconjunto dos 50 casos base do GDD). Somente nomes genéricos da RENAME, sem doses e sem marcas. Todos os casos são fictícios e estão PENDENTES de revisão médica (2 etapas: Erick e profissional habilitado).",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/entities/clinical-case.ts",
+      "src/systems/case-system.ts",
+      "src/systems/satisfaction-system.ts",
+      "src/systems/economy-system.ts",
+      "src/ui/decision-modal.ts",
+      "src/ui/decision-feedback.ts",
+      "tests/case-system.test.ts"
+    ]
+  },
+  "cases": [
+    {
+      "id": "resfriado-comum",
+      "name": "Resfriado comum",
+      "area": "Respiratória",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": { "min": 4, "max": 70 },
+      "symptoms": ["Coriza e nariz entupido", "Espirros", "Dor de garganta leve", "Febre baixa ou ausente"],
+      "suggestedExams": ["Nenhum exame de rotina: diagnóstico clínico"],
+      "suggestedConduct": {
+        "id": "resfriado-sintomaticos",
+        "text": "Tratar os sintomas: hidratação, repouso, lavagem nasal com soro fisiológico e antitérmico se houver febre ou dor. Sem antibiótico."
+      },
+      "distractorConducts": [
+        {
+          "id": "resfriado-antibiotico",
+          "text": "Prescrever amoxicilina por via oral para curar mais rápido.",
+          "whyWrong": "O resfriado é causado por vírus. Antibiótico não age em vírus, não encurta a doença e aumenta a resistência bacteriana."
+        }
+      ],
+      "medications": [
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" },
+        { "genericName": "Cloreto de sódio (soro fisiológico)", "route": "Nasal", "indication": "Lavagem e desobstrução nasal" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O resfriado é uma infecção viral que melhora sozinha em cerca de uma semana. O cuidado é aliviar os sintomas e orientar retorno se surgir falta de ar ou febre persistente.",
+      "possibleComorbidities": ["Rinite alérgica", "Asma controlada"],
+      "sources": [
+        {
+          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
+          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
+          "accessedOn": "2026-10-23"
+        },
+        {
+          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
+          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
+          "accessedOn": "2026-10-23"
+        }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "gripe-influenza",
+      "name": "Gripe (influenza)",
+      "area": "Respiratória",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 6, "max": 80 },
+      "symptoms": ["Febre de início súbito", "Dor no corpo", "Tosse seca", "Dor de cabeça", "Cansaço"],
+      "suggestedExams": ["Avaliar sinais de gravidade (falta de ar, saturação baixa)", "Teste para vírus respiratório se disponível"],
+      "suggestedConduct": {
+        "id": "gripe-sintomaticos-oseltamivir",
+        "text": "Hidratação, repouso e antitérmico. Iniciar oseltamivir se o paciente for de grupo de risco ou tiver sinal de gravidade. Orientar sinais de alarme."
+      },
+      "distractorConducts": [
+        {
+          "id": "gripe-antibiotico-rotina",
+          "text": "Prescrever antibiótico de rotina para evitar pneumonia.",
+          "whyWrong": "A gripe é viral. Antibiótico só entra se houver infecção bacteriana confirmada ou suspeita forte, não como prevenção de rotina."
+        },
+        {
+          "id": "gripe-acido-acetilsalicilico-crianca",
+          "text": "Usar ácido acetilsalicílico para baixar a febre em qualquer idade.",
+          "whyWrong": "O ácido acetilsalicílico em crianças e adolescentes com infecção viral se associa à síndrome de Reye. Prefira outro antitérmico."
+        }
+      ],
+      "medications": [
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor no corpo" },
+        { "genericName": "Fosfato de oseltamivir", "route": "Oral", "indication": "Antiviral para grupos de risco ou sinais de gravidade" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A influenza costuma melhorar com cuidados de suporte. O antiviral oseltamivir é indicado para grupos de risco, como idosos, gestantes e pessoas com doenças crônicas, de preferência nas primeiras 48 horas.",
+      "possibleComorbidities": ["Diabetes", "Doença pulmonar crônica", "Gestação"],
+      "sources": [
+        {
+          "name": "Ministério da Saúde. Guia de manejo e tratamento de influenza",
+          "url": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/influenza",
+          "accessedOn": "2026-10-23"
+        },
+        {
+          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
+          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
+          "accessedOn": "2026-10-23"
+        }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "dengue-grupo-a",
+      "name": "Dengue sem sinais de alarme",
+      "area": "Viral",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 8, "max": 75 },
+      "symptoms": ["Febre alta", "Dor atrás dos olhos", "Dor muscular e nas articulações", "Manchas vermelhas na pele"],
+      "suggestedExams": ["Prova do laço", "Hemograma conforme o protocolo", "Teste para dengue"],
+      "suggestedConduct": {
+        "id": "dengue-hidratacao",
+        "text": "Hidratação oral abundante, paracetamol ou dipirona para dor e febre. Evitar anti-inflamatórios e ácido acetilsalicílico. Orientar sinais de alarme e retorno."
+      },
+      "distractorConducts": [
+        {
+          "id": "dengue-ibuprofeno",
+          "text": "Prescrever ibuprofeno para aliviar as dores no corpo.",
+          "whyWrong": "Anti-inflamatórios como o ibuprofeno e o ácido acetilsalicílico aumentam o risco de sangramento na dengue e devem ser evitados."
+        }
+      ],
+      "medications": [
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Febre e dor" },
+        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Hidratação" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na dengue, a hidratação é o tratamento principal. O paciente deve voltar imediatamente se tiver dor abdominal intensa, vômitos persistentes, sangramentos ou tontura, que são sinais de alarme.",
+      "possibleComorbidities": ["Hipertensão", "Diabetes"],
+      "sources": [
+        {
+          "name": "Ministério da Saúde. Dengue: diagnóstico e manejo clínico, adulto e criança",
+          "url": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/dengue",
+          "accessedOn": "2026-10-23"
+        },
+        {
+          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
+          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
+          "accessedOn": "2026-10-23"
+        }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "amigdalite-estreptococica",
+      "name": "Amigdalite estreptocócica",
+      "area": "Bacteriana",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 5, "max": 40 },
+      "symptoms": ["Dor de garganta intensa", "Febre", "Placas brancas nas amígdalas", "Gânglios doloridos no pescoço", "Sem tosse"],
+      "suggestedExams": ["Avaliação clínica", "Teste rápido para estreptococo se disponível"],
+      "suggestedConduct": {
+        "id": "amigdalite-antibiotico",
+        "text": "Antibiótico: amoxicilina por via oral ou benzilpenicilina benzatina intramuscular. Antitérmico para febre e dor."
+      },
+      "distractorConducts": [
+        {
+          "id": "amigdalite-so-sintomaticos",
+          "text": "Tratar só os sintomas, sem antibiótico, porque toda dor de garganta é viral.",
+          "whyWrong": "Na amigdalite bacteriana por estreptococo, o antibiótico previne complicações graves, como a febre reumática."
+        }
+      ],
+      "medications": [
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibiótico para amigdalite bacteriana" },
+        { "genericName": "Benzilpenicilina benzatina", "route": "Intramuscular", "indication": "Alternativa em aplicação única" },
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A amigdalite por estreptococo é bacteriana. Tratar com antibiótico pelo tempo completo reduz a transmissão e previne febre reumática, que pode lesar o coração.",
+      "possibleComorbidities": ["Alergia a penicilina relatada"],
+      "sources": [
+        {
+          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
+          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
+          "accessedOn": "2026-10-23"
+        },
+        {
+          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
+          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
+          "accessedOn": "2026-10-23"
+        }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "infeccao-urinaria",
+      "name": "Infecção urinária (cistite não complicada)",
+      "area": "Bacteriana",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 18, "max": 65 },
+      "symptoms": ["Ardência ao urinar", "Vontade frequente de urinar", "Dor no pé da barriga", "Sem febre alta e sem dor lombar"],
+      "suggestedExams": ["Exame de urina", "Urocultura conforme o protocolo"],
+      "suggestedConduct": {
+        "id": "itu-antibiotico-oral",
+        "text": "Antibiótico por via oral, como nitrofurantoína, com hidratação. Orientar retorno se surgir febre ou dor lombar."
+      },
+      "distractorConducts": [
+        {
+          "id": "itu-internacao-venoso",
+          "text": "Internar e iniciar antibiótico venoso imediatamente.",
+          "whyWrong": "Cistite sem complicação é tratada em casa com antibiótico oral. Internação fica para sinais de pielonefrite grave ou sepse."
+        },
+        {
+          "id": "itu-so-analgesico",
+          "text": "Dar apenas analgésico e esperar melhorar sozinha.",
+          "whyWrong": "A cistite é bacteriana. Sem antibiótico, a infecção pode subir para os rins."
+        }
+      ],
+      "medications": [
+        { "genericName": "Nitrofurantoína", "route": "Oral", "indication": "Antibiótico para cistite não complicada" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Dor" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A cistite não complicada é uma infecção bacteriana da bexiga. Antibiótico oral e hidratação resolvem a maioria dos casos. Febre e dor nas costas sugerem infecção nos rins e pedem reavaliação.",
+      "possibleComorbidities": ["Diabetes", "Infecções urinárias de repetição"],
+      "sources": [
+        {
+          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
+          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
+          "accessedOn": "2026-10-23"
+        },
+        {
+          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
+          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
+          "accessedOn": "2026-10-23"
+        }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "description": "Textos e chaves de tradução em Português do Brasil para HUD, salas, condutas e mensagens contextuais.",
+    "connectedFiles": [
+      "src/ui/hud.ts",
+      "src/ui/build-menu.ts",
+      "src/ui/decision-modal.ts",
+      "src/ui/room-sheet.ts",
+      "src/ui/advisor-view.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "Hospital Pequeno",
+    "subtitle": "Gestão Hospitalar & Condutas Médicas Reais (SUS)"
+  },
+  "hud": {
+    "cash": "Caixa",
+    "reputation": "Reputação",
+    "satisfaction": "Satisfação",
+    "queue": "Fila",
+    "waiting": "esperando",
+    "avgWait": "Espera média",
+    "day": "Dia",
+    "paused": "Pausado",
+    "speed1x": "1x",
+    "speed2x": "2x",
+    "speed3x": "3x"
+  },
+  "room": {
+    "reception": "Recepção",
+    "waiting": "Sala de Espera",
+    "consultation": "Consultório",
+    "pharmacy": "Farmácia",
+    "cost": "Custo",
+    "upkeep": "Manut./dia",
+    "capacity": "Capacidade",
+    "remove": "Vender Sala",
+    "refund": "Reembolso"
+  },
+  "actions": {
+    "build": "Construir",
+    "cancel": "Cancelar",
+    "removeMode": "Demolir",
+    "close": "Fechar",
+    "acceptConduct": "Adotar Conduta",
+    "rejectConduct": "Recusar / Trocar",
+    "confirm": "Confirmar"
+  },
+  "intensity": {
+    "leve": "Leve",
+    "moderada": "Moderada"
+  },
+  "patient": {
+    "sheetTitle": "Ficha do Paciente",
+    "symptoms": "Sintomas relatados",
+    "exams": "Exames sugeridos",
+    "suggestedConduct": "Conduta Sugerida",
+    "medications": "Medicamentos genéricos (RENAME)",
+    "comorbidity": "Condição prévia",
+    "none": "Nenhuma",
+    "source": "Fonte oficial",
+    "statusPending": "Revisão médica pendente"
+  },
+  "advisor": {
+    "empty": "Nenhum gargalo identificado no momento.",
+    "queueDelay": "Fila acumulando na recepção. Considere abrir mais consultórios.",
+    "pharmacyMissing": "Pacientes saindo sem farmácia para dispensação de medicamentos.",
+    "waitingFull": "Capacidade da sala de espera quase no limite.",
+    "cashLow": "Alerta: Caixa crítico! Monitore os custos diários."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "description": "Constantes visuais e de interação (tamanho da célula, câmera, gestos, paletas claro/escuro). Não contém regras de jogo; essas ficam em balance.json.",
+    "connectedFiles": [
+      "src/render/theme-config.ts",
+      "src/render/renderer.ts",
+      "src/render/camera.ts",
+      "src/render/grid-view.ts",
+      "src/render/rooms-view.ts",
+      "src/render/patients-view.ts",
+      "src/render/patient-layout.ts",
+      "src/render/ghost-view.ts",
+      "src/render/floating-text.ts",
+      "src/input/canvas-input.ts",
+      "src/ui/toasts.ts"
+    ]
+  },
+  "tileSize": 48,
+  "maxResolution": 2,
+  "textResolution": 2,
+  "fontFamily": "Fredoka, ui-rounded, system-ui, sans-serif",
+  "room": {
+    "inset": 3,
+    "cornerRadius": 12,
+    "borderWidth": 3,
+    "fillAlpha": 0.28,
+    "labelFontSize": 13,
+    "labelTop": 8,
+    "selectionWidth": 4
+  },
+  "grid": {
+    "cornerRadius": 14,
+    "lineWidth": 1
+  },
+  "patient": {
+    "radius": 8,
+    "spacing": 21,
+    "padding": 13,
+    "labelOffset": 36,
+    "outlineWidth": 2,
+    "badgeFontSize": 18,
+    "badgeOffsetY": 20,
+    "worriedRatio": 0.5,
+    "angryRatio": 0.8,
+    "progressHeight": 6,
+    "progressMargin": 8
+  },
+  "ghost": {
+    "alpha": 0.45,
+    "borderWidth": 3,
+    "fontSize": 14
+  },
+  "floatingText": {
+    "durationMs": 1200,
+    "risePx": 36,
+    "fontSize": 16
+  },
+  "camera": {
+    "minZoom": 0.35,
+    "maxZoom": 2.6,
+    "wheelZoomSensitivity": 0.0015,
+    "keyboardPanPx": 40,
+    "fitPadding": 12
+  },
+  "input": {
+    "dragThresholdPx": 8,
+    "longPressMs": 550
+  },
+  "ui": {
+    "toastDurationMs": 3800,
+    "maxToasts": 3
+  },
+  "palettes": {
+    "light": {
+      "background": "#e8eef6",
+      "gridFill": "#ffffff",
+      "gridLine": "#dbe3ee",
+      "text": "#0f172a",
+      "selection": "#0ea5e9",
+      "ghostValid": "#22c55e",
+      "ghostInvalid": "#ef4444",
+      "patientCalm": "#22c55e",
+      "patientWorried": "#f59e0b",
+      "patientAngry": "#ef4444",
+      "patientOutline": "#ffffff",
+      "progressTrack": "#cbd5e1",
+      "progressFill": "#0ea5e9",
+      "positive": "#16a34a",
+      "negative": "#dc2626"
+    },
+    "dark": {
+      "background": "#0b1220",
+      "gridFill": "#111a2e",
+      "gridLine": "#1e2a44",
+      "text": "#e2e8f0",
+      "selection": "#38bdf8",
+      "ghostValid": "#4ade80",
+      "ghostInvalid": "#f87171",
+      "patientCalm": "#4ade80",
+      "patientWorried": "#fbbf24",
+      "patientAngry": "#f87171",
+      "patientOutline": "#0b1220",
+      "progressTrack": "#334155",
+      "progressFill": "#38bdf8",
+      "positive": "#4ade80",
+      "negative": "#f87171"
+    }
+  }
+}

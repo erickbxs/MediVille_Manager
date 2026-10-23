@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "description": "Nomes fictícios para pacientes e equipe. Nenhum dado real de paciente (pilar de privacidade do GDD).",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/systems/person-factory.ts",
+      "src/systems/case-system.ts",
+      "src/systems/staff-system.ts"
+    ]
+  },
+  "pools": {
+    "female": ["Ana", "Beatriz", "Camila", "Daniela", "Eduarda", "Fernanda", "Gabriela", "Helena", "Isabela", "Juliana", "Larissa", "Mariana", "Natália", "Patrícia", "Raquel", "Sofia", "Tainá", "Valentina"],
+    "male": ["André", "Bruno", "Carlos", "Diego", "Eduardo", "Felipe", "Gustavo", "Henrique", "Igor", "João", "Lucas", "Mateus", "Nicolas", "Otávio", "Paulo", "Rafael", "Thiago", "Vinícius"],
+    "lastNames": ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Costa", "Ferreira", "Almeida", "Ribeiro", "Carvalho", "Gomes", "Martins", "Araújo", "Barbosa", "Rocha", "Moura", "Xavier"]
+  }
+}

@@ -1,0 +1,30 @@
+/**
+ * Arquivo: src/styles.css
+ * O que faz: Folha de estilos global com Tailwind CSS v4 e configurações de fonte e canvas.
+ * Para que foi criado: Garantir estética Apple limpa, moderna e suave em computadores e celulares.
+ * Como modificar/debugar: Utilize classes utilitárias do Tailwind ou personalize regras aqui.
+ * Conecta-se com: index.html, src/main.ts
+ */
+
+@import "tailwindcss";
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: 'Fredoka', ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #e8eef6;
+  }
+}
+
+#game-canvas-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
