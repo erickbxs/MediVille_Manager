@@ -67,6 +67,32 @@
       "capacity": 0,
       "hasStaff": false,
       "color": "#fbbf24"
+    },
+    {
+      "id": "triage",
+      "role": "treatment",
+      "nameKey": "room.triage",
+      "icon": "📋",
+      "width": 2,
+      "height": 2,
+      "cost": 10000,
+      "dailyUpkeep": 800,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#f97316"
+    },
+    {
+      "id": "observation",
+      "role": "queue",
+      "nameKey": "room.observation",
+      "icon": "🛏️",
+      "width": 3,
+      "height": 2,
+      "cost": 18000,
+      "dailyUpkeep": 1200,
+      "capacity": 4,
+      "hasStaff": false,
+      "color": "#06b6d4"
     }
   ]
 }

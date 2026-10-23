@@ -42,6 +42,22 @@ function buildStarterPharmacyStock(): Record<string, number> {
   return stock;
 }
 
+function buildInitialFinances(): {
+  bpaRevenue: number;
+  aihRevenue: number;
+  ministryTransfers: number;
+  emergencyGrants: number;
+  medicationPurchases: number;
+} {
+  return {
+    bpaRevenue: 0,
+    aihRevenue: 0,
+    ministryTransfers: 0,
+    emergencyGrants: 0,
+    medicationPurchases: 0,
+  };
+}
+
 export function createInitialGameState(): GameState {
   return {
     day: 1,
@@ -59,18 +75,18 @@ export function createInitialGameState(): GameState {
     patients: new Map(),
     queueIds: [],
     activeDecisionPatientId: null,
+    pendingDecisionPatientIds: [],
+    hospitalLevel: 'ubs',
+    unlockedRoomIds: ['reception', 'waiting', 'consultation', 'pharmacy'],
+    seenTutorialTips: [],
+    movingRoomId: null,
     stats: { treatedCount: 0, abandonedCount: 0, totalDecisions: 0, correctDecisions: 0 },
     arrivalTimerSec: BALANCE.arrival.baseIntervalSec * BALANCE.arrival.initialProgress,
     staff: buildStarterStaffMap(),
     activeEvents: [],
     eventTimerSec: BALANCE.events.firstEventDelaySec,
     pharmacyStock: buildStarterPharmacyStock(),
-    finances: {
-      bpaRevenue: 0,
-      aihRevenue: 0,
-      ministryTransfers: 0,
-      emergencyGrants: 0,
-      medicationPurchases: 0,
-    },
+    finances: buildInitialFinances(),
   };
 }
+

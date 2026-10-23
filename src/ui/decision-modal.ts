@@ -9,6 +9,7 @@
 
 import type { PatientInstance } from '../entities/patient';
 import type { HospitalSimulation } from '../core/simulation';
+import { getNextPendingDecision, finishPatientDecision } from '../systems/consultation-system';
 
 export class DecisionModal {
   private container: HTMLElement;
@@ -92,6 +93,9 @@ export class DecisionModal {
     });
 
     closeBtn?.addEventListener('click', () => {
+      if (this.currentPatient) {
+        finishPatientDecision(this.simulation.state, this.currentPatient.id);
+      }
       this.container.innerHTML = '';
       this.currentPatient = null;
     });
@@ -112,5 +116,54 @@ export class DecisionModal {
     `;
     box.classList.remove('hidden');
     this.container.querySelectorAll('.conduct-btn').forEach((b) => ((b as HTMLButtonElement).disabled = true));
+
+    this.renderFooterActions();
+  }
+
+  private renderFooterActions(): void {
+    const footer = this.container.querySelector('.p-4.border-t');
+    if (!footer || !this.currentPatient) return;
+
+    const remaining = this.simulation.state.pendingDecisionPatientIds.filter(
+      (id) => id !== this.currentPatient?.id
+    ).length;
+
+    if (remaining > 0) {
+      footer.innerHTML = `
+        <button id="btn-next-case" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md active:scale-95 transition-all">
+          📋 Atender Próximo Caso (${remaining} na espera)
+        </button>
+        <button id="btn-close-modal" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 active:scale-95 transition-all">
+          Voltar ao Hospital
+        </button>
+      `;
+
+      document.getElementById('btn-next-case')?.addEventListener('click', () => {
+        if (this.currentPatient) finishPatientDecision(this.simulation.state, this.currentPatient.id);
+        const next = getNextPendingDecision(this.simulation.state);
+        if (next) {
+          this.open(next);
+        } else {
+          this.container.innerHTML = '';
+          this.currentPatient = null;
+        }
+      });
+    } else {
+      footer.innerHTML = `
+        <button id="btn-close-modal" class="min-h-[44px] px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:opacity-90 active:scale-95 transition-all">
+          ✓ Concluir Atendimento
+        </button>
+      `;
+    }
+
+    document.getElementById('btn-close-modal')?.addEventListener('click', () => {
+      if (this.currentPatient) finishPatientDecision(this.simulation.state, this.currentPatient.id);
+      this.container.innerHTML = '';
+      this.currentPatient = null;
+    });
+  }
+
+  public isOpen(): boolean {
+    return this.currentPatient !== null;
   }
 }

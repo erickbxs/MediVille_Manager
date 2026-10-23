@@ -15,7 +15,7 @@ import { updateArrivalSystem } from '../systems/arrival-system';
 import { updateQueueSystem } from '../systems/queue-system';
 import { dischargePatient, updateConsultationSystem } from '../systems/consultation-system';
 import { updateDaySystem } from '../systems/day-system';
-import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom } from '../systems/grid-system';
+import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom, moveRoom as sysMoveRoom } from '../systems/grid-system';
 import { updateEventSystem } from '../systems/event-system';
 import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems/staff-system';
 
@@ -70,6 +70,14 @@ export class HospitalSimulation {
     if (refund <= 0) return false;
     globalBus.emit('room:removed', { roomId, refund });
     globalBus.emit('cash:changed', { cash: this.state.cash, delta: refund, reason: 'Venda de sala' });
+    globalBus.emit('state:changed', undefined);
+    return true;
+  }
+
+  public moveRoom(roomId: string, newCol: number, newRow: number, newRotated = false): boolean {
+    const moved = sysMoveRoom(this.state, roomId, newCol, newRow, newRotated);
+    if (!moved) return false;
+    globalBus.emit('room:moved', { roomId, col: newCol, row: newRow, rotated: newRotated });
     globalBus.emit('state:changed', undefined);
     return true;
   }

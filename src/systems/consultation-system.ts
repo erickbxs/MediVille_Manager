@@ -10,12 +10,14 @@
 import { BALANCE } from '../core/config';
 import { globalBus } from '../core/event-bus';
 import { addOccupant, removeOccupant, type RoomInstance } from '../entities/room';
+import type { PatientInstance } from '../entities/patient';
 import type { GameState } from '../state/game-state';
 import { calculatePatientSatisfaction } from './satisfaction-system';
 import { calculateConsultationDuration } from '../entities/staff';
 import { getBestDoctorSkill } from './staff-system';
 import { getActiveConsultationFactor } from './event-system';
 import { consumeMedicationsForCase } from './economy-system';
+import { checkHospitalProgression } from './progression-system';
 
 export function findAvailableConsultationRoom(state: GameState): RoomInstance | null {
   for (const room of state.rooms.values()) {
@@ -58,12 +60,36 @@ function progressConsultation(state: GameState, deltaSec: number): void {
 
     if (patient.consultationTimeSec >= patient.consultationDurationSec && !patient.clinicalCase.decisionMade) {
       patient.state = 'needs_decision';
+      if (!state.pendingDecisionPatientIds.includes(patient.id)) {
+        state.pendingDecisionPatientIds.push(patient.id);
+        globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
+      }
       if (!state.activeDecisionPatientId) {
         state.activeDecisionPatientId = patient.id;
+        globalBus.emit('patient:needs_decision', { patientId: patient.id });
       }
-      globalBus.emit('patient:needs_decision', { patientId: patient.id });
     }
   }
+}
+
+export function getNextPendingDecision(state: GameState): PatientInstance | null {
+  while (state.pendingDecisionPatientIds.length > 0) {
+    const nextId = state.pendingDecisionPatientIds[0]!;
+    const pat = state.patients.get(nextId);
+    if (pat && pat.state === 'needs_decision' && !pat.clinicalCase.decisionMade) {
+      return pat;
+    }
+    state.pendingDecisionPatientIds.shift();
+  }
+  return null;
+}
+
+export function finishPatientDecision(state: GameState, patientId: string): void {
+  state.pendingDecisionPatientIds = state.pendingDecisionPatientIds.filter((id) => id !== patientId);
+  if (state.activeDecisionPatientId === patientId) {
+    state.activeDecisionPatientId = null;
+  }
+  globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
 }
 
 export function dischargePatient(state: GameState, patientId: string): void {
@@ -92,6 +118,7 @@ export function dischargePatient(state: GameState, patientId: string): void {
   state.cash += revenue;
   state.finances.bpaRevenue += revenue;
   state.stats.treatedCount += 1;
+  checkHospitalProgression(state);
 
   globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue });
   globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Procedimento BPA faturado (SUS)' });

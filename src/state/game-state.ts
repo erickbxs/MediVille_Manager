@@ -43,6 +43,11 @@ export interface GameState {
   patients: Map<string, PatientInstance>;
   queueIds: string[];
   activeDecisionPatientId: string | null;
+  pendingDecisionPatientIds: string[];
+  hospitalLevel: 'ubs' | 'upa' | 'hospital';
+  unlockedRoomIds: string[];
+  seenTutorialTips: string[];
+  movingRoomId: string | null;
   stats: HospitalStats;
   arrivalTimerSec: number;
   staff: Map<string, StaffMember>;

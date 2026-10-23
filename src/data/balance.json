@@ -123,5 +123,30 @@
   "emergencyGrant": {
     "amount": 25000,
     "description": "Verba Emergencial da Secretaria Municipal de Saúde para Reformas"
+  },
+  "progression": {
+    "levels": [
+      {
+        "id": "ubs",
+        "name": "Unidade Básica de Saúde (UBS)",
+        "minTreatedCount": 0,
+        "minReputation": 0,
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy"]
+      },
+      {
+        "id": "upa",
+        "name": "Unidade de Pronto Atendimento (UPA 24h)",
+        "minTreatedCount": 10,
+        "minReputation": 55,
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation"]
+      },
+      {
+        "id": "hospital",
+        "name": "Hospital Geral Municipal",
+        "minTreatedCount": 30,
+        "minReputation": 70,
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation"]
+      }
+    ]
   }
 }

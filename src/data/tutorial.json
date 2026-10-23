@@ -1,0 +1,102 @@
+{
+  "_meta": {
+    "description": "Catálogo com as 15 dicas contextuais oficiais do GDD (Prompt 10) que surgem na primeira ocorrência de cada evento ou situação no jogo.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/state/game-state.ts",
+      "src/ui/tutorial-view.ts"
+    ]
+  },
+  "tips": [
+    {
+      "id": "welcome_ubs",
+      "trigger": "game_start",
+      "title": "Bem-vindo à sua Unidade de Saúde!",
+      "message": "Construa salas na grade livre e contrate profissionais para receber e tratar a população do bairro."
+    },
+    {
+      "id": "first_patient",
+      "trigger": "patient_arrived",
+      "title": "Primeiro Paciente Chegando!",
+      "message": "Pacientes aguardam na recepção e na sala de espera. Mantenha os tempos baixos para garantir alta satisfação."
+    },
+    {
+      "id": "first_decision",
+      "trigger": "decision_needed",
+      "title": "Decisão Médica Necessária",
+      "message": "Analise os sintomas e escolha a conduta correta. Seus casos ficam guardados na fila para você decidir com calma."
+    },
+    {
+      "id": "first_pharmacy",
+      "trigger": "pharmacy_opened",
+      "title": "Farmácia da RENAME",
+      "message": "Adquira lotes de medicamentos essenciais para evitar que pacientes fiquem sem tratamento ao sair da consulta."
+    },
+    {
+      "id": "queue_warning",
+      "trigger": "queue_long",
+      "title": "Fila de Espera Crescendo",
+      "message": "Construa novos consultórios e contrate mais médicos para desafogar o tempo de espera dos pacientes."
+    },
+    {
+      "id": "emergency_grant",
+      "trigger": "grant_available",
+      "title": "Verba da Secretaria de Saúde",
+      "message": "Precisa de dinheiro para reformas ou contratações? Clique em 'Verba Reforma' para apoio municipal imediato."
+    },
+    {
+      "id": "first_event",
+      "trigger": "event_started",
+      "title": "Evento Emergencial no Município",
+      "message": "Acidentes e epidemias alteram temporariamente a chegada de pacientes. Prepare sua equipe médica para o pico."
+    },
+    {
+      "id": "doctor_skill",
+      "trigger": "staff_skill",
+      "title": "Habilidade da Equipe",
+      "message": "Médicos com mais estrelas reduzem a duração das consultas, atendendo mais pessoas por dia."
+    },
+    {
+      "id": "reputation_impact",
+      "trigger": "reputation_changed",
+      "title": "Reputação do Hospital",
+      "message": "Altas taxas de cura e decisões acertadas aumentam a reputação, atraindo mais recursos e pacientes."
+    },
+    {
+      "id": "move_room",
+      "trigger": "room_moved",
+      "title": "Reorganização do Espaço",
+      "message": "Use a ferramenta 'Mover' no menu inferior para reposicionar e girar salas já construídas sem custos."
+    },
+    {
+      "id": "sigtap_bpa",
+      "trigger": "bpa_billed",
+      "title": "Faturamento SIGTAP do SUS",
+      "message": "Cada atendimento e medicamento dispensado gera faturamento oficial repassado diretamente ao seu caixa."
+    },
+    {
+      "id": "stock_out_warning",
+      "trigger": "stock_out",
+      "title": "Medicamento em Falta!",
+      "message": "Um paciente não encontrou o remédio prescrito. Compre novos lotes na Farmácia para restaurar a satisfação."
+    },
+    {
+      "id": "upkeep_day_end",
+      "trigger": "day_end",
+      "title": "Fechamento Diário do SUS",
+      "message": "À meia-noite o hospital paga a manutenção predial e salários, e recebe o Piso da Atenção Básica do Ministério."
+    },
+    {
+      "id": "level_up_upa",
+      "trigger": "level_up",
+      "title": "Evolução para UPA 24h!",
+      "message": "Parabéns! Sua unidade evoluiu para Pronto Atendimento. Novas salas como Triagem e Observação foram liberadas."
+    },
+    {
+      "id": "defeat_prevention",
+      "trigger": "cash_negative",
+      "title": "Atenção ao Caixa!",
+      "message": "Evite manter o caixa negativo por 7 dias seguidos solicitando verbas municipais ou ajustando a equipe."
+    }
+  ]
+}

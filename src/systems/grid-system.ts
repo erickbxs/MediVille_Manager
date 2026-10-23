@@ -78,3 +78,46 @@ export function removeRoom(state: GameState, roomId: string): number {
   state.rooms.delete(roomId);
   return refund;
 }
+
+export function canMoveRoom(
+  state: GameState,
+  roomId: string,
+  newCol: number,
+  newRow: number,
+  newRotated = false
+): boolean {
+  const room = state.rooms.get(roomId);
+  if (!room) return false;
+
+  const width = newRotated ? room.definition.height : room.definition.width;
+  const height = newRotated ? room.definition.width : room.definition.height;
+
+  if (!isWithinGrid(newCol, newRow, width, height)) return false;
+
+  for (const other of state.rooms.values()) {
+    if (other.id === roomId) continue;
+    if (roomsOverlap({ col: newCol, row: newRow, width, height }, other)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function moveRoom(
+  state: GameState,
+  roomId: string,
+  newCol: number,
+  newRow: number,
+  newRotated = false
+): boolean {
+  if (!canMoveRoom(state, roomId, newCol, newRow, newRotated)) return false;
+  const room = state.rooms.get(roomId);
+  if (!room) return false;
+
+  room.col = newCol;
+  room.row = newRow;
+  room.rotated = newRotated;
+  room.width = newRotated ? room.definition.height : room.definition.width;
+  room.height = newRotated ? room.definition.width : room.definition.height;
+  return true;
+}

@@ -244,6 +244,184 @@
       "version": "0.1.0",
       "reviewedOn": "",
       "reviewStatus": "pending"
+    },
+    {
+      "id": "covid-19",
+      "name": "COVID-19 (leve a moderada)",
+      "area": "Respiratória",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 10, "max": 85 },
+      "symptoms": ["Febre", "Tosse seca", "Perda súbita de olfato ou paladar", "Fadiga", "Dor de garganta"],
+      "suggestedExams": ["Teste rápido de antígeno ou RT-PCR", "Oximetria de pulso"],
+      "suggestedConduct": {
+        "id": "covid-isolamento-sintomaticos",
+        "text": "Isolamento respiratório domiciliar, hidratação, antitérmico para febre e monitoramento de oximetria. Orientar procurar emergência se saturação cair abaixo de 95%."
+      },
+      "distractorConducts": [
+        {
+          "id": "covid-antibiotico-precoce",
+          "text": "Prescrever azitromicina profilática para prevenir infecção pulmonar.",
+          "whyWrong": "A COVID-19 é uma infecção viral aguda. Antibióticos não têm ação antiviral e não devem ser usados de rotina."
+        }
+      ],
+      "medications": [
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Febre e mialgia" },
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Alternativa antitérmica" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O manejo de casos leves de COVID-19 prioriza repouso, hidratação, controle de sintomas e isolamento. Sinais de gravidade como falta de ar exigem avaliação hospitalar imediata.",
+      "possibleComorbidities": ["Hipertensão", "Diabetes", "Obesidade"],
+      "sources": [
+        { "name": "Ministério da Saúde. Guia de Manejo Clínico da COVID-19 na Atenção Primária", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-23" },
+        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "pneumonia-comunitaria",
+      "name": "Pneumonia Adquirida na Comunidade",
+      "area": "Respiratória",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 18, "max": 80 },
+      "symptoms": ["Tosse produtiva com catarro amarelado", "Febre alta com calafrios", "Dor torácica ventilatório-dependente", "Falta de ar leve"],
+      "suggestedExams": ["Raio-X de tórax", "Ausculta pulmonar detalhada", "Oximetria"],
+      "suggestedConduct": {
+        "id": "pneumonia-amoxicilina",
+        "text": "Iniciar antibioticoterapia empírica ambulatorial com amoxicilina por via oral, hidratação vigorosa e reavaliação em 48 a 72 horas."
+      },
+      "distractorConducts": [
+        {
+          "id": "pneumonia-so-xarope",
+          "text": "Prescrever apenas xarope antitussígeno e repouso.",
+          "whyWrong": "Pneumonia comunitária bacteriana exige antibiótico imediato para evitar sepse ou derrame pleural."
+        }
+      ],
+      "medications": [
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibiótico de primeira linha para pneumonia típica" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Controle da dor pleurítica e febre" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na pneumonia não complicada em pacientes estáveis, o tratamento ambulatorial com amoxicilina oral é altamente eficaz. Sinais de alarme como taquipneia intensa indicam internação.",
+      "possibleComorbidities": ["Tabagismo", "DPOC"],
+      "sources": [
+        { "name": "Ministério da Saúde. Protocolo Clínico para Infecções Respiratórias Agudas", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-23" },
+        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "gastroenterite-aguda",
+      "name": "Gastroenterite Aguda",
+      "area": "Digestiva",
+      "typicalUnit": "UPA e UBS",
+      "severity": "Leve",
+      "weight": 2,
+      "ageRange": { "min": 2, "max": 75 },
+      "symptoms": ["Diarreia líquida súbita", "Náuseas e episódios de vômito", "Cólicas abdominais", "Febre baixa"],
+      "suggestedExams": ["Avaliação de turgor cutâneo e sinais de desidratação", "Glicemia capilar se vômitos frequentes"],
+      "suggestedConduct": {
+        "id": "gastroenterite-reidratacao",
+        "text": "Terapia de Reidratação Oral (TRO) com Sais de Reidratação do SUS, dieta fracionada leve e evitar antimicrobianos de rotina."
+      },
+      "distractorConducts": [
+        {
+          "id": "gastroenterite-antibiotico-imediato",
+          "text": "Prescrever antibiótico imediatamente para cortar a diarreia.",
+          "whyWrong": "A imensa maioria das gastroenterites é viral ou autolimitada. Antibióticos podem prolongar o estado de portador e desequilibrar a microbiota."
+        }
+      ],
+      "medications": [
+        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Correção hidroeletrolítica" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Alívio de cólicas e febre" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A pedra angular da gastroenterite aguda é prevenir e tratar a desidratação com sais de reidratação oral. Quase todos os casos regridem espontaneamente em 3 a 5 dias.",
+      "possibleComorbidities": ["Nenhuma"],
+      "sources": [
+        { "name": "Ministério da Saúde. Manejo da Doença Diarreica Aguda", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-23" },
+        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "crise-hipertensiva",
+      "name": "Elevação Pressórica Sintomática",
+      "area": "Cardiovascular",
+      "typicalUnit": "UPA e UBS",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 35, "max": 85 },
+      "symptoms": ["Pressão arterial elevada (>160/100 mmHg)", "Cefaleia occipital leve", "Ansiedade", "Sem dor no peito ou déficits neurológicos"],
+      "suggestedExams": ["Aferição seriada da pressão arterial com manguito adequado", "Fundo de olho se disponível", "ECG"],
+      "suggestedConduct": {
+        "id": "hipertensao-acolhimento-repouso",
+        "text": "Acolhimento em sala tranquila, repouso de 30 minutos, ajuste da medicação anti-hipertensiva habitual e orientação de acompanhamento na UBS. Evitar quedas abruptas da pressão."
+      },
+      "distractorConducts": [
+        {
+          "id": "hipertensao-sublingual-rapido",
+          "text": "Administrar anti-hipertensivo sublingual de ação ultrarrápida para normalizar a pressão em 10 minutos.",
+          "whyWrong": "Quedas bruscas da pressão arterial podem causar isquemia cerebral ou coronariana. A redução deve ser gradual e segura."
+        }
+      ],
+      "medications": [
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Cefaleia" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A pseudocrise ou elevação pressórica sem lesão aguda de órgão-alvo melhora com repouso e readequação do tratamento crônico, sem necessitar de medicamentos endovenosos de emergência.",
+      "possibleComorbidities": ["Hipertensão arterial sistêmica crônica", "Dislipidemia"],
+      "sources": [
+        { "name": "Diretrizes Brasileiras de Hipertensão Arterial", "url": "https://departamentos.cardiol.br", "accessedOn": "2026-10-23" },
+        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "desidratacao-infantil",
+      "name": "Desidratação Leve a Moderada Infantil",
+      "area": "Pediatria",
+      "typicalUnit": "UPA e UBS",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 1, "max": 8 },
+      "symptoms": ["Olhos fundos", "Boca e lábios secos", "Sede intensa e choro com pouca lágrima", "Diminuição das fraldas molhadas"],
+      "suggestedExams": ["Avaliação clínica do sinal da prega cutânea", "Verificação do peso atual e fontanela"],
+      "suggestedConduct": {
+        "id": "desidratacao-plano-b",
+        "text": "Iniciar Plano B de Reidratação Oral na unidade: oferta frequente de solução de sais de reidratação com colher ou copinho até reidratar completamente."
+      },
+      "distractorConducts": [
+        {
+          "id": "desidratacao-refrigerante",
+          "text": "Orientar hidratação exclusiva com refrigerantes ou sucos açucarados em casa.",
+          "whyWrong": "Bebidas hiperosmolares e açucaradas pioram a perda de água no intestino e agravam a desidratação infantil."
+        }
+      ],
+      "medications": [
+        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Reposição hidroeletrolítica" }
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O Plano B na Atenção Básica e UPA reidrata a criança em poucas horas sob observação na sala de hidratação, evitando internações hospitalares desnecessárias.",
+      "possibleComorbidities": ["Desnutrição leve"],
+      "sources": [
+        { "name": "Ministério da Saúde. AIDPI Criança: Atenção Integrada às Doenças Prevalentes na Infância", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-23" },
+        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+      ],
+      "version": "0.1.0",
+      "reviewedOn": "",
+      "reviewStatus": "pending"
     }
   ]
 }

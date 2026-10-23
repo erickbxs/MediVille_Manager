@@ -31,6 +31,10 @@ export interface GameEvents {
   'economy:grant_received': { amount: number; reason: string };
   'economy:transfer_received': { amount: number; fixedPab: number; bonus: number };
   'economy:bpa_billed': { code: string; name: string; amount: number };
+  'progression:level_up': { levelId: 'ubs' | 'upa' | 'hospital'; name: string };
+  'tutorial:tip_triggered': { tipId: string; title: string; message: string };
+  'room:moved': { roomId: string; col: number; row: number; rotated: boolean };
+  'decision:queue_updated': { pendingCount: number };
 }
 
 export type EventKey = keyof GameEvents;

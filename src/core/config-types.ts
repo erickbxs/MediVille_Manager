@@ -113,6 +113,28 @@ export interface GameBalanceConfig {
     amount: number;
     description: string;
   };
+  progression: {
+    levels: HospitalProgressionLevel[];
+  };
+}
+
+export interface HospitalProgressionLevel {
+  id: 'ubs' | 'upa' | 'hospital';
+  name: string;
+  minTreatedCount: number;
+  minReputation: number;
+  unlockedRooms: string[];
+}
+
+export interface TutorialTip {
+  id: string;
+  trigger: string;
+  title: string;
+  message: string;
+}
+
+export interface TutorialCatalog {
+  tips: TutorialTip[];
 }
 
 export interface SigtapProcedure {

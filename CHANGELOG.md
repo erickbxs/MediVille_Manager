@@ -2,6 +2,38 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.4.0] - 2026-10-23
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Adicionado & Aprimorado (Conclusão da Fase 2 do GDD + Melhorias de Jogabilidade & Gráficos)
+- **Fila de Espera de Casos Clínicos (Fim dos Popups Sobrepostos)**:
+  - Eliminação completa de popups médicos abrindo em cascata ou sobrepostos.
+  - Implementação de fila de espera de decisões clínicas (`pendingDecisionPatientIds` e `getNextPendingDecision`).
+  - Badge interativa no HUD `📋 Casos:` com indicador numérico em tempo real e pulso visual quando houver pacientes aguardando conduta.
+  - O modal clínico nunca fecha sem o consentimento do jogador; após o feedback do protocolo SUS, exibe botões `📋 Atender Próximo Caso (${restantes} na espera)` e `Voltar ao Hospital`.
+- **Ferramenta de Mover / Reposicionar Salas Existentes**:
+  - Nova ação no dock de construção `✋ Mover`: permite clicar em qualquer sala já construída para selecioná-la e reposicioná-la livremente na grade sem cobrar novo custo de construção.
+  - Suporte completo a girar (`tecla R` ou botão) durante a movimentação da sala fantasma.
+  - Validação de colisão inteligente (`canMoveRoom`) que ignora a própria sala durante a verificação de sobreposição.
+- **Evolução Hospitalar & Novas Salas da Fase 2 (Prompt 9)**:
+  - Progressão em 3 níveis: **Unidade Básica de Saúde (UBS)** $\rightarrow$ **Unidade de Pronto Atendimento (UPA 24h)** $\rightarrow$ **Hospital Geral Municipal**.
+  - Novas salas introduzidas no catálogo `src/data/rooms.json`: **Triagem de Manchester** (`triage`) e **Leitos Clínicos / Observação** (`observation`), desbloqueadas no nível UPA.
+  - Subida de nível dinâmica baseada em metas de pacientes atendidos e reputação institucional SUS.
+- **Catálogo Expandido com 10 Casos Clínicos Reais da Atenção Básica e Urgência**:
+  - Inclusão dos 5 novos casos em `src/data/cases.json`: COVID-19 Leve, Pneumonia Adquirida na Comunidade (PAC), Gastroenterite Aguda Infantil, Crise Hipertensiva e Desidratação Pediátrica com condutas baseadas na RENAME e protocolos do Ministério da Saúde.
+- **Sistema de Tutorial Contextual (Prompt 10)**:
+  - Integração das 15 dicas contextuais oficiais do GDD em `src/data/tutorial.json`.
+  - Apresentação estilo Apple através de cards discretos no canto inferior esquerdo (`src/ui/tutorial-view.ts`) que surgem apenas na primeira ocorrência de cada mecânica.
+- **Upgrade Gráfico Completo no PixiJS**:
+  - **Piso do Hospital**: Grade refinada com ladrilhos brancos e cinzas suaves, rejunte sutil, calçada externa e emblema hospitalar no centro da recepção.
+  - **Salas Volumétricas com Mobília Detalhada**: Paredes 3D ortogonais com profundidade, pisos coloridos higiênicos, capachos de entrada e mobília vetorial desenhada para cada setor (mesa com monitor + maca com travesseiro no consultório, balcão de recepção, cadeiras de espera em fileira, estantes de medicamentos na farmácia e leitos de observação).
+  - **Pacientes e Médicos**: Projeção de sombras suaves no piso, médicos de jaleco branco no consultório e balões de status flutuantes (`🩺`).
+- **Suíte de Testes Expandida**:
+  - 27 testes automatizados cobrindo a Fase 2, movimentação de salas, fila de espera, progressão de unidade, dicas de tutorial e dados clínicos.
+- **Orçamento de Peso**:
+  - Pacote otimizado totalizando **0.67 MB** (meta do GDD < 2.00 MB).
+
 ## [0.3.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

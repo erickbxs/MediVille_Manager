@@ -15,6 +15,7 @@ export interface HudCallbacks {
   onOpenPharmacy?: () => void;
   onOpenFinances?: () => void;
   onRequestGrant?: () => void;
+  onOpenPendingCase?: () => void;
 }
 
 export class HospitalHUD {
@@ -41,13 +42,16 @@ export class HospitalHUD {
             🏥
           </div>
           <div>
-            <div class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">MediVille Manager</div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">MediVille</span>
+              <span id="hud-unit-level" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400">UBS</span>
+            </div>
             <div id="hud-cash" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100.000</div>
           </div>
         </div>
 
-        <div class="flex items-center gap-3 flex-1 max-w-xl justify-center flex-wrap">
-          <div class="min-w-[80px]">
+        <div class="flex items-center gap-2.5 flex-1 max-w-2xl justify-center flex-wrap">
+          <div class="min-w-[70px]">
             <div class="flex justify-between text-xs font-semibold mb-1">
               <span>Reputação</span>
               <span id="hud-rep-val">50%</span>
@@ -57,7 +61,7 @@ export class HospitalHUD {
             </div>
           </div>
 
-          <div class="min-w-[80px]">
+          <div class="min-w-[70px]">
             <div class="flex justify-between text-xs font-semibold mb-1">
               <span>Satisfação</span>
               <span id="hud-sat-val">50%</span>
@@ -66,6 +70,11 @@ export class HospitalHUD {
               <div id="hud-sat-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 50%"></div>
             </div>
           </div>
+
+          <button id="btn-pending-cases" title="Casos clínicos aguardando decisão médica" class="min-h-[44px] px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+            <span>📋 Casos:</span>
+            <span id="hud-cases-count" class="text-sky-600 dark:text-sky-400">0</span>
+          </button>
 
           <div class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5">
             <span>👥 Fila:</span>
@@ -122,6 +131,9 @@ export class HospitalHUD {
     document.getElementById('btn-request-grant')?.addEventListener('click', () => {
       this.callbacks?.onRequestGrant?.();
     });
+    document.getElementById('btn-pending-cases')?.addEventListener('click', () => {
+      this.callbacks?.onOpenPendingCase?.();
+    });
     bind('btn-1x', 1);
     bind('btn-2x', 2);
     bind('btn-3x', 3);
@@ -130,6 +142,24 @@ export class HospitalHUD {
   public update(state: GameState): void {
     const cashEl = document.getElementById('hud-cash');
     if (cashEl) cashEl.textContent = `R$ ${state.cash.toLocaleString('pt-BR')}`;
+
+    const unitLevelEl = document.getElementById('hud-unit-level');
+    if (unitLevelEl) {
+      const names = { ubs: 'UBS', upa: 'UPA 24h', hospital: 'Hospital' };
+      unitLevelEl.textContent = names[state.hospitalLevel] || 'UBS';
+    }
+
+    const casesEl = document.getElementById('hud-cases-count');
+    const casesBtn = document.getElementById('btn-pending-cases');
+    if (casesEl && casesBtn) {
+      const count = state.pendingDecisionPatientIds.length;
+      casesEl.textContent = `${count}`;
+      if (count > 0) {
+        casesBtn.className = 'min-h-[44px] px-2.5 py-1 rounded-xl bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/50 text-xs font-extrabold flex items-center gap-1.5 animate-pulse active:scale-95 transition-all shadow-xs';
+      } else {
+        casesBtn.className = 'min-h-[44px] px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95';
+      }
+    }
 
     const repVal = document.getElementById('hud-rep-val');
     const repBar = document.getElementById('hud-rep-bar');
