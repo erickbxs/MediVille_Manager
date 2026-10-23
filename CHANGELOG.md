@@ -5,6 +5,7 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 ## [0.4.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Deployment Preview v0.4.0: [https://a627c349.mediville-manager.pages.dev](https://a627c349.mediville-manager.pages.dev)
 
 ### Adicionado & Aprimorado (Conclusão da Fase 2 do GDD + Melhorias de Jogabilidade & Gráficos)
 - **Fila de Espera de Casos Clínicos (Fim dos Popups Sobrepostos)**:
