@@ -1,9 +1,9 @@
 /**
  * Arquivo: src/systems/arrival-system.ts
- * O que faz: Simula o fluxo contínuo de chegada de pacientes ao hospital baseado no tempo e número de setores instalados.
- * Para que foi criado: Aumentar a demanda conforme o hospital cresce, seguindo a fórmula lambda do GDD.
+ * O que faz: Simula o fluxo contínuo de chegada de pacientes ao hospital baseado no tempo, número de setores e eventos ativos.
+ * Para que foi criado: Aumentar a demanda conforme o hospital cresce e reagir a eventos (epidemias, acidentes) do GDD.
  * Como modificar/debugar: Ajuste baseIntervalSec e sectorGrowthFactor em src/data/balance.json.
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/case-system.ts
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/case-system.ts, src/systems/event-system.ts
  * Conecta-se com: src/core/simulation.ts, src/systems/queue-system.ts
  */
 
@@ -11,15 +11,18 @@ import { BALANCE } from '../core/config';
 import type { GameState } from '../state/game-state';
 import { createPatient } from './case-system';
 import { globalBus } from '../core/event-bus';
+import { getActiveArrivalMultiplier } from './event-system';
 
-export function calculateArrivalInterval(sectorCount: number): number {
+export function calculateArrivalInterval(sectorCount: number, eventMultiplier = 1.0): number {
   const { baseIntervalSec, sectorGrowthFactor } = BALANCE.arrival;
-  const multiplier = 1 + sectorGrowthFactor * sectorCount;
-  return Math.max(1, baseIntervalSec / multiplier);
+  const sectorMult = 1 + sectorGrowthFactor * sectorCount;
+  const totalMult = sectorMult * Math.max(0, eventMultiplier);
+  return Math.max(1, baseIntervalSec / totalMult);
 }
 
 export function updateArrivalSystem(state: GameState, deltaSec: number): void {
-  const interval = calculateArrivalInterval(state.rooms.size);
+  const eventMult = getActiveArrivalMultiplier(state);
+  const interval = calculateArrivalInterval(state.rooms.size, eventMult);
   state.arrivalTimerSec += deltaSec;
 
   if (state.arrivalTimerSec >= interval) {

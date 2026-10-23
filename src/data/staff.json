@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "description": "Tabela de cargos de funcionários do MediVille Manager (médico, enfermeiro, farmacêutico, recepcionista) com habilidades de 1 a 5, salários diários e impacto no atendimento conforme GDD pág. 7.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/entities/staff.ts",
+      "src/systems/staff-system.ts",
+      "src/ui/staff-modal.ts",
+      "src/data/balance.json"
+    ]
+  },
+  "roles": [
+    {
+      "id": "doctor",
+      "name": "Médico(a) Clínico",
+      "icon": "👨‍⚕️",
+      "baseSalaryDaily": 800,
+      "skillSalaryBonus": 150,
+      "requiredRoomRole": "treatment",
+      "description": "Realiza consultas e reduz o tempo de atendimento conforme sua habilidade."
+    },
+    {
+      "id": "nurse",
+      "name": "Enfermeiro(a) Triagem",
+      "icon": "👩‍⚕️",
+      "baseSalaryDaily": 450,
+      "skillSalaryBonus": 80,
+      "requiredRoomRole": "entry",
+      "description": "Acelera a triagem e aumenta a paciência dos pacientes na fila."
+    },
+    {
+      "id": "pharmacist",
+      "name": "Farmacêutico(a)",
+      "icon": "🧑‍🔬",
+      "baseSalaryDaily": 400,
+      "skillSalaryBonus": 70,
+      "requiredRoomRole": "dispense",
+      "description": "Disponibiliza medicamentos e agiliza a dispensação de receitas."
+    },
+    {
+      "id": "receptionist",
+      "name": "Recepcionista",
+      "icon": "📋",
+      "baseSalaryDaily": 250,
+      "skillSalaryBonus": 50,
+      "requiredRoomRole": "entry",
+      "description": "Atende a chegada e organiza o acolhimento da unidade."
+    }
+  ]
+}

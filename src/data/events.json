@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "description": "Lista dos 12 eventos dinâmicos iniciais do MediVille Manager divididos nos quatro tipos previstos no GDD: acidentes e desastres, epidemias e surtos, crises de gestão e sazonais.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/entities/event.ts",
+      "src/systems/event-system.ts",
+      "src/ui/event-banner.ts"
+    ]
+  },
+  "events": [
+    {
+      "id": "traffic_collision",
+      "type": "accident",
+      "title": "Colisão na Rodovia",
+      "icon": "🚗💥",
+      "description": "Um engavetamento nas imediações aumentou a chegada de pacientes com urgência.",
+      "durationSec": 45,
+      "arrivalMultiplier": 2.2,
+      "preferredArea": "Trauma"
+    },
+    {
+      "id": "construction_collapse",
+      "type": "accident",
+      "title": "Desabamento em Obra",
+      "icon": "🏗️⚠️",
+      "description": "Acidente em construção civil traz trabalhadores feridos para a unidade.",
+      "durationSec": 50,
+      "arrivalMultiplier": 2.0,
+      "preferredArea": "Trauma"
+    },
+    {
+      "id": "fire_outbreak",
+      "type": "accident",
+      "title": "Incêndio em Galpão",
+      "icon": "🔥🚒",
+      "description": "Vítimas com inalação de fumaça e queimaduras chegam simultaneamente.",
+      "durationSec": 40,
+      "arrivalMultiplier": 1.8,
+      "preferredArea": "Respiratória"
+    },
+    {
+      "id": "dengue_outbreak",
+      "type": "epidemic",
+      "title": "Surto de Dengue",
+      "icon": "🦟🌡️",
+      "description": "Período chuvoso acelera proliferação do mosquito. Aumento expressivo de casos virais.",
+      "durationSec": 60,
+      "arrivalMultiplier": 2.5,
+      "preferredArea": "Viral"
+    },
+    {
+      "id": "flu_epidemic",
+      "type": "epidemic",
+      "title": "Surto de Influenza",
+      "icon": "🤧💧",
+      "description": "Queda de temperatura eleva transmissão de vírus respiratórios em toda a cidade.",
+      "durationSec": 55,
+      "arrivalMultiplier": 2.1,
+      "preferredArea": "Respiratória"
+    },
+    {
+      "id": "gastro_surge",
+      "type": "epidemic",
+      "title": "Surto de Gastroenterite",
+      "icon": "🚰🤢",
+      "description": "Contaminação da água local causa náuseas e desidratação em vários bairros.",
+      "durationSec": 45,
+      "arrivalMultiplier": 1.9,
+      "preferredArea": "Digestiva"
+    },
+    {
+      "id": "power_shortage",
+      "type": "crisis",
+      "title": "Instabilidade na Rede Elétrica",
+      "icon": "⚡🔌",
+      "description": "Queda de energia exige geradores auxiliares. O tempo de atendimento nas salas sobe 30%.",
+      "durationSec": 35,
+      "arrivalMultiplier": 1.0,
+      "consultationDurationFactor": 1.3
+    },
+    {
+      "id": "medication_shortage",
+      "type": "crisis",
+      "title": "Atraso no Repasse de Medicamentos",
+      "icon": "📦⏳",
+      "description": "Distribuidora atrasou remessa de antibióticos e analgésicos. Farmácia sob pressão.",
+      "durationSec": 40,
+      "arrivalMultiplier": 1.0,
+      "pharmacyPenaltyBonus": 15
+    },
+    {
+      "id": "transit_strike",
+      "type": "crisis",
+      "title": "Paralisação do Transporte",
+      "icon": "🚌🛑",
+      "description": "Dificuldade de locomoção atrasa pacientes e reduz a demanda temporariamente.",
+      "durationSec": 35,
+      "arrivalMultiplier": 0.6
+    },
+    {
+      "id": "carnival_festivities",
+      "type": "seasonal",
+      "title": "Semana de Carnaval",
+      "icon": "🎭🎉",
+      "description": "Festividades de rua trazem picos de atendimentos com desidratação e viroses.",
+      "durationSec": 50,
+      "arrivalMultiplier": 1.7,
+      "preferredArea": "Viral"
+    },
+    {
+      "id": "winter_wave",
+      "type": "seasonal",
+      "title": "Frente Fria Intensa",
+      "icon": "❄️🧣",
+      "description": "Onda de baixas temperaturas agrava doenças respiratórias crônicas em idosos e crianças.",
+      "durationSec": 55,
+      "arrivalMultiplier": 1.6,
+      "preferredArea": "Respiratória"
+    },
+    {
+      "id": "vaccination_campaign",
+      "type": "seasonal",
+      "title": "Dia D de Multivacinação",
+      "icon": "💉🇧🇷",
+      "description": "Campanha nacional do SUS traz famílias para atualização da caderneta de vacinas.",
+      "durationSec": 45,
+      "arrivalMultiplier": 1.4,
+      "reputationBonus": 5
+    }
+  ]
+}

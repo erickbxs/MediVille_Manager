@@ -11,19 +11,23 @@ import { BALANCE } from '../core/config';
 import { globalBus } from '../core/event-bus';
 import type { GameState } from '../state/game-state';
 import { calculateNewReputation } from './reputation-system';
+import { calculateTotalDailyStaffSalaries } from './staff-system';
 
 function deductDailyUpkeep(state: GameState): number {
   let totalUpkeep = 0;
   for (const room of state.rooms.values()) {
     totalUpkeep += room.definition.dailyUpkeep;
   }
-  state.cash -= totalUpkeep;
+  const staffSalaries = calculateTotalDailyStaffSalaries(state);
+  const totalDailyCost = totalUpkeep + staffSalaries;
+
+  state.cash -= totalDailyCost;
   globalBus.emit('cash:changed', {
     cash: state.cash,
-    delta: -totalUpkeep,
-    reason: 'Manutenção diária e salários',
+    delta: -totalDailyCost,
+    reason: 'Manutenção predial e folha salarial da equipe',
   });
-  return totalUpkeep;
+  return totalDailyCost;
 }
 
 function checkDefeatConditions(state: GameState): void {

@@ -12,6 +12,8 @@ import balanceRaw from '../data/balance.json';
 import roomsRaw from '../data/rooms.json';
 import casesRaw from '../data/cases.json';
 import namesRaw from '../data/names.json';
+import staffRaw from '../data/staff.json';
+import eventsRaw from '../data/events.json';
 
 export const BALANCE: GameBalanceConfig = balanceRaw as unknown as GameBalanceConfig;
 
@@ -72,3 +74,39 @@ export interface NamesPool {
 }
 
 export const NAMES_CATALOG: NamesPool = namesRaw as unknown as NamesPool;
+
+export interface StaffRoleDefinition {
+  id: string;
+  name: string;
+  icon: string;
+  baseSalaryDaily: number;
+  skillSalaryBonus: number;
+  requiredRoomRole: string;
+  description: string;
+}
+
+export interface StaffCatalog {
+  roles: StaffRoleDefinition[];
+}
+
+export const STAFF_CATALOG: StaffCatalog = staffRaw as unknown as StaffCatalog;
+
+export interface GameEventDefinition {
+  id: string;
+  type: 'accident' | 'epidemic' | 'crisis' | 'seasonal';
+  title: string;
+  icon: string;
+  description: string;
+  durationSec: number;
+  arrivalMultiplier: number;
+  preferredArea?: string;
+  consultationDurationFactor?: number;
+  pharmacyPenaltyBonus?: number;
+  reputationBonus?: number;
+}
+
+export interface EventsCatalog {
+  events: GameEventDefinition[];
+}
+
+export const EVENTS_CATALOG: EventsCatalog = eventsRaw as unknown as EventsCatalog;

@@ -9,6 +9,8 @@
 
 import type { RoomInstance } from '../entities/room';
 import type { PatientInstance } from '../entities/patient';
+import type { StaffMember } from '../entities/staff';
+import type { ActiveEvent } from '../entities/event';
 
 export interface HospitalStats {
   treatedCount: number;
@@ -35,4 +37,7 @@ export interface GameState {
   activeDecisionPatientId: string | null;
   stats: HospitalStats;
   arrivalTimerSec: number;
+  staff: Map<string, StaffMember>;
+  activeEvents: ActiveEvent[];
+  eventTimerSec: number;
 }

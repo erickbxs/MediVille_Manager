@@ -87,4 +87,16 @@ export interface GameBalanceConfig {
     queueWarningThreshold: number;
     treatedPatientsPharmacyWarning: number;
   };
+  staff: {
+    startingDoctors: number;
+    startingNurses: number;
+    minSkill: number;
+    maxSkill: number;
+    skillReductionFactor: number;
+  };
+  events: {
+    intervalBetweenEventsSec: number;
+    firstEventDelaySec: number;
+    maxActiveEvents: number;
+  };
 }

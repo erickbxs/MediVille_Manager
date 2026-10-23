@@ -16,6 +16,8 @@ import { updateQueueSystem } from '../systems/queue-system';
 import { dischargePatient, updateConsultationSystem } from '../systems/consultation-system';
 import { updateDaySystem } from '../systems/day-system';
 import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom } from '../systems/grid-system';
+import { updateEventSystem } from '../systems/event-system';
+import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems/staff-system';
 
 export class HospitalSimulation {
   public state: GameState;
@@ -31,6 +33,7 @@ export class HospitalSimulation {
     updateArrivalSystem(this.state, scaledDelta);
     updateQueueSystem(this.state, scaledDelta);
     updateConsultationSystem(this.state, scaledDelta);
+    updateEventSystem(this.state, scaledDelta);
     updateDaySystem(this.state, scaledDelta);
 
     const dayProgress = this.state.dayTimeSec / BALANCE.time.dayDurationSec;
@@ -98,5 +101,14 @@ export class HospitalSimulation {
     }
     globalBus.emit('state:changed', undefined);
     return true;
+  }
+
+  public hireStaff(roleId: string, skill?: number): boolean {
+    const member = sysHireStaff(this.state, roleId, skill);
+    return member !== null;
+  }
+
+  public fireStaff(staffId: string): boolean {
+    return sysFireStaff(this.state, staffId);
   }
 }

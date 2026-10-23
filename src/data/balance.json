@@ -97,5 +97,17 @@
     "cashWarningThreshold": 20000,
     "queueWarningThreshold": 4,
     "treatedPatientsPharmacyWarning": 2
+  },
+  "staff": {
+    "startingDoctors": 1,
+    "startingNurses": 1,
+    "minSkill": 1,
+    "maxSkill": 5,
+    "skillReductionFactor": 0.05
+  },
+  "events": {
+    "intervalBetweenEventsSec": 75,
+    "firstEventDelaySec": 30,
+    "maxActiveEvents": 1
   }
 }

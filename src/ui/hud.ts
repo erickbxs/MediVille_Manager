@@ -14,9 +14,12 @@ export class HospitalHUD {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
 
-  constructor(container: HTMLElement, simulation: HospitalSimulation) {
+  private onOpenStaff?: () => void;
+
+  constructor(container: HTMLElement, simulation: HospitalSimulation, onOpenStaff?: () => void) {
     this.container = container;
     this.simulation = simulation;
+    this.onOpenStaff = onOpenStaff;
     this.renderInitial();
   }
 
@@ -58,6 +61,11 @@ export class HospitalHUD {
             <span>👥 Fila:</span>
             <span id="hud-queue" class="text-sky-600 dark:text-sky-400">0</span>
           </div>
+
+          <button id="btn-open-staff" class="min-h-[44px] px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+            <span>👨‍⚕️ Equipe:</span>
+            <span id="hud-staff-count" class="text-emerald-600 dark:text-emerald-400">2</span>
+          </button>
         </div>
 
         <div class="flex items-center gap-2">
@@ -79,6 +87,9 @@ export class HospitalHUD {
       document.getElementById(id)?.addEventListener('click', () => this.simulation.setSpeed(spd));
     };
     document.getElementById('btn-pause')?.addEventListener('click', () => this.simulation.togglePause());
+    document.getElementById('btn-open-staff')?.addEventListener('click', () => {
+      this.onOpenStaff?.();
+    });
     bind('btn-1x', 1);
     bind('btn-2x', 2);
     bind('btn-3x', 3);
@@ -104,6 +115,9 @@ export class HospitalHUD {
 
     const queueEl = document.getElementById('hud-queue');
     if (queueEl) queueEl.textContent = `${state.queueIds.length}`;
+
+    const staffEl = document.getElementById('hud-staff-count');
+    if (staffEl) staffEl.textContent = `${state.staff.size}`;
 
     const dayEl = document.getElementById('hud-day');
     if (dayEl) dayEl.textContent = `Dia ${state.day}`;

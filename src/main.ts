@@ -15,6 +15,8 @@ import { BuildMenu } from './ui/build-menu';
 import { DecisionModal } from './ui/decision-modal';
 import { AdvisorView } from './ui/advisor-view';
 import { DefeatModal } from './ui/defeat-modal';
+import { StaffModal } from './ui/staff-modal';
+import { EventBannerView } from './ui/event-banner';
 import { CanvasInputManager } from './input/canvas-input';
 import { globalBus } from './core/event-bus';
 import { canPlaceRoom } from './systems/grid-system';
@@ -28,6 +30,8 @@ class MediVilleApp {
   private decisionModal!: DecisionModal;
   private advisorView!: AdvisorView;
   private defeatModal!: DefeatModal;
+  private staffModal!: StaffModal;
+  private eventBanner!: EventBannerView;
   private ghost: GhostState = { def: null, col: 0, row: 0, rotated: false, isValid: false };
   private isDemolishMode = false;
   private selectedRoomId: string | null = null;
@@ -36,7 +40,13 @@ class MediVilleApp {
     const canvasContainer = document.getElementById('game-canvas-container')!;
     await this.renderer.init(canvasContainer);
 
-    this.hud = new HospitalHUD(document.getElementById('hud-container')!, this.simulation);
+    this.staffModal = new StaffModal(document.getElementById('modal-container')!, this.simulation);
+    this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
+    this.hud = new HospitalHUD(
+      document.getElementById('hud-container')!,
+      this.simulation,
+      () => this.staffModal.open()
+    );
     this.decisionModal = new DecisionModal(document.getElementById('modal-container')!, this.simulation);
     this.advisorView = new AdvisorView(document.getElementById('advisor-container')!);
     this.defeatModal = new DefeatModal(document.getElementById('modal-container')!);
@@ -135,6 +145,7 @@ class MediVilleApp {
     globalBus.on('tick', () => {
       this.hud.update(this.simulation.state);
       this.advisorView.update(this.simulation.state);
+      this.eventBanner.update(this.simulation.state.activeEvents);
     });
 
     globalBus.on('patient:needs_decision', ({ patientId }) => {

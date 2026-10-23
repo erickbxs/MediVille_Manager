@@ -1,15 +1,17 @@
 /**
  * Arquivo: src/core/new-game.ts
- * O que faz: Inicializa uma nova partida do MediVille Manager com as salas iniciais, caixa, reputação e parâmetros do GDD.
+ * O que faz: Inicializa uma nova partida do MediVille Manager com as salas iniciais, equipe médica, caixa, reputação e parâmetros do GDD.
  * Para que foi criado: Criação de estado limpo e reprodutível para início de jogo e testes automatizados.
- * Como modificar/debugar: Ajuste starterRooms ou startingCash em src/data/balance.json.
- * Importa: src/core/config.ts, src/entities/room.ts, src/state/game-state.ts
+ * Como modificar/debugar: Ajuste starterRooms, staff ou startingCash em src/data/balance.json.
+ * Importa: src/core/config.ts, src/entities/room.ts, src/entities/staff.ts, src/state/game-state.ts, src/systems/staff-system.ts
  * Conecta-se com: src/core/simulation.ts, tests/simulation.test.ts
  */
 
 import { BALANCE, ROOMS_CATALOG } from './config';
 import { createRoomInstance, type RoomInstance } from '../entities/room';
+import type { StaffMember } from '../entities/staff';
 import type { GameState } from '../state/game-state';
+import { createStaffMember } from '../systems/staff-system';
 
 function buildStarterRoomsMap(): Map<string, RoomInstance> {
   const rooms = new Map<string, RoomInstance>();
@@ -21,6 +23,15 @@ function buildStarterRoomsMap(): Map<string, RoomInstance> {
     rooms.set(roomId, instance);
   }
   return rooms;
+}
+
+function buildStarterStaffMap(): Map<string, StaffMember> {
+  const staff = new Map<string, StaffMember>();
+  const doc = createStaffMember('doctor', BALANCE.staff.minSkill);
+  if (doc) staff.set(doc.id, doc);
+  const nurse = createStaffMember('nurse', 1);
+  if (nurse) staff.set(nurse.id, nurse);
+  return staff;
 }
 
 export function createInitialGameState(): GameState {
@@ -42,5 +53,8 @@ export function createInitialGameState(): GameState {
     activeDecisionPatientId: null,
     stats: { treatedCount: 0, abandonedCount: 0, totalDecisions: 0, correctDecisions: 0 },
     arrivalTimerSec: BALANCE.arrival.baseIntervalSec * BALANCE.arrival.initialProgress,
+    staff: buildStarterStaffMap(),
+    activeEvents: [],
+    eventTimerSec: BALANCE.events.firstEventDelaySec,
   };
 }

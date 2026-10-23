@@ -12,6 +12,9 @@ import { globalBus } from '../core/event-bus';
 import { addOccupant, removeOccupant, type RoomInstance } from '../entities/room';
 import type { GameState } from '../state/game-state';
 import { calculatePatientSatisfaction } from './satisfaction-system';
+import { calculateConsultationDuration } from '../entities/staff';
+import { getBestDoctorSkill } from './staff-system';
+import { getActiveConsultationFactor } from './event-system';
 
 export function findAvailableConsultationRoom(state: GameState): RoomInstance | null {
   for (const room of state.rooms.values()) {
@@ -40,6 +43,9 @@ function startConsultationForNextPatient(state: GameState): void {
 
   patient.state = 'in_consultation';
   patient.currentRoomId = room.id;
+  const doctorSkill = getBestDoctorSkill(state);
+  const eventFactor = getActiveConsultationFactor(state);
+  patient.consultationDurationSec = calculateConsultationDuration(BALANCE.consultation.baseTimeSec, doctorSkill) * eventFactor;
   addOccupant(room, patient.id);
   globalBus.emit('patient:consultation_started', { patientId: patient.id, roomId: room.id });
 }

@@ -2,6 +2,22 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.2.0] - 2026-10-23
+### Adicionado
+- **Gestão Completa de Equipe (Prompt 5)**:
+  - Sistema de contratação e demissão de 4 categorias profissionais de saúde: Médicos, Enfermeiros, Farmacêuticos e Recepcionistas em `src/data/staff.json`.
+  - Habilidade de 1 a 5 estrelas gerada proceduralmente e impacto dinâmico na velocidade de atendimento pela fórmula oficial do GDD: $T_{atend} = T_{base} \times (1 - 0.05 \times (H - 1))$.
+  - Dedução diária de salários no fechamento do dia (`day-system.ts`) somada à manutenção de salas construídas.
+  - Modal Apple-style (`src/ui/staff-modal.ts`) com visualização de habilidades em estrelas douradas, custo diário, filtros e ações rápidas com alvos de toque mobile ≥ 44px.
+  - Indicador numérico em tempo real no HUD com botão de acesso rápido à equipe.
+- **Sistema de 12 Eventos Dinâmicos Oficiais do SUS (Prompt 8)**:
+  - Catálogo em `src/data/events.json` com 12 eventos distribuídos nas 4 categorias do GDD: Acidentes (ex: colisão na rodovia, desabamento), Surtos & Epidemias (surto de dengue, surto de gastroenterite), Crises de Recursos (falta de insumos, greve parcial de transporte) e Sazonais (inverno respiratório, onda de calor extrema).
+  - Multiplicadores em tempo real de taxa de chegada de pacientes e duração de consultas médicas.
+  - Banner animado com visual de emergência (`src/ui/event-banner.ts`) exibindo ícone, título, descrição e contagem regressiva em segundos.
+  - Total integração desacoplada via EventBus (`event:started` e `event:ended`).
+- **Suíte de Testes Expandida**:
+  - 16 testes automatizados cobrindo fórmulas matemáticas, simulação de fila, casos clínicos e agora contratação/demissão de equipe e temporização/expiração de eventos dinâmicos.
+
 ## [0.1.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

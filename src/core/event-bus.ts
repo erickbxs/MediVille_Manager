@@ -22,6 +22,10 @@ export interface GameEvents {
   'room:removed': { roomId: string; refund: number };
   'advisor:alert': { id: string; message: string };
   'game:defeat': { reason: string };
+  'event:started': { eventId: string; title: string; icon: string; description: string; durationSec: number };
+  'event:ended': { eventId: string; title: string };
+  'staff:hired': { staffId: string; roleId: string; name: string };
+  'staff:fired': { staffId: string; name: string };
 }
 
 export type EventKey = keyof GameEvents;
