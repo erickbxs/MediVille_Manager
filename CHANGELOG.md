@@ -3,6 +3,10 @@
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
 ## [0.2.0] - 2026-10-23
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Deployment Preview v0.2.0: [https://c2b2e1f7.mediville-manager.pages.dev](https://c2b2e1f7.mediville-manager.pages.dev)
+
 ### Adicionado
 - **Gestão Completa de Equipe (Prompt 5)**:
   - Sistema de contratação e demissão de 4 categorias profissionais de saúde: Médicos, Enfermeiros, Farmacêuticos e Recepcionistas em `src/data/staff.json`.
