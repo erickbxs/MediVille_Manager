@@ -26,6 +26,11 @@ export interface GameEvents {
   'event:ended': { eventId: string; title: string };
   'staff:hired': { staffId: string; roleId: string; name: string };
   'staff:fired': { staffId: string; name: string };
+  'pharmacy:stock_changed': { medId: string; newStock: number; delta: number };
+  'pharmacy:stock_out': { medId: string; medName: string };
+  'economy:grant_received': { amount: number; reason: string };
+  'economy:transfer_received': { amount: number; fixedPab: number; bonus: number };
+  'economy:bpa_billed': { code: string; name: string; amount: number };
 }
 
 export type EventKey = keyof GameEvents;

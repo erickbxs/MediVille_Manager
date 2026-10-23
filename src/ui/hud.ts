@@ -10,16 +10,26 @@
 import type { HospitalSimulation } from '../core/simulation';
 import type { GameState } from '../state/game-state';
 
+export interface HudCallbacks {
+  onOpenStaff?: () => void;
+  onOpenPharmacy?: () => void;
+  onOpenFinances?: () => void;
+  onRequestGrant?: () => void;
+}
+
 export class HospitalHUD {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
+  private callbacks?: HudCallbacks;
 
-  private onOpenStaff?: () => void;
-
-  constructor(container: HTMLElement, simulation: HospitalSimulation, onOpenStaff?: () => void) {
+  constructor(container: HTMLElement, simulation: HospitalSimulation, callbacks?: HudCallbacks | (() => void)) {
     this.container = container;
     this.simulation = simulation;
-    this.onOpenStaff = onOpenStaff;
+    if (typeof callbacks === 'function') {
+      this.callbacks = { onOpenStaff: callbacks };
+    } else {
+      this.callbacks = callbacks;
+    }
     this.renderInitial();
   }
 
@@ -36,8 +46,8 @@ export class HospitalHUD {
           </div>
         </div>
 
-        <div class="flex items-center gap-4 flex-1 max-w-md justify-center">
-          <div class="flex-1 min-w-[90px]">
+        <div class="flex items-center gap-3 flex-1 max-w-xl justify-center flex-wrap">
+          <div class="min-w-[80px]">
             <div class="flex justify-between text-xs font-semibold mb-1">
               <span>Reputação</span>
               <span id="hud-rep-val">50%</span>
@@ -47,7 +57,7 @@ export class HospitalHUD {
             </div>
           </div>
 
-          <div class="flex-1 min-w-[90px]">
+          <div class="min-w-[80px]">
             <div class="flex justify-between text-xs font-semibold mb-1">
               <span>Satisfação</span>
               <span id="hud-sat-val">50%</span>
@@ -62,9 +72,22 @@ export class HospitalHUD {
             <span id="hud-queue" class="text-sky-600 dark:text-sky-400">0</span>
           </div>
 
-          <button id="btn-open-staff" class="min-h-[44px] px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+          <button id="btn-open-staff" class="min-h-[44px] px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
             <span>👨‍⚕️ Equipe:</span>
             <span id="hud-staff-count" class="text-emerald-600 dark:text-emerald-400">2</span>
+          </button>
+
+          <button id="btn-open-pharmacy" class="min-h-[44px] px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+            <span>💊 Farmácia:</span>
+            <span id="hud-pharmacy-stock" class="text-emerald-600 dark:text-emerald-400">0 un</span>
+          </button>
+
+          <button id="btn-request-grant" title="Solicitar verba extraordinária imediata com a Secretaria de Saúde" class="min-h-[44px] px-3 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-extrabold flex items-center gap-1.5 transition-all active:scale-95">
+            <span>🏛️ Verba Reforma</span>
+          </button>
+
+          <button id="btn-open-finances" title="Demonstrativo Orçamentário e Tabela SIGTAP" class="min-h-[44px] px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+            <span>📊 Finanças</span>
           </button>
         </div>
 
@@ -88,7 +111,16 @@ export class HospitalHUD {
     };
     document.getElementById('btn-pause')?.addEventListener('click', () => this.simulation.togglePause());
     document.getElementById('btn-open-staff')?.addEventListener('click', () => {
-      this.onOpenStaff?.();
+      this.callbacks?.onOpenStaff?.();
+    });
+    document.getElementById('btn-open-pharmacy')?.addEventListener('click', () => {
+      this.callbacks?.onOpenPharmacy?.();
+    });
+    document.getElementById('btn-open-finances')?.addEventListener('click', () => {
+      this.callbacks?.onOpenFinances?.();
+    });
+    document.getElementById('btn-request-grant')?.addEventListener('click', () => {
+      this.callbacks?.onRequestGrant?.();
     });
     bind('btn-1x', 1);
     bind('btn-2x', 2);
@@ -118,6 +150,22 @@ export class HospitalHUD {
 
     const staffEl = document.getElementById('hud-staff-count');
     if (staffEl) staffEl.textContent = `${state.staff.size}`;
+
+    const pharmacyStockEl = document.getElementById('hud-pharmacy-stock');
+    if (pharmacyStockEl) {
+      let totalStock = 0;
+      let hasZero = false;
+      for (const count of Object.values(state.pharmacyStock)) {
+        totalStock += count;
+        if (count === 0) hasZero = true;
+      }
+      pharmacyStockEl.textContent = `${totalStock} un`;
+      if (hasZero) {
+        pharmacyStockEl.className = 'text-rose-500 font-extrabold animate-pulse';
+      } else {
+        pharmacyStockEl.className = 'text-emerald-600 dark:text-emerald-400 font-bold';
+      }
+    }
 
     const dayEl = document.getElementById('hud-day');
     if (dayEl) dayEl.textContent = `Dia ${state.day}`;

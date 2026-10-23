@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "description": "Catálogo de medicamentos essenciais da Relação Nacional de Medicamentos Essenciais (RENAME) disponíveis na farmácia do hospital, com custos de lote e dosagem genérica.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/core/config-types.ts",
+      "src/systems/economy-system.ts",
+      "src/systems/consultation-system.ts",
+      "src/ui/pharmacy-modal.ts"
+    ]
+  },
+  "medications": [
+    {
+      "id": "paracetamol",
+      "genericName": "Paracetamol 500mg",
+      "category": "Analgésico / Antitérmico",
+      "unit": "comprimido",
+      "batchSize": 50,
+      "batchCost": 150,
+      "initialStock": 25,
+      "description": "Alívio sintomático de cefaleia, mialgia e febre em quadros virais comuns."
+    },
+    {
+      "id": "dipirona",
+      "genericName": "Dipirona 500mg/mL",
+      "category": "Analgésico / Antitérmico",
+      "unit": "frasco gotas",
+      "batchSize": 40,
+      "batchCost": 180,
+      "initialStock": 20,
+      "description": "Antitérmico e analgésico de rápida ação para controle de febre e dor aguda."
+    },
+    {
+      "id": "soro-fisiologico",
+      "genericName": "Cloreto de Sódio 0,9% (Solução Nasal)",
+      "category": "Solução Fisiológica",
+      "unit": "frasco",
+      "batchSize": 40,
+      "batchCost": 120,
+      "initialStock": 20,
+      "description": "Higienização e desobstrução das vias aéreas superiores no resfriado comum."
+    },
+    {
+      "id": "sais-reidratacao",
+      "genericName": "Sais para Reidratação Oral (SRO)",
+      "category": "Hidratação Eletrolítica",
+      "unit": "envelope",
+      "batchSize": 50,
+      "batchCost": 100,
+      "initialStock": 25,
+      "description": "Reposição hidroeletrolítica indispensável no manejo clínico da dengue e desidratação."
+    },
+    {
+      "id": "amoxicilina",
+      "genericName": "Amoxicilina 500mg",
+      "category": "Antibacteriano",
+      "unit": "cápsula",
+      "batchSize": 30,
+      "batchCost": 280,
+      "initialStock": 15,
+      "description": "Antibiótico de primeira linha para faringoamigdalite estreptocócica bacteriana."
+    },
+    {
+      "id": "benzilpenicilina",
+      "genericName": "Benzilpenicilina Benzatina 1.200.000 UI",
+      "category": "Antibacteriano Injetável",
+      "unit": "frasco-ampola",
+      "batchSize": 20,
+      "batchCost": 350,
+      "initialStock": 10,
+      "description": "Penicilina de depósito indicada para prevenção de febre reumática e infecções estreptocócicas."
+    },
+    {
+      "id": "nitrofurantoina",
+      "genericName": "Nitrofurantoína 100mg",
+      "category": "Antimicrobiano Urinário",
+      "unit": "cápsula",
+      "batchSize": 30,
+      "batchCost": 260,
+      "initialStock": 15,
+      "description": "Tratamento de primeira escolha na RENAME para infecção do trato urinário baixo (cistite)."
+    },
+    {
+      "id": "oseltamivir",
+      "genericName": "Fosfato de Oseltamivir 75mg",
+      "category": "Antiviral",
+      "unit": "cápsula",
+      "batchSize": 20,
+      "batchCost": 450,
+      "initialStock": 10,
+      "description": "Inibidor de neuraminidase indicado para pacientes com síndrome gripal em grupo de risco."
+    }
+  ]
+}

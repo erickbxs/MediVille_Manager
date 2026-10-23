@@ -12,9 +12,10 @@ import type { PatientInstance } from '../entities/patient';
 
 export function calculatePatientSatisfaction(
   patient: PatientInstance,
-  hasPharmacyAvailable = true
+  hasPharmacyAvailable = true,
+  hasMedicationInStock = true
 ): number {
-  const { min, max, waitPenalty, errorPenalty, missingPharmacyPenalty } = BALANCE.satisfaction;
+  const { min, max, waitPenalty, errorPenalty, missingPharmacyPenalty, missingMedicationPenalty } = BALANCE.satisfaction;
 
   const waitRatio = patient.patienceSec > 0
     ? Math.min(1, patient.waitTimeSec / patient.patienceSec)
@@ -22,8 +23,12 @@ export function calculatePatientSatisfaction(
 
   let score = max - (waitPenalty * waitRatio) - (errorPenalty * patient.errorsCount);
 
-  if (patient.clinicalCase.definition.requiresPharmacy && !hasPharmacyAvailable) {
-    score -= missingPharmacyPenalty;
+  if (patient.clinicalCase.definition.requiresPharmacy) {
+    if (!hasPharmacyAvailable) {
+      score -= missingPharmacyPenalty;
+    } else if (!hasMedicationInStock) {
+      score -= missingMedicationPenalty;
+    }
   }
 
   return Math.max(min, Math.min(max, Math.round(score)));

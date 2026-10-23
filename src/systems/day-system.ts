@@ -12,6 +12,7 @@ import { globalBus } from '../core/event-bus';
 import type { GameState } from '../state/game-state';
 import { calculateNewReputation } from './reputation-system';
 import { calculateTotalDailyStaffSalaries } from './staff-system';
+import { processMinistryDailyTransfer } from './economy-system';
 
 function deductDailyUpkeep(state: GameState): number {
   let totalUpkeep = 0;
@@ -63,6 +64,7 @@ export function updateDaySystem(state: GameState, deltaSec: number): void {
   if (state.dayTimeSec >= dayDurationSec) {
     state.dayTimeSec -= dayDurationSec;
     deductDailyUpkeep(state);
+    processMinistryDailyTransfer(state);
 
     const newRep = calculateNewReputation(state.reputation, state.satisfactionAverage);
     const repDelta = Math.round((newRep - state.reputation) * 10) / 10;

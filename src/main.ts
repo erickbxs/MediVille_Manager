@@ -16,10 +16,13 @@ import { DecisionModal } from './ui/decision-modal';
 import { AdvisorView } from './ui/advisor-view';
 import { DefeatModal } from './ui/defeat-modal';
 import { StaffModal } from './ui/staff-modal';
+import { PharmacyModal } from './ui/pharmacy-modal';
+import { FinancesModal } from './ui/finances-modal';
 import { EventBannerView } from './ui/event-banner';
 import { CanvasInputManager } from './input/canvas-input';
 import { globalBus } from './core/event-bus';
 import { canPlaceRoom } from './systems/grid-system';
+import { requestEmergencyGrant } from './systems/economy-system';
 import type { RoomDefinition } from './core/config';
 
 class MediVilleApp {
@@ -31,6 +34,8 @@ class MediVilleApp {
   private advisorView!: AdvisorView;
   private defeatModal!: DefeatModal;
   private staffModal!: StaffModal;
+  private pharmacyModal!: PharmacyModal;
+  private financesModal!: FinancesModal;
   private eventBanner!: EventBannerView;
   private ghost: GhostState = { def: null, col: 0, row: 0, rotated: false, isValid: false };
   private isDemolishMode = false;
@@ -40,16 +45,7 @@ class MediVilleApp {
     const canvasContainer = document.getElementById('game-canvas-container')!;
     await this.renderer.init(canvasContainer);
 
-    this.staffModal = new StaffModal(document.getElementById('modal-container')!, this.simulation);
-    this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
-    this.hud = new HospitalHUD(
-      document.getElementById('hud-container')!,
-      this.simulation,
-      () => this.staffModal.open()
-    );
-    this.decisionModal = new DecisionModal(document.getElementById('modal-container')!, this.simulation);
-    this.advisorView = new AdvisorView(document.getElementById('advisor-container')!);
-    this.defeatModal = new DefeatModal(document.getElementById('modal-container')!);
+    this.setupModalsAndHud(document.getElementById('modal-container')!);
 
     new BuildMenu(document.getElementById('build-menu-container')!, {
       onSelectRoom: (def: RoomDefinition) => this.selectRoomToBuild(def),
@@ -65,6 +61,26 @@ class MediVilleApp {
       this.renderer.render(this.simulation.state, this.ghost, this.selectedRoomId);
     });
     this.gameLoop.start();
+  }
+
+  private setupModalsAndHud(modalContainer: HTMLElement): void {
+    this.staffModal = new StaffModal(modalContainer, this.simulation);
+    this.pharmacyModal = new PharmacyModal(modalContainer, this.simulation);
+    this.financesModal = new FinancesModal(modalContainer, this.simulation);
+    this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
+    this.hud = new HospitalHUD(
+      document.getElementById('hud-container')!,
+      this.simulation,
+      {
+        onOpenStaff: () => this.staffModal.open(),
+        onOpenPharmacy: () => this.pharmacyModal.open(),
+        onOpenFinances: () => this.financesModal.open(),
+        onRequestGrant: () => requestEmergencyGrant(this.simulation.state),
+      }
+    );
+    this.decisionModal = new DecisionModal(modalContainer, this.simulation);
+    this.advisorView = new AdvisorView(document.getElementById('advisor-container')!);
+    this.defeatModal = new DefeatModal(modalContainer);
   }
 
   private selectRoomToBuild(def: RoomDefinition): void {

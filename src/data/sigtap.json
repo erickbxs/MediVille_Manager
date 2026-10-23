@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "description": "Tabela de Procedimentos, Medicamentos e OPM do SUS (SIGTAP) para faturamento ambulatorial (BPA) e hospitalar (AIH) no MediVille Manager.",
+    "connectedFiles": [
+      "src/core/config.ts",
+      "src/core/config-types.ts",
+      "src/systems/economy-system.ts",
+      "src/systems/consultation-system.ts",
+      "src/ui/finances-modal.ts"
+    ]
+  },
+  "procedures": [
+    {
+      "code": "03.01.01.007-2",
+      "name": "Consulta Médica em Atenção Primária / UBS",
+      "type": "BPA",
+      "baseValue": 3600,
+      "description": "Atendimento médico ambulatorial de demanda espontânea ou agendada na atenção primária à saúde."
+    },
+    {
+      "code": "03.01.01.004-8",
+      "name": "Dispensação de Medicamentos da Farmácia RENAME",
+      "type": "BPA",
+      "baseValue": 600,
+      "description": "Orientação e entrega de fármacos essenciais da Atenção Básica dispensados pelo farmacêutico."
+    },
+    {
+      "code": "02.14.01.001-5",
+      "name": "Acolhimento com Classificação de Risco",
+      "type": "BPA",
+      "baseValue": 400,
+      "description": "Triagem e estratificação de gravidade realizada pela equipe de enfermagem."
+    },
+    {
+      "code": "03.03.01.003-7",
+      "name": "Tratamento Clínico de Infecções e Doenças Agudas",
+      "type": "AIH",
+      "baseValue": 5000,
+      "description": "Autorização de Internação Hospitalar e leito de observação clínica para quadros moderados a graves."
+    }
+  ]
+}

@@ -2,6 +2,25 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.3.0] - 2026-10-23
+### Adicionado
+- **Economia Aprofundada & Tabela SIGTAP/SUS (Prompt 6)**:
+  - Integração da tabela oficial de procedimentos do SUS em `src/data/sigtap.json` com códigos SIGTAP reais (`03.01.01.007-2` para consulta médica, `03.01.01.004-8` para dispensação farmacêutica e `02.14.01.001-5` para triagem/acolhimento).
+  - **Faturamento Quadruplicado**: O valor repassado por consulta médica básica subiu 4x (de R$ 900 para R$ 3.600 por paciente atendido), proporcionando sustentabilidade financeira na expansão da unidade.
+  - Modal Apple-style de Finanças SUS (`src/ui/finances-modal.ts`) com extrato discriminado de receitas BPA, repasses federais e custos.
+- **Estoque & Compra de Medicamentos da Farmácia RENAME**:
+  - Catálogo de 8 medicamentos essenciais da Atenção Básica em `src/data/pharmacy.json` (Paracetamol, Dipirona, Soro Fisiológico, Sais de Reidratação Oral, Amoxicilina, Benzilpenicilina, Nitrofurantoína e Oseltamivir).
+  - Consumo procedural de estoque na alta do paciente de acordo com o caso clínico tratado.
+  - Penalidade de satisfação por desabastecimento caso falte medicamento em estoque no hospital (`missingMedicationPenalty`).
+  - Modal da Farmácia Básica (`src/ui/pharmacy-modal.ts`) para monitorar níveis de estoque com alertas visuais e compra instantânea de lotes.
+  - Indicador de estoque total em tempo real no HUD com alerta pulsante se algum medicamento estiver zerado.
+- **Repasses Periódicos do Ministério da Saúde**:
+  - Crédito diário no fechamento do dia do Piso da Atenção Básica (PAB fixo de R$ 3.500/dia) somado a bônus de desempenho por satisfação média elevada.
+- **Solicitação Imediata de Verba com a Secretaria de Saúde para Reforma**:
+  - Botão de acesso rápido no HUD e no modal financeiro (`🏛️ Verba Reforma`) que libera imediatamente +R$ 25.000 em recursos municipais para ampliação física e contratação.
+- **Suíte de Testes Expandida**:
+  - 21 testes automatizados cobrindo fórmulas, simulação, casos clínicos, eventos, equipe, compra/consumo de medicamentos da RENAME, repasse do ministério e verba emergencial.
+
 ## [0.2.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

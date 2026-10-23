@@ -34,8 +34,8 @@
   },
   "economy": {
     "startingCash": 100000,
-    "revenuePerPatient": 900,
-    "pharmacyRevenue": 150,
+    "revenuePerPatient": 3600,
+    "pharmacyRevenue": 600,
     "removeRefundRatio": 0.5
   },
   "arrival": {
@@ -73,7 +73,8 @@
     "errorPenalty": 15,
     "abandonedSatisfaction": 10,
     "turnedAwaySatisfaction": 20,
-    "missingPharmacyPenalty": 10
+    "missingPharmacyPenalty": 10,
+    "missingMedicationPenalty": 15
   },
   "reputation": {
     "initial": 50,
@@ -109,5 +110,18 @@
     "intervalBetweenEventsSec": 75,
     "firstEventDelaySec": 30,
     "maxActiveEvents": 1
+  },
+  "sigtap": {
+    "consultationBpaCode": "03.01.01.007-2",
+    "pharmacyBpaCode": "03.01.01.004-8"
+  },
+  "ministryOfHealth": {
+    "dailyFixedPab": 3500,
+    "performanceBonusThreshold": 60,
+    "performanceBonusPerPoint": 50
+  },
+  "emergencyGrant": {
+    "amount": 25000,
+    "description": "Verba Emergencial da Secretaria Municipal de Saúde para Reformas"
   }
 }

@@ -15,6 +15,7 @@ import { calculatePatientSatisfaction } from './satisfaction-system';
 import { calculateConsultationDuration } from '../entities/staff';
 import { getBestDoctorSkill } from './staff-system';
 import { getActiveConsultationFactor } from './event-system';
+import { consumeMedicationsForCase } from './economy-system';
 
 export function findAvailableConsultationRoom(state: GameState): RoomInstance | null {
   for (const room of state.rooms.values()) {
@@ -75,18 +76,25 @@ export function dischargePatient(state: GameState, patientId: string): void {
   }
 
   const pharmacyOk = hasPharmacy(state);
-  patient.satisfaction = calculatePatientSatisfaction(patient, pharmacyOk);
+  let medStockOk = true;
+  if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk) {
+    const res = consumeMedicationsForCase(state, patient.clinicalCase.definition.id);
+    medStockOk = res.success;
+  }
+
+  patient.satisfaction = calculatePatientSatisfaction(patient, pharmacyOk, medStockOk);
   patient.state = 'treated';
 
   let revenue = BALANCE.economy.revenuePerPatient;
-  if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk) {
+  if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk && medStockOk) {
     revenue += BALANCE.economy.pharmacyRevenue;
   }
   state.cash += revenue;
+  state.finances.bpaRevenue += revenue;
   state.stats.treatedCount += 1;
 
   globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue });
-  globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Atendimento concluído' });
+  globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Procedimento BPA faturado (SUS)' });
 }
 
 export function updateConsultationSystem(state: GameState, deltaSec: number): void {

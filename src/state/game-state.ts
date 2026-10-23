@@ -19,6 +19,14 @@ export interface HospitalStats {
   correctDecisions: number;
 }
 
+export interface FinancialStats {
+  bpaRevenue: number;
+  aihRevenue: number;
+  ministryTransfers: number;
+  emergencyGrants: number;
+  medicationPurchases: number;
+}
+
 export interface GameState {
   day: number;
   dayTimeSec: number;
@@ -40,4 +48,6 @@ export interface GameState {
   staff: Map<string, StaffMember>;
   activeEvents: ActiveEvent[];
   eventTimerSec: number;
+  pharmacyStock: Record<string, number>;
+  finances: FinancialStats;
 }

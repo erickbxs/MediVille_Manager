@@ -66,6 +66,7 @@ export interface GameBalanceConfig {
     abandonedSatisfaction: number;
     turnedAwaySatisfaction: number;
     missingPharmacyPenalty: number;
+    missingMedicationPenalty: number;
   };
   reputation: {
     initial: number;
@@ -99,4 +100,44 @@ export interface GameBalanceConfig {
     firstEventDelaySec: number;
     maxActiveEvents: number;
   };
+  sigtap: {
+    consultationBpaCode: string;
+    pharmacyBpaCode: string;
+  };
+  ministryOfHealth: {
+    dailyFixedPab: number;
+    performanceBonusThreshold: number;
+    performanceBonusPerPoint: number;
+  };
+  emergencyGrant: {
+    amount: number;
+    description: string;
+  };
+}
+
+export interface SigtapProcedure {
+  code: string;
+  name: string;
+  type: 'BPA' | 'AIH';
+  baseValue: number;
+  description: string;
+}
+
+export interface SigtapCatalog {
+  procedures: SigtapProcedure[];
+}
+
+export interface RenameMedication {
+  id: string;
+  genericName: string;
+  category: string;
+  unit: string;
+  batchSize: number;
+  batchCost: number;
+  initialStock: number;
+  description: string;
+}
+
+export interface PharmacyCatalog {
+  medications: RenameMedication[];
 }

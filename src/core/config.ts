@@ -14,8 +14,14 @@ import casesRaw from '../data/cases.json';
 import namesRaw from '../data/names.json';
 import staffRaw from '../data/staff.json';
 import eventsRaw from '../data/events.json';
+import sigtapRaw from '../data/sigtap.json';
+import pharmacyRaw from '../data/pharmacy.json';
+import type { SigtapCatalog, PharmacyCatalog, RenameMedication, SigtapProcedure } from './config-types';
+export type { RenameMedication, SigtapProcedure };
 
 export const BALANCE: GameBalanceConfig = balanceRaw as unknown as GameBalanceConfig;
+export const SIGTAP_CATALOG: SigtapCatalog = sigtapRaw as unknown as SigtapCatalog;
+export const PHARMACY_CATALOG: PharmacyCatalog = pharmacyRaw as unknown as PharmacyCatalog;
 
 export interface RoomDefinition {
   id: string;

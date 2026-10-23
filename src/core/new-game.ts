@@ -7,7 +7,7 @@
  * Conecta-se com: src/core/simulation.ts, tests/simulation.test.ts
  */
 
-import { BALANCE, ROOMS_CATALOG } from './config';
+import { BALANCE, ROOMS_CATALOG, PHARMACY_CATALOG } from './config';
 import { createRoomInstance, type RoomInstance } from '../entities/room';
 import type { StaffMember } from '../entities/staff';
 import type { GameState } from '../state/game-state';
@@ -34,6 +34,14 @@ function buildStarterStaffMap(): Map<string, StaffMember> {
   return staff;
 }
 
+function buildStarterPharmacyStock(): Record<string, number> {
+  const stock: Record<string, number> = {};
+  for (const med of PHARMACY_CATALOG.medications) {
+    stock[med.id] = med.initialStock;
+  }
+  return stock;
+}
+
 export function createInitialGameState(): GameState {
   return {
     day: 1,
@@ -56,5 +64,13 @@ export function createInitialGameState(): GameState {
     staff: buildStarterStaffMap(),
     activeEvents: [],
     eventTimerSec: BALANCE.events.firstEventDelaySec,
+    pharmacyStock: buildStarterPharmacyStock(),
+    finances: {
+      bpaRevenue: 0,
+      aihRevenue: 0,
+      ministryTransfers: 0,
+      emergencyGrants: 0,
+      medicationPurchases: 0,
+    },
   };
 }
