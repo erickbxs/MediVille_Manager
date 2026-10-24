@@ -1,8 +1,15 @@
 /**
  * Arquivo: src/ui/staff-modal.ts
- * O que faz: Exibe o modal de gestão de equipe hospitalar (contratação de novos profissionais, visualização de habilidades de 1 a 5 estrelas e demissões).
- * Para que foi criado: Cumprir o Prompt 5 do GDD dando controle total da folha salarial e produtividade ao administrador.
- * Como modificar/debugar: Cargos e salários vêm de src/data/staff.json.
+ *
+ * 1. O que este arquivo faz?
+ * Exibe o modal de gestão de equipe hospitalar (contratação de novos profissionais, visualização de habilidades de 1 a 5 estrelas e demissões).
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir o Prompt 5 do GDD dando controle total da folha salarial e produtividade ao administrador com suporte a bottom sheet no mobile.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Cargos e salários vêm de src/data/staff.json.
+ *
  * Importa: src/core/config.ts, src/core/simulation.ts, src/entities/staff.ts
  * Conecta-se com: src/main.ts, src/ui/hud.ts
  */
@@ -26,8 +33,8 @@ export class StaffModal {
     const rolesList = STAFF_CATALOG.roles;
 
     this.container.innerHTML = `
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-        <div class="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[85dvh]">
           
           <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
             <div class="flex items-center gap-3">

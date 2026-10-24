@@ -7,7 +7,7 @@
  * Conecta-se com: src/systems/consultation-system.ts, src/systems/day-system.ts, src/ui/pharmacy-modal.ts, src/ui/hud.ts
  */
 
-import { BALANCE, PHARMACY_CATALOG } from '../core/config';
+import { BALANCE, CASES_CATALOG, PHARMACY_CATALOG } from '../core/config';
 import { globalBus } from '../core/event-bus';
 import type { GameState } from '../state/game-state';
 
@@ -75,21 +75,32 @@ export function processMinistryDailyTransfer(state: GameState): { fixedPab: numb
   return { fixedPab: dailyFixedPab, bonus, total };
 }
 
+const DEFAULT_CASE_MEDS: Record<string, string[]> = {
+  'resfriado-comum': ['soro-fisiologico', 'paracetamol'],
+  'gripe-influenza': ['oseltamivir', 'dipirona'],
+  'gripe-influenza-risco': ['oseltamivir', 'dipirona'],
+  'dengue-grupo-a': ['sais-reidratacao', 'dipirona'],
+  'amigdalite-estreptococica': ['amoxicilina', 'paracetamol'],
+  'infeccao-urinaria': ['nitrofurantoina'],
+  'infeccao-urinaria-cistite': ['nitrofurantoina'],
+  'cistite-itu': ['nitrofurantoina'],
+  'sifilis-primaria-secundaria': ['benzilpenicilina'],
+  'febre-reumatica-profilaxia': ['benzilpenicilina'],
+  'gastroenterite-aguda': ['sais-reidratacao'],
+  'rinossinusite-bacteriana': ['amoxicilina', 'soro-fisiologico'],
+  'otite-media-aguda': ['amoxicilina', 'dipirona'],
+  'pneumonia-comunitaria': ['amoxicilina', 'dipirona'],
+  'cefaleia-tensional': ['dipirona'],
+  'desidratacao-moderada-plano-b': ['sais-reidratacao', 'soro-fisiologico'],
+  'exantema-subito-pediatrico': ['paracetamol'],
+};
+
 export function getRequiredMedicationsForCase(caseId: string): string[] {
-  switch (caseId) {
-    case 'resfriado-comum':
-      return ['paracetamol', 'soro-fisiologico'];
-    case 'gripe-influenza':
-      return ['paracetamol', 'oseltamivir'];
-    case 'dengue-grupo-a':
-      return ['paracetamol', 'sais-reidratacao'];
-    case 'amigdalite-estreptococica':
-      return ['amoxicilina'];
-    case 'cistite-itu':
-      return ['nitrofurantoina'];
-    default:
-      return ['paracetamol'];
+  const found = CASES_CATALOG.cases.find((c) => c.id === caseId);
+  if (found?.medicationIds && found.medicationIds.length > 0) {
+    return found.medicationIds;
   }
+  return DEFAULT_CASE_MEDS[caseId] ?? ['paracetamol'];
 }
 
 export function consumeMedicationsForCase(state: GameState, caseId: string): { success: boolean; missingMedName?: string } {

@@ -2,6 +2,46 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.8.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Correções & Melhorias (Estabilização, Casos SUS, Refinamento Visual & Responsividade Mobile)
+- **Correção da Linha Azul ao Ponto de Origem (0,0)**:
+  - Eliminado o artefato visual do estetoscópio médico em `src/render/patients-view.ts`: adicionada chamada explícita `this.graphics.moveTo(x + 4, y - 4)` imediatamente antes do traçado `.arc(...)`, isolando o subcaminho do canvas PixiJS v8.
+  - Validação estrita de coordenadas finitas e não-nulas (`!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)`) antes de desenhar caracteres para evitar ligação a nós não inicializados.
+  - Validação de coordenadas da grade em `GhostView` prevenindo traçados espúrios fora da área utilizável do mapa.
+- **Expansão de Casos Clínicos Reais da Atenção Primária à Saúde (APS/SUS)**:
+  - Catálogo ampliado para 15 casos reais com condutas baseadas estritamente em protocolos do Ministério da Saúde (`src/data/cases.json` e espelho `src/data/clinical-cases.json`):
+    1. Gastroenterite Aguda Viral (Plano A - Sais de Reidratação Oral)
+    2. Sífilis Primária / Secundária na APS (Benzilpenicilina Benzatina intramuscular)
+    3. Otite Média Aguda Purulenta Pediátrica (Amoxicilina + Dipirona)
+    4. Síndrome Gripal / Influenza com Fatores de Risco (Oseltamivir precoce + Dipirona)
+    5. Rinossinusite Aguda Bacteriana (Amoxicilina + Lavagem com Soro Fisiológico)
+    6. Cefaleia Tensional Aguda sem Sinais de Alarme (Dipirona / analgesia de primeira linha)
+    7. Febre Reumática - Profilaxia Secundária Recorrente (Benzilpenicilina Benzatina)
+    8. Desidratação Moderada / Golpe de Calor - Plano B (SRO + Soro Fisiológico)
+    9. Infecção do Trato Urinário Baixo Recorrente - Cistite (Nitrofurantoína oral)
+    10. Exantema Súbito / Febre Viral Benigna Pediátrica (Paracetamol)
+    11. Resfriado Comum em Adulto (Soro Fisiológico + Paracetamol)
+    12. Faringoamigdalite Estreptocócica Aguda (Amoxicilina + Paracetamol)
+    13. Dengue Clássica sem Sinais de Alarme - Grupo A (SRO + Dipirona)
+    14. Pneumonia Adquirida na Comunidade - PAC Leve (Amoxicilina + Dipirona)
+    15. COVID-19 Leve na APS (Isolamento + Dipirona + Paracetamol)
+  - Integridade referencial 100% com os 8 medicamentos da RENAME em `src/data/pharmacy.json`.
+  - Seleção aleatória ponderada (`selectWeightedCase`) que nunca repete o caso imediatamente anterior.
+- **Responsividade Mobile-First & Auto-Fit Dinâmico**:
+  - Implementada função pura e testada `fitMapToScreen(viewportWidth, viewportHeight)` calculando com precisão a escala e o centramento do hospital 12x12 descontando o HUD superior e a barra de construção inferior.
+  - Suporte sem cortes nem desbordamento para telas de 360px a 430px de largura e integração com `ResizeObserver` e `window.addEventListener('resize')`.
+  - Botão de atalho rápido `🎯 Centralizar` adicionado ao dock de construção para centralização e auto-fit instantâneos do mapa.
+  - Dock de construção com rolagem horizontal tátil suave (`snap-x`, `touch-pan-x`, `scrollbar-none`) e botões com dimensões mínimas de toque (`>= 44x44px`).
+  - Adaptação dos modais (`DecisionModal`, `StaffModal`, `PharmacyModal`, `FinancesModal`) para comportamento nativo de *Bottom Sheet* no mobile (`items-end sm:items-center`, `rounded-t-3xl sm:rounded-3xl`, `max-h-[85dvh]` e `overflow-y-auto`).
+- **Qualidade, Tipagem Estrita & Testes**:
+  - 10 novos testes automatizados em `tests/cases-and-mobile.test.ts` validando integridade referencial, sorteio sem repetição e auto-fit em telas mobile (`375x667`), telas estreitas (`360x740`) e monitores desktop (`1920x1080`).
+  - Total de 58 testes automatizados (10 arquivos) 100% aprovados com Vitest.
+  - TypeScript rigoroso com zero `any` e conformidade completa com regras do ESLint (limite <= 35 linhas por função).
+  - Tamanho final do pacote: **0.72 MB** (muito abaixo do limite de 2.00 MB).
+
 ## [0.7.0] - 2026-10-24
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

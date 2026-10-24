@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "Fichas dos 5 casos clínicos iniciais do protótipo (subconjunto dos 50 casos base do GDD). Somente nomes genéricos da RENAME, sem doses e sem marcas. Todos os casos são fictícios e estão PENDENTES de revisão médica (2 etapas: Erick e profissional habilitado).",
+    "description": "Catálogo ampliado com 15 casos clínicos reais de Atenção Primária de Saúde (APS/SUS) e RENAME. Protocolos alinhados às diretrizes do Ministério da Saúde com integridade referencial estrita para os 8 medicamentos de pharmacy.json.",
     "connectedFiles": [
       "src/core/config.ts",
       "src/entities/clinical-case.ts",
@@ -8,419 +8,592 @@
       "src/systems/satisfaction-system.ts",
       "src/systems/economy-system.ts",
       "src/ui/decision-modal.ts",
-      "src/ui/decision-feedback.ts",
-      "tests/case-system.test.ts"
+      "tests/cases-and-mobile.test.ts"
     ]
   },
   "cases": [
     {
-      "id": "resfriado-comum",
-      "name": "Resfriado comum",
-      "area": "Respiratória",
+      "id": "gastroenterite-aguda",
+      "name": "Gastroenterite Aguda Viral (Plano A)",
+      "area": "Gastroenterologia / APS",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": { "min": 1, "max": 75 },
+      "symptoms": ["Diarreia líquida súbita", "Náuseas e episódios de vômitos", "Dor e cólicas abdominais", "Sem sinais clínicos de desidratação grave"],
+      "suggestedExams": ["Avaliação clínica do turgor da pele, mucosas e fontanela em bebês"],
+      "suggestedConduct": {
+        "id": "gastro-plano-a-sro",
+        "text": "Terapia de Reidratação Oral (Plano A) com Sais de Reidratação Oral (SRO) do SUS, dieta habitual fracionada e retorno se houver sinais de alarme."
+      },
+      "distractorConducts": [
+        {
+          "id": "gastro-amoxicilina",
+          "text": "Prescrever amoxicilina por via oral imediatamente para combater a infecção gastrointestinal e cessar a diarreia.",
+          "whyWrong": "A maioria das gastroenterites é de etiologia viral e autolimitada. Antibióticos não encurtam o quadro viral e promovem resistência bacteriana."
+        },
+        {
+          "id": "gastro-oseltamivir",
+          "text": "Prescrever oseltamivir empírico para virose intestinal aguda.",
+          "whyWrong": "O oseltamivir é um antiviral específico para vírus influenza (gripe), não possuindo qualquer indicação ou eficácia em vírus entéricos."
+        }
+      ],
+      "medications": [
+        { "genericName": "Sais para Reidratação Oral (SRO)", "route": "Oral", "indication": "Reposição hidroeletrolítica ambulatorial (Plano A)" }
+      ],
+      "medicationIds": ["sais-reidratacao"],
+      "requiresPharmacy": true,
+      "explanation": "Na gastroenterite viral aguda sem desidratação (Plano A), a conduta preconizada pelo Ministério da Saúde é hidratação oral precoce com SRO e manutenção da alimentação.",
+      "possibleComorbidities": ["Nenhuma", "Desnutrição leve"],
+      "sources": [
+        { "name": "Ministério da Saúde. Manejo da Doença Diarreica Aguda na Atenção Básica", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "sifilis-primaria-secundaria",
+      "name": "Sífilis Primária / Secundária na APS",
+      "area": "Infectologia / APS",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 16, "max": 65 },
+      "symptoms": ["Úlcera genital indolor de fundo limpo (cancro duro)", "Ou roséolas cutâneas em tronco, palmas e plantas", "Micropolilinfadenopatia generalizada"],
+      "suggestedExams": ["Teste Rápido Treponêmico", "VDRL quantitativo basal"],
+      "suggestedConduct": {
+        "id": "sifilis-penicilina-benzatina",
+        "text": "Administrar Benzilpenicilina Benzatina 2,4 milhões UI intramuscular na própria UBS, notificar agravo e convocar parcerias sexuais."
+      },
+      "distractorConducts": [
+        {
+          "id": "sifilis-nitrofurantoina",
+          "text": "Prescrever nitrofurantoína por via oral durante 7 dias.",
+          "whyWrong": "A nitrofurantoína é um antisséptico urinário sem ação sistêmica sobre o Treponema pallidum. A sífilis não tratada progride para formas terciárias graves."
+        },
+        {
+          "id": "sifilis-paracetamol-aguardar",
+          "text": "Prescrever apenas paracetamol e aguardar a cicatrização espontânea da lesão ulcerada.",
+          "whyWrong": "O cancro duro cicatriza espontaneamente mesmo sem cura, evoluindo silenciosamente para sífilis secundária e terciária com lesões neurológicas e cardiovasculares."
+        }
+      ],
+      "medications": [
+        { "genericName": "Benzilpenicilina Benzatina", "route": "Intramuscular", "indication": "Tratamento de primeira linha do Treponema pallidum na APS" }
+      ],
+      "medicationIds": ["benzilpenicilina"],
+      "requiresPharmacy": true,
+      "explanation": "A penicilina benzatina administrada na UBS é o tratamento ouro da sífilis no SUS. O atraso na aplicação gera transmissão contínua e risco de sífilis congênita.",
+      "possibleComorbidities": ["Infecções Sexualmente Transmissíveis prévias", "Gestação"],
+      "sources": [
+        { "name": "Ministério da Saúde. Protocolo Clínico e Diretrizes Terapêuticas para Atenção Integral às Pessoas com IST", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "otite-media-aguda",
+      "name": "Otite Média Aguda Purulenta Pediátrica",
+      "area": "Pediatria / Otorrinolaringologia",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 1, "max": 12 },
+      "symptoms": ["Otalgia intensa e choro inconsolável", "Febre de início agudo", "Abaulamento e hiperemia da membrana timpânica", "Irritabilidade e recusa alimentar"],
+      "suggestedExams": ["Otoscopia bilateral rigorosa"],
+      "suggestedConduct": {
+        "id": "otite-amoxicilina-dipirona",
+        "text": "Prescrever Amoxicilina por via oral por 10 dias associada à Dipirona para alívio imediato da dor e febre, com reavaliação clínica em 48 a 72 horas."
+      },
+      "distractorConducts": [
+        {
+          "id": "otite-oseltamivir",
+          "text": "Iniciar oseltamivir oral como tratamento etiológico.",
+          "whyWrong": "Oseltamivir não possui eficácia contra os agentes bacterianos da otite média aguda purulenta (Streptococcus pneumoniae, Haemophilus influenzae)."
+        },
+        {
+          "id": "otite-sais-reidratacao",
+          "text": "Tratar exclusivamente com sais de reidratação oral e sem medicação analgésica.",
+          "whyWrong": "A otite média purulenta é extremamente dolorosa e requer controle analgésico mandatória, além de antibioticoterapia em crianças com abaulamento timpânico purulento."
+        }
+      ],
+      "medications": [
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibiótico de primeira linha para patógenos da orelha média" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Analgesia e controle térmico" }
+      ],
+      "medicationIds": ["amoxicilina", "dipirona"],
+      "requiresPharmacy": true,
+      "explanation": "A amoxicilina em dose adequada é a primeira escolha para otite média aguda bacteriana. O manejo da dor com analgésicos é pilar essencial do cuidado pediátrico.",
+      "possibleComorbidities": ["Rinite alérgica", "Hipertrofia de adenoides"],
+      "sources": [
+        { "name": "Ministério da Saúde. AIDPI Criança: Infecções de Ouvido e Vias Aéreas", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "gripe-influenza-risco",
+      "name": "Síndrome Gripal / Influenza com Fatores de Risco",
+      "area": "Respiratória / APS",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 60, "max": 90 },
+      "symptoms": ["Febre alta de início súbito", "Mialgia intensa e prostração", "Tosse seca", "Fator de risco presente (idoso, diabético ou cardiopata)"],
+      "suggestedExams": ["Aferição de oximetria de pulso", "Frequência respiratória e ausculta pulmonar"],
+      "suggestedConduct": {
+        "id": "influenza-oseltamivir-dipirona",
+        "text": "Iniciar precocemente Fosfato de Oseltamivir 75mg por via oral nas primeiras 48h, associado à Dipirona para conforto e monitoramento de saturação."
+      },
+      "distractorConducts": [
+        {
+          "id": "influenza-benzilpenicilina",
+          "text": "Aplicar benzilpenicilina benzatina intramuscular de rotina na suspeita de gripe.",
+          "whyWrong": "Antibióticos não combatem vírus da gripe. A penicilina não tem indicação na síndrome gripal aguda sem foco estreptocócico comprovado."
+        },
+        {
+          "id": "influenza-nitrofurantoina",
+          "text": "Prescrever nitrofurantoína para profilaxia de infecções oportunistas.",
+          "whyWrong": "A nitrofurantoína atua quase exclusivamente nas vias urinárias e não atinge concentração nem espectro no trato respiratório."
+        }
+      ],
+      "medications": [
+        { "genericName": "Fosfato de Oseltamivir", "route": "Oral", "indication": "Inibidor de neuraminidase para síndrome gripal em grupos vulneráveis" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Controle térmico e alívio da mialgia" }
+      ],
+      "medicationIds": ["oseltamivir", "dipirona"],
+      "requiresPharmacy": true,
+      "explanation": "No SUS, pacientes com síndrome gripal que pertencem a grupos de risco têm indicação formal de oseltamivir para prevenir Síndrome Respiratória Aguda Grave (SRAG).",
+      "possibleComorbidities": ["Diabetes mellitus", "Hipertensão", "DPOC"],
+      "sources": [
+        { "name": "Ministério da Saúde. Guia de Manejo Clínico da Influenza", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "rinossinusite-bacteriana",
+      "name": "Rinossinusite Aguda Bacteriana",
+      "area": "Respiratória / APS",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 18, "max": 70 },
+      "symptoms": ["Secreção nasal purulenta há mais de 10 dias sem melhora", "Dor facial e sensação de peso maxilar", "Piora dos sintomas após melhora inicial (duplo agravamento)", "Febre"],
+      "suggestedExams": ["Rinoscopia anterior", "Palpação dos seios paranasais"],
+      "suggestedConduct": {
+        "id": "sinusite-amoxicilina-soro",
+        "text": "Prescrever Amoxicilina por via oral associada a lavagem nasal vigorosa com Cloreto de Sódio 0,9% (Soro Fisiológico) para desobstrução mecânica."
+      },
+      "distractorConducts": [
+        {
+          "id": "sinusite-nitrofurantoina",
+          "text": "Iniciar nitrofurantoína por via oral por 10 dias.",
+          "whyWrong": "A nitrofurantoína não atinge níveis terapêuticos na mucosa respiratória nem trata patógenos sinusais."
+        },
+        {
+          "id": "sinusite-oseltamivir",
+          "text": "Prescrever oseltamivir para sinusite de evolução prolongada.",
+          "whyWrong": "Rinossinusites com mais de 10 dias de secreção purulenta e dor facial têm etiologia bacteriana sobreposta, sem resposta a antivirais."
+        }
+      ],
+      "medications": [
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibacteriano de primeira escolha para sinusite bacteriana" },
+        { "genericName": "Cloreto de Sódio 0,9% (Soro Fisiológico)", "route": "Nasal", "indication": "Lavagem e eliminação de secreções espessas" }
+      ],
+      "medicationIds": ["amoxicilina", "soro-fisiologico"],
+      "requiresPharmacy": true,
+      "explanation": "A persistência por mais de 10 dias ou o duplo agravamento justificam amoxicilina. A lavagem nasal com solução fisiológica é essencial para restabelecer a depuração mucociliar.",
+      "possibleComorbidities": ["Rinite alérgica crônica", "Desvio de septo nasal"],
+      "sources": [
+        { "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28: Queixas Respiratórias Comuns", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "cefaleia-tensional",
+      "name": "Cefaleia Tensional Aguda sem Sinais de Alarme",
+      "area": "Neurologia / APS",
       "typicalUnit": "UBS",
       "severity": "Leve",
       "weight": 3,
-      "ageRange": { "min": 4, "max": 70 },
-      "symptoms": ["Coriza e nariz entupido", "Espirros", "Dor de garganta leve", "Febre baixa ou ausente"],
-      "suggestedExams": ["Nenhum exame de rotina: diagnóstico clínico"],
+      "ageRange": { "min": 18, "max": 65 },
+      "symptoms": ["Dor de cabeça em aperto/pressão bifrontal ou em faixa", "Intensidade leve a moderada", "Sem náuseas intensas, fotofobia ou febre", "Sem déficits neurológicos focais"],
+      "suggestedExams": ["Exame neurológico sumário e fundoscopia se indicada", "Aferição da pressão arterial"],
       "suggestedConduct": {
-        "id": "resfriado-sintomaticos",
-        "text": "Tratar os sintomas: hidratação, repouso, lavagem nasal com soro fisiológico e antitérmico se houver febre ou dor. Sem antibiótico."
+        "id": "cefaleia-dipirona-orientacoes",
+        "text": "Administrar Dipirona por via oral para alívio analgésico imediato, orientar repouso em ambiente calmo e esclarecer sinais de alarme."
       },
       "distractorConducts": [
         {
-          "id": "resfriado-antibiotico",
-          "text": "Prescrever amoxicilina por via oral para curar mais rápido.",
-          "whyWrong": "O resfriado é causado por vírus. Antibiótico não age em vírus, não encurta a doença e aumenta a resistência bacteriana."
+          "id": "cefaleia-amoxicilina",
+          "text": "Prescrever amoxicilina empírica caso haja infecção latente craniana.",
+          "whyWrong": "Cefaleias tensionais não têm causa infecciosa. O uso indiscriminado de antibióticos expõe a efeitos adversos e resistência bacteriana."
+        },
+        {
+          "id": "cefaleia-benzilpenicilina",
+          "text": "Administrar benzilpenicilina intramuscular de urgência.",
+          "whyWrong": "Penicilina de depósito não possui propriedade analgésica e é totalmente contraindicada na ausência de infecção bacteriana sensível."
         }
       ],
       "medications": [
-        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" },
-        { "genericName": "Cloreto de sódio (soro fisiológico)", "route": "Nasal", "indication": "Lavagem e desobstrução nasal" }
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Analgesia de primeira linha para cefaleias tensionais episódicas" }
       ],
+      "medicationIds": ["dipirona"],
       "requiresPharmacy": true,
-      "explanation": "O resfriado é uma infecção viral que melhora sozinha em cerca de uma semana. O cuidado é aliviar os sintomas e orientar retorno se surgir falta de ar ou febre persistente.",
-      "possibleComorbidities": ["Rinite alérgica", "Asma controlada"],
+      "explanation": "Na cefaleia primária tensional sem bandeiras vermelhas, analgésicos simples como a dipirona da RENAME são a melhor escolha terapêutica.",
+      "possibleComorbidities": ["Ansiedade", "Estresse ocupacional", "Ergonomia inadequada"],
       "sources": [
-        {
-          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
-          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
-          "accessedOn": "2026-10-23"
-        },
-        {
-          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
-          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
-          "accessedOn": "2026-10-23"
-        }
+        { "name": "Ministério da Saúde. Cadernos de Atenção Básica: Cefaleia na Atenção Primária", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
-      "id": "gripe-influenza",
-      "name": "Gripe (influenza)",
-      "area": "Respiratória",
+      "id": "febre-reumatica-profilaxia",
+      "name": "Febre Reumática (Profilaxia Secundária)",
+      "area": "Cardiologia / Reumatologia na APS",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 10, "max": 45 },
+      "symptoms": ["Histórico documentado de febre reumática / cardite", "Comparecimento para dose periódica programada de profilaxia secundária", "Assintomático no momento"],
+      "suggestedExams": ["Ausculta cardíaca cuidadosa para sopros", "Conferência do cartão de controle de doses"],
+      "suggestedConduct": {
+        "id": "febre-reumatica-penicilina-recorrente",
+        "text": "Administrar Benzilpenicilina Benzatina 1.200.000 UI intramuscular em aplicação a cada 21 dias para erradicar estreptococos e evitar nova cardite."
+      },
+      "distractorConducts": [
+        {
+          "id": "febre-reumatica-oseltamivir",
+          "text": "Substituir a injeção mensal por cápsulas orais de oseltamivir.",
+          "whyWrong": "O oseltamivir age em vírus influenza e não tem nenhuma ação contra o Streptococcus pyogenes causador da febre reumática."
+        },
+        {
+          "id": "febre-reumatica-sais",
+          "text": "Interromper as injeções e recomendar apenas sais de reidratação oral.",
+          "whyWrong": "A suspensão da penicilina benzatina causa surtos recidivantes de febre reumática com lesão progressiva das valvas cardíacas (estenose mitral)."
+        }
+      ],
+      "medications": [
+        { "genericName": "Benzilpenicilina Benzatina", "route": "Intramuscular", "indication": "Profilaxia secundária contra Streptococcus pyogenes" }
+      ],
+      "medicationIds": ["benzilpenicilina"],
+      "requiresPharmacy": true,
+      "explanation": "A penicilina benzatina a cada 21 dias na UBS é a intervenção de maior impacto no SUS para impedir valvopatias reumáticas graves e cirurgias cardíacas.",
+      "possibleComorbidities": ["Valvopatia mitral prévia"],
+      "sources": [
+        { "name": "Ministério da Saúde. Diretrizes Brasileiras para o Diagnóstico e Tratamento da Febre Reumática", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "desidratacao-moderada-plano-b",
+      "name": "Desidratação Moderada / Golpe de Calor (Plano B)",
+      "area": "Clínica Médica / Emergência APS",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 2,
+      "ageRange": { "min": 5, "max": 80 },
+      "symptoms": ["Sede intensa e boca ressecada", "Olhos fundos e sinal da prega cutânea positivo (retorno lento)", "Cefaleia e tontura após exposição excessiva a calor", "Urina escassa e concentrada"],
+      "suggestedExams": ["Avaliação hemodinâmica e turgor cutâneo", "Controle de peso e diurese"],
+      "suggestedConduct": {
+        "id": "desidratacao-plano-b-sro-soro",
+        "text": "Instituir Plano B em observação na unidade com Sais de Reidratação Oral (SRO) em pequenos goles contínuos e Soro Fisiológico nasal/tópico para umidificação."
+      },
+      "distractorConducts": [
+        {
+          "id": "desidratacao-amoxicilina",
+          "text": "Iniciar amoxicilina oral por suspeita de febre bacteriana oculta.",
+          "whyWrong": "O quadro decorre de perda hidroeletrolítica por calor e desidratação. Antibióticos são inócuos e podem piorar queixas gastrointestinais."
+        },
+        {
+          "id": "desidratacao-nitrofurantoina",
+          "text": "Administrar nitrofurantoína para clarear a coloração da urina concentrada.",
+          "whyWrong": "A oligúria e urina escura decorrem da desidratação e ação fisiológica do ADH, não de infecção do trato urinário."
+        }
+      ],
+      "medications": [
+        { "genericName": "Sais para Reidratação Oral (SRO)", "route": "Oral", "indication": "Terapia de reposição hidroeletrolítica no Plano B" },
+        { "genericName": "Cloreto de Sódio 0,9% (Soro Fisiológico)", "route": "Nasal / Mucosa", "indication": "Umidificação de mucosas ressecadas" }
+      ],
+      "medicationIds": ["sais-reidratacao", "soro-fisiologico"],
+      "requiresPharmacy": true,
+      "explanation": "No Plano B de desidratação, a reposição vigorosa de SRO supervisionada na sala de observação restaura o equilíbrio eletrolítico e evita venóclise e internação hospitalar.",
+      "possibleComorbidities": ["Exposição ocupacional ao sol"],
+      "sources": [
+        { "name": "Ministério da Saúde. Guia Prático de Manejo das Desidratações", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "infeccao-urinaria-cistite",
+      "name": "Infecção do Trato Urinário Baixo Recorrente (Cistite)",
+      "area": "Ginecologia / APS",
       "typicalUnit": "UBS",
       "severity": "Leve",
       "weight": 2,
-      "ageRange": { "min": 6, "max": 80 },
-      "symptoms": ["Febre de início súbito", "Dor no corpo", "Tosse seca", "Dor de cabeça", "Cansaço"],
-      "suggestedExams": ["Avaliar sinais de gravidade (falta de ar, saturação baixa)", "Teste para vírus respiratório se disponível"],
+      "ageRange": { "min": 18, "max": 55 },
+      "symptoms": ["Disúria importante (dor e ardor ao urinar)", "Polaciúria e sensação de esvaziamento incompleto", "Dor supra-púbica", "Sem febre e sem dor lombar"],
+      "suggestedExams": ["EAS (Elemento Anormal do Sedimento)", "Urocultura com antibiograma se disponível"],
       "suggestedConduct": {
-        "id": "gripe-sintomaticos-oseltamivir",
-        "text": "Hidratação, repouso e antitérmico. Iniciar oseltamivir se o paciente for de grupo de risco ou tiver sinal de gravidade. Orientar sinais de alarme."
+        "id": "cistite-nitrofurantoina-oral",
+        "text": "Prescrever Nitrofurantoína 100mg por via oral de 6 em 6 horas por 5 a 7 dias, reforçando ingesta hídrica abundante e esvaziamento pós-coito."
       },
       "distractorConducts": [
         {
-          "id": "gripe-antibiotico-rotina",
-          "text": "Prescrever antibiótico de rotina para evitar pneumonia.",
-          "whyWrong": "A gripe é viral. Antibiótico só entra se houver infecção bacteriana confirmada ou suspeita forte, não como prevenção de rotina."
+          "id": "cistite-benzilpenicilina",
+          "text": "Administrar dose única de benzilpenicilina intramuscular.",
+          "whyWrong": "A maioria dos casos de cistite é causada por Escherichia coli gram-negativa, resistente à benzilpenicilina benzatina."
         },
         {
-          "id": "gripe-acido-acetilsalicilico-crianca",
-          "text": "Usar ácido acetilsalicílico para baixar a febre em qualquer idade.",
-          "whyWrong": "O ácido acetilsalicílico em crianças e adolescentes com infecção viral se associa à síndrome de Reye. Prefira outro antitérmico."
+          "id": "cistite-oseltamivir",
+          "text": "Prescrever oseltamivir antiviral para combater a inflamação na bexiga.",
+          "whyWrong": "Cistite aguda não complicada é uma infecção bacteriana do trato urinário baixo e não responde a antivirais."
         }
       ],
       "medications": [
-        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor no corpo" },
-        { "genericName": "Fosfato de oseltamivir", "route": "Oral", "indication": "Antiviral para grupos de risco ou sinais de gravidade" }
+        { "genericName": "Nitrofurantoína", "route": "Oral", "indication": "Antimicrobiano de primeira escolha na RENAME para cistite não complicada" }
       ],
+      "medicationIds": ["nitrofurantoina"],
       "requiresPharmacy": true,
-      "explanation": "A influenza costuma melhorar com cuidados de suporte. O antiviral oseltamivir é indicado para grupos de risco, como idosos, gestantes e pessoas com doenças crônicas, de preferência nas primeiras 48 horas.",
-      "possibleComorbidities": ["Diabetes", "Doença pulmonar crônica", "Gestação"],
+      "explanation": "A nitrofurantoína possui alta concentração urinária com baixíssimas taxas de resistência para E. coli na comunidade, sendo a droga padrão ouro na RENAME.",
+      "possibleComorbidities": ["Infecções urinárias de repetição prévias"],
       "sources": [
-        {
-          "name": "Ministério da Saúde. Guia de manejo e tratamento de influenza",
-          "url": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/influenza",
-          "accessedOn": "2026-10-23"
-        },
-        {
-          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
-          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
-          "accessedOn": "2026-10-23"
-        }
+        { "name": "Ministério da Saúde. Cadernos de Atenção Básica: Saúde da Mulher e Queixas Urinárias", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
-      "id": "dengue-grupo-a",
-      "name": "Dengue sem sinais de alarme",
-      "area": "Viral",
-      "typicalUnit": "UBS e UPA",
+      "id": "exantema-subito-pediatrico",
+      "name": "Exantema Súbito / Febre Viral Benigna Pediátrica",
+      "area": "Pediatria / APS",
+      "typicalUnit": "UBS",
       "severity": "Leve",
       "weight": 2,
-      "ageRange": { "min": 8, "max": 75 },
-      "symptoms": ["Febre alta", "Dor atrás dos olhos", "Dor muscular e nas articulações", "Manchas vermelhas na pele"],
-      "suggestedExams": ["Prova do laço", "Hemograma conforme o protocolo", "Teste para dengue"],
+      "ageRange": { "min": 1, "max": 4 },
+      "symptoms": ["Febre alta que cessou subitamente após 3 dias", "Aparecimento súbito de manchas rosadas (máculas) em tronco e pescoço", "Criança ativa e com bom estado geral"],
+      "suggestedExams": ["Exame físico completo e pesquisa de rigidez de nuca"],
       "suggestedConduct": {
-        "id": "dengue-hidratacao",
-        "text": "Hidratação oral abundante, paracetamol ou dipirona para dor e febre. Evitar anti-inflamatórios e ácido acetilsalicílico. Orientar sinais de alarme e retorno."
+        "id": "exantema-paracetamol-suporte",
+        "text": "Prescrever Paracetamol para controle térmico conforme necessidade, orientar repouso, hidratação generosa e tranquilizar a família sobre o caráter benigno."
       },
       "distractorConducts": [
         {
-          "id": "dengue-ibuprofeno",
-          "text": "Prescrever ibuprofeno para aliviar as dores no corpo.",
-          "whyWrong": "Anti-inflamatórios como o ibuprofeno e o ácido acetilsalicílico aumentam o risco de sangramento na dengue e devem ser evitados."
+          "id": "exantema-amoxicilina",
+          "text": "Iniciar amoxicilina oral para tratar a erupção na pele.",
+          "whyWrong": "O exantema súbito (roséola) é causado pelo herpes-vírus 6. Amoxicilina não é indicada e pode desencadear farmacodermia confusa."
+        },
+        {
+          "id": "exantema-benzilpenicilina",
+          "text": "Administrar injeção de benzilpenicilina benzatina intramuscular.",
+          "whyWrong": "Trata-se de quadro viral autolimitado sem qualquer indicação de penicilinas injetáveis."
         }
       ],
       "medications": [
-        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" },
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Febre e dor" },
-        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Hidratação" }
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Antitérmico pediátrico seguro" }
       ],
+      "medicationIds": ["paracetamol"],
       "requiresPharmacy": true,
-      "explanation": "Na dengue, a hidratação é o tratamento principal. O paciente deve voltar imediatamente se tiver dor abdominal intensa, vômitos persistentes, sangramentos ou tontura, que são sinais de alarme.",
-      "possibleComorbidities": ["Hipertensão", "Diabetes"],
+      "explanation": "A roséola é autolimitada: a febre desaparece exatamente quando o exantema surge. O manejo consiste em analgesia e tranquilização dos responsáveis.",
+      "possibleComorbidities": ["Nenhuma"],
       "sources": [
+        { "name": "Ministério da Saúde. AIDPI Criança: Doenças Exantemáticas", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "resfriado-comum",
+      "name": "Resfriado Comum em Adulto",
+      "area": "Respiratória / APS",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": { "min": 14, "max": 70 },
+      "symptoms": ["Coriza hialina e congestão nasal", "Espirros frequentes", "Dor de garganta leve", "Febre baixa ou ausente"],
+      "suggestedExams": ["Exame físico da orofaringe e rinoscopia anterior"],
+      "suggestedConduct": {
+        "id": "resfriado-soro-paracetamol",
+        "text": "Orientar lavagem nasal frequente com Soro Fisiológico 0,9%, Paracetamol em caso de febre ou dor de cabeça e repouso hídrico."
+      },
+      "distractorConducts": [
         {
-          "name": "Ministério da Saúde. Dengue: diagnóstico e manejo clínico, adulto e criança",
-          "url": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/dengue",
-          "accessedOn": "2026-10-23"
-        },
-        {
-          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
-          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
-          "accessedOn": "2026-10-23"
+          "id": "resfriado-amoxicilina",
+          "text": "Prescrever amoxicilina oral por 7 dias para evitar agravamento da gripe.",
+          "whyWrong": "O resfriado comum é viral (rinovírus). Antibióticos não alteram o curso da doença e elevam os riscos de efeitos adversos."
         }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "medications": [
+        { "genericName": "Cloreto de Sódio 0,9% (Soro Fisiológico)", "route": "Nasal", "indication": "Lavagem e alívio da congestão" },
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Controle sintomático de febre e dor" }
+      ],
+      "medicationIds": ["soro-fisiologico", "paracetamol"],
+      "requiresPharmacy": true,
+      "explanation": "O resfriado é uma infecção viral autolimitada que regride em cerca de 7 dias com medidas de suporte e lavagem nasal.",
+      "possibleComorbidities": ["Rinite alérgica"],
+      "sources": [
+        { "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-24" }
+      ],
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
       "id": "amigdalite-estreptococica",
-      "name": "Amigdalite estreptocócica",
-      "area": "Bacteriana",
+      "name": "Faringoamigdalite Estreptocócica Aguda",
+      "area": "Infectologia / APS",
       "typicalUnit": "UBS",
-      "severity": "Leve",
+      "severity": "Moderada",
       "weight": 2,
-      "ageRange": { "min": 5, "max": 40 },
-      "symptoms": ["Dor de garganta intensa", "Febre", "Placas brancas nas amígdalas", "Gânglios doloridos no pescoço", "Sem tosse"],
-      "suggestedExams": ["Avaliação clínica", "Teste rápido para estreptococo se disponível"],
+      "ageRange": { "min": 4, "max": 40 },
+      "symptoms": ["Dor de garganta intensa de início súbito", "Febre alta e ausência de tosse ou coriza", "Exsudato purulento nas amígdalas", "Linfonodos cervicais anteriores dolorosos"],
+      "suggestedExams": ["Critérios de Centor / McIsaac", "Teste rápido para estreptococo A se disponível"],
       "suggestedConduct": {
-        "id": "amigdalite-antibiotico",
-        "text": "Antibiótico: amoxicilina por via oral ou benzilpenicilina benzatina intramuscular. Antitérmico para febre e dor."
+        "id": "amigdalite-amoxicilina-paracetamol",
+        "text": "Prescrever Amoxicilina por via oral durante 10 dias associada ao Paracetamol para dor e febre, prevenindo febre reumática."
       },
       "distractorConducts": [
         {
-          "id": "amigdalite-so-sintomaticos",
-          "text": "Tratar só os sintomas, sem antibiótico, porque toda dor de garganta é viral.",
-          "whyWrong": "Na amigdalite bacteriana por estreptococo, o antibiótico previne complicações graves, como a febre reumática."
+          "id": "amigdalite-sem-antibiotico",
+          "text": "Tratar unicamente com anti-inflamatório sem antibiótico porque a maioria das queixas é viral.",
+          "whyWrong": "Amigdalites bacterianas estreptocócicas exigem erradicação com penicilina ou amoxicilina para prevenir sequelas cardíacas e renais."
         }
       ],
       "medications": [
-        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibiótico para amigdalite bacteriana" },
-        { "genericName": "Benzilpenicilina benzatina", "route": "Intramuscular", "indication": "Alternativa em aplicação única" },
-        { "genericName": "Paracetamol", "route": "Oral", "indication": "Febre e dor" }
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Erradicação do Streptococcus pyogenes" },
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Analgesia da dor de garganta" }
       ],
+      "medicationIds": ["amoxicilina", "paracetamol"],
       "requiresPharmacy": true,
-      "explanation": "A amigdalite por estreptococo é bacteriana. Tratar com antibiótico pelo tempo completo reduz a transmissão e previne febre reumática, que pode lesar o coração.",
-      "possibleComorbidities": ["Alergia a penicilina relatada"],
+      "explanation": "O tratamento completo com amoxicilina previne complicações supurativas e a febre reumática.",
+      "possibleComorbidities": ["Alergias medicamentosas"],
       "sources": [
-        {
-          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
-          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
-          "accessedOn": "2026-10-23"
-        },
-        {
-          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
-          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
-          "accessedOn": "2026-10-23"
-        }
+        { "name": "Ministério da Saúde. Manejo Clínico da Faringoamigdalite na APS", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
-      "id": "infeccao-urinaria",
-      "name": "Infecção urinária (cistite não complicada)",
-      "area": "Bacteriana",
-      "typicalUnit": "UBS",
-      "severity": "Leve",
-      "weight": 2,
-      "ageRange": { "min": 18, "max": 65 },
-      "symptoms": ["Ardência ao urinar", "Vontade frequente de urinar", "Dor no pé da barriga", "Sem febre alta e sem dor lombar"],
-      "suggestedExams": ["Exame de urina", "Urocultura conforme o protocolo"],
-      "suggestedConduct": {
-        "id": "itu-antibiotico-oral",
-        "text": "Antibiótico por via oral, como nitrofurantoína, com hidratação. Orientar retorno se surgir febre ou dor lombar."
-      },
-      "distractorConducts": [
-        {
-          "id": "itu-internacao-venoso",
-          "text": "Internar e iniciar antibiótico venoso imediatamente.",
-          "whyWrong": "Cistite sem complicação é tratada em casa com antibiótico oral. Internação fica para sinais de pielonefrite grave ou sepse."
-        },
-        {
-          "id": "itu-so-analgesico",
-          "text": "Dar apenas analgésico e esperar melhorar sozinha.",
-          "whyWrong": "A cistite é bacteriana. Sem antibiótico, a infecção pode subir para os rins."
-        }
-      ],
-      "medications": [
-        { "genericName": "Nitrofurantoína", "route": "Oral", "indication": "Antibiótico para cistite não complicada" },
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Dor" }
-      ],
-      "requiresPharmacy": true,
-      "explanation": "A cistite não complicada é uma infecção bacteriana da bexiga. Antibiótico oral e hidratação resolvem a maioria dos casos. Febre e dor nas costas sugerem infecção nos rins e pedem reavaliação.",
-      "possibleComorbidities": ["Diabetes", "Infecções urinárias de repetição"],
-      "sources": [
-        {
-          "name": "Ministério da Saúde. Cadernos de Atenção Básica n. 28, v. II: queixas mais comuns na Atenção Básica",
-          "url": "https://bvsms.saude.gov.br/bvs/publicacoes/acolhimento_demanda_espontanea_queixas_comuns_cab28v2.pdf",
-          "accessedOn": "2026-10-23"
-        },
-        {
-          "name": "Ministério da Saúde. Relação Nacional de Medicamentos Essenciais (RENAME)",
-          "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename",
-          "accessedOn": "2026-10-23"
-        }
-      ],
-      "version": "0.1.0",
-      "reviewedOn": "",
-      "reviewStatus": "pending"
-    },
-    {
-      "id": "covid-19",
-      "name": "COVID-19 (leve a moderada)",
-      "area": "Respiratória",
+      "id": "dengue-grupo-a",
+      "name": "Dengue Clássica sem Sinais de Alarme (Grupo A)",
+      "area": "Infectologia / Arboviroses",
       "typicalUnit": "UBS e UPA",
-      "severity": "Leve",
+      "severity": "Moderada",
       "weight": 2,
-      "ageRange": { "min": 10, "max": 85 },
-      "symptoms": ["Febre", "Tosse seca", "Perda súbita de olfato ou paladar", "Fadiga", "Dor de garganta"],
-      "suggestedExams": ["Teste rápido de antígeno ou RT-PCR", "Oximetria de pulso"],
+      "ageRange": { "min": 6, "max": 75 },
+      "symptoms": ["Febre alta de início abrupto", "Cefaleia e dor retro-ocular", "Mialgia e artralgia intensas", "Sem dor abdominal intensa ou sangramentos"],
+      "suggestedExams": ["Prova do laço", "Hemograma e contagem de plaquetas conforme protocolo"],
       "suggestedConduct": {
-        "id": "covid-isolamento-sintomaticos",
-        "text": "Isolamento respiratório domiciliar, hidratação, antitérmico para febre e monitoramento de oximetria. Orientar procurar emergência se saturação cair abaixo de 95%."
+        "id": "dengue-hidratacao-sro-dipirona",
+        "text": "Hidratação oral rigorosa (60 mL/kg/dia, 1/3 com Sais de Reidratação Oral) e Dipirona para dor e febre. Contraindicar AAS e anti-inflamatórios."
       },
       "distractorConducts": [
         {
-          "id": "covid-antibiotico-precoce",
-          "text": "Prescrever azitromicina profilática para prevenir infecção pulmonar.",
-          "whyWrong": "A COVID-19 é uma infecção viral aguda. Antibióticos não têm ação antiviral e não devem ser usados de rotina."
+          "id": "dengue-anti-inflamatorio",
+          "text": "Prescrever anti-inflamatório não esteroidal para rápido alívio das dores no corpo.",
+          "whyWrong": "Anti-inflamatórios aumentam criticamente o risco de sangramentos gastrointestinais e falência renal na dengue."
         }
       ],
       "medications": [
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Febre e mialgia" },
-        { "genericName": "Paracetamol", "route": "Oral", "indication": "Alternativa antitérmica" }
+        { "genericName": "Sais para Reidratação Oral (SRO)", "route": "Oral", "indication": "Hidratação fundamental da dengue" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Antitérmico e analgésico seguro na dengue" }
       ],
+      "medicationIds": ["sais-reidratacao", "dipirona"],
       "requiresPharmacy": true,
-      "explanation": "O manejo de casos leves de COVID-19 prioriza repouso, hidratação, controle de sintomas e isolamento. Sinais de gravidade como falta de ar exigem avaliação hospitalar imediata.",
-      "possibleComorbidities": ["Hipertensão", "Diabetes", "Obesidade"],
+      "explanation": "A hidratação precoce com SRO salva vidas na dengue e impede a evolução para choque circulatório por extravasamento plasmático.",
+      "possibleComorbidities": ["Hipertensão", "Diabetes"],
       "sources": [
-        { "name": "Ministério da Saúde. Guia de Manejo Clínico da COVID-19 na Atenção Primária", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-23" },
-        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+        { "name": "Ministério da Saúde. Dengue: Diagnóstico e Manejo Clínico Adulto e Criança", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
       "id": "pneumonia-comunitaria",
-      "name": "Pneumonia Adquirida na Comunidade",
-      "area": "Respiratória",
-      "typicalUnit": "UPA e Hospital",
+      "name": "Pneumonia Adquirida na Comunidade (PAC Leve)",
+      "area": "Pneumologia / APS",
+      "typicalUnit": "UBS e UPA",
       "severity": "Moderada",
       "weight": 2,
       "ageRange": { "min": 18, "max": 80 },
-      "symptoms": ["Tosse produtiva com catarro amarelado", "Febre alta com calafrios", "Dor torácica ventilatório-dependente", "Falta de ar leve"],
-      "suggestedExams": ["Raio-X de tórax", "Ausculta pulmonar detalhada", "Oximetria"],
+      "symptoms": ["Tosse com expectoração purulenta", "Febre com calafrios", "Estertores crepitantes localizados à ausculta", "Sem taquipneia grave ou hipotensão"],
+      "suggestedExams": ["Radiografia de tórax em PA e perfil", "Oximetria de pulso", "Escore CRB-65"],
       "suggestedConduct": {
-        "id": "pneumonia-amoxicilina",
-        "text": "Iniciar antibioticoterapia empírica ambulatorial com amoxicilina por via oral, hidratação vigorosa e reavaliação em 48 a 72 horas."
+        "id": "pneumonia-amoxicilina-dipirona",
+        "text": "Prescrever Amoxicilina oral ambulatorial por 7 dias associada à Dipirona para controle da febre e dor ventilatória, com reavaliação em 48h."
       },
       "distractorConducts": [
         {
-          "id": "pneumonia-so-xarope",
-          "text": "Prescrever apenas xarope antitussígeno e repouso.",
-          "whyWrong": "Pneumonia comunitária bacteriana exige antibiótico imediato para evitar sepse ou derrame pleural."
+          "id": "pneumonia-apenas-xarope",
+          "text": "Prescrever apenas xarope antitussígeno e hidratação domiciliar.",
+          "whyWrong": "Pneumonia bacteriana comunitária exige antibioticoterapia empírica com amoxicilina para evitar descompensação e óbito."
         }
       ],
       "medications": [
-        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibiótico de primeira linha para pneumonia típica" },
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Controle da dor pleurítica e febre" }
+        { "genericName": "Amoxicilina", "route": "Oral", "indication": "Antibacteriano de escolha para Streptococcus pneumoniae na APS" },
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Alívio da febre e dor torácica" }
       ],
+      "medicationIds": ["amoxicilina", "dipirona"],
       "requiresPharmacy": true,
-      "explanation": "Na pneumonia não complicada em pacientes estáveis, o tratamento ambulatorial com amoxicilina oral é altamente eficaz. Sinais de alarme como taquipneia intensa indicam internação.",
-      "possibleComorbidities": ["Tabagismo", "DPOC"],
+      "explanation": "Em pacientes com PAC de baixo risco (CRB-65 = 0), o tratamento ambulatorial com amoxicilina oral é altamente resolutivo e seguro.",
+      "possibleComorbidities": ["Tabagismo"],
       "sources": [
-        { "name": "Ministério da Saúde. Protocolo Clínico para Infecções Respiratórias Agudas", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-23" },
-        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+        { "name": "Ministério da Saúde. Manejo da Pneumonia na Atenção Básica", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     },
     {
-      "id": "gastroenterite-aguda",
-      "name": "Gastroenterite Aguda",
-      "area": "Digestiva",
-      "typicalUnit": "UPA e UBS",
+      "id": "covid-19",
+      "name": "COVID-19 Leve na APS",
+      "area": "Infectologia / APS",
+      "typicalUnit": "UBS",
       "severity": "Leve",
       "weight": 2,
-      "ageRange": { "min": 2, "max": 75 },
-      "symptoms": ["Diarreia líquida súbita", "Náuseas e episódios de vômito", "Cólicas abdominais", "Febre baixa"],
-      "suggestedExams": ["Avaliação de turgor cutâneo e sinais de desidratação", "Glicemia capilar se vômitos frequentes"],
+      "ageRange": { "min": 12, "max": 75 },
+      "symptoms": ["Anosmia e ageusia súbitas", "Febre baixa e mialgia", "Tosse seca e fadiga", "Saturação periférica de O2 normal (>= 95%)"],
+      "suggestedExams": ["Teste rápido de antígeno para SARS-CoV-2", "Oximetria de pulso"],
       "suggestedConduct": {
-        "id": "gastroenterite-reidratacao",
-        "text": "Terapia de Reidratação Oral (TRO) com Sais de Reidratação do SUS, dieta fracionada leve e evitar antimicrobianos de rotina."
+        "id": "covid-isolamento-dipirona-paracetamol",
+        "text": "Isolamento domiciliar por 7 dias, hidratação, uso combinado sintomático de Dipirona ou Paracetamol e orientar procurar UPA se saturação cair abaixo de 95%."
       },
       "distractorConducts": [
         {
-          "id": "gastroenterite-antibiotico-imediato",
-          "text": "Prescrever antibiótico imediatamente para cortar a diarreia.",
-          "whyWrong": "A imensa maioria das gastroenterites é viral ou autolimitada. Antibióticos podem prolongar o estado de portador e desequilibrar a microbiota."
+          "id": "covid-antibiotico-profilatico",
+          "text": "Prescrever antibiótico profilático imediato para evitar pneumonia bacteriana associada.",
+          "whyWrong": "Antibióticos não têm ação antiviral contra o coronavírus e seu uso empírico precoce não previne complicações pulmonares virais."
         }
       ],
       "medications": [
-        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Correção hidroeletrolítica" },
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Alívio de cólicas e febre" }
+        { "genericName": "Dipirona", "route": "Oral", "indication": "Alívio de mialgia e febre" },
+        { "genericName": "Paracetamol", "route": "Oral", "indication": "Alternativa analgésica e antitérmica" }
       ],
+      "medicationIds": ["dipirona", "paracetamol"],
       "requiresPharmacy": true,
-      "explanation": "A pedra angular da gastroenterite aguda é prevenir e tratar a desidratação com sais de reidratação oral. Quase todos os casos regridem espontaneamente em 3 a 5 dias.",
-      "possibleComorbidities": ["Nenhuma"],
+      "explanation": "Na forma leve da COVID-19, o cuidado de suporte, analgesia com medicamentos da RENAME e vigilância dos sinais respiratórios são as diretrizes recomendadas.",
+      "possibleComorbidities": ["Hipertensão arterial"],
       "sources": [
-        { "name": "Ministério da Saúde. Manejo da Doença Diarreica Aguda", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-23" },
-        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
+        { "name": "Ministério da Saúde. Guia de Manejo Clínico da COVID-19", "url": "https://www.gov.br/saude", "accessedOn": "2026-10-24" }
       ],
-      "version": "0.1.0",
-      "reviewedOn": "",
-      "reviewStatus": "pending"
-    },
-    {
-      "id": "crise-hipertensiva",
-      "name": "Elevação Pressórica Sintomática",
-      "area": "Cardiovascular",
-      "typicalUnit": "UPA e UBS",
-      "severity": "Moderada",
-      "weight": 2,
-      "ageRange": { "min": 35, "max": 85 },
-      "symptoms": ["Pressão arterial elevada (>160/100 mmHg)", "Cefaleia occipital leve", "Ansiedade", "Sem dor no peito ou déficits neurológicos"],
-      "suggestedExams": ["Aferição seriada da pressão arterial com manguito adequado", "Fundo de olho se disponível", "ECG"],
-      "suggestedConduct": {
-        "id": "hipertensao-acolhimento-repouso",
-        "text": "Acolhimento em sala tranquila, repouso de 30 minutos, ajuste da medicação anti-hipertensiva habitual e orientação de acompanhamento na UBS. Evitar quedas abruptas da pressão."
-      },
-      "distractorConducts": [
-        {
-          "id": "hipertensao-sublingual-rapido",
-          "text": "Administrar anti-hipertensivo sublingual de ação ultrarrápida para normalizar a pressão em 10 minutos.",
-          "whyWrong": "Quedas bruscas da pressão arterial podem causar isquemia cerebral ou coronariana. A redução deve ser gradual e segura."
-        }
-      ],
-      "medications": [
-        { "genericName": "Dipirona", "route": "Oral", "indication": "Cefaleia" }
-      ],
-      "requiresPharmacy": true,
-      "explanation": "A pseudocrise ou elevação pressórica sem lesão aguda de órgão-alvo melhora com repouso e readequação do tratamento crônico, sem necessitar de medicamentos endovenosos de emergência.",
-      "possibleComorbidities": ["Hipertensão arterial sistêmica crônica", "Dislipidemia"],
-      "sources": [
-        { "name": "Diretrizes Brasileiras de Hipertensão Arterial", "url": "https://departamentos.cardiol.br", "accessedOn": "2026-10-23" },
-        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
-      ],
-      "version": "0.1.0",
-      "reviewedOn": "",
-      "reviewStatus": "pending"
-    },
-    {
-      "id": "desidratacao-infantil",
-      "name": "Desidratação Leve a Moderada Infantil",
-      "area": "Pediatria",
-      "typicalUnit": "UPA e UBS",
-      "severity": "Moderada",
-      "weight": 2,
-      "ageRange": { "min": 1, "max": 8 },
-      "symptoms": ["Olhos fundos", "Boca e lábios secos", "Sede intensa e choro com pouca lágrima", "Diminuição das fraldas molhadas"],
-      "suggestedExams": ["Avaliação clínica do sinal da prega cutânea", "Verificação do peso atual e fontanela"],
-      "suggestedConduct": {
-        "id": "desidratacao-plano-b",
-        "text": "Iniciar Plano B de Reidratação Oral na unidade: oferta frequente de solução de sais de reidratação com colher ou copinho até reidratar completamente."
-      },
-      "distractorConducts": [
-        {
-          "id": "desidratacao-refrigerante",
-          "text": "Orientar hidratação exclusiva com refrigerantes ou sucos açucarados em casa.",
-          "whyWrong": "Bebidas hiperosmolares e açucaradas pioram a perda de água no intestino e agravam a desidratação infantil."
-        }
-      ],
-      "medications": [
-        { "genericName": "Sais para reidratação oral", "route": "Oral", "indication": "Reposição hidroeletrolítica" }
-      ],
-      "requiresPharmacy": true,
-      "explanation": "O Plano B na Atenção Básica e UPA reidrata a criança em poucas horas sob observação na sala de hidratação, evitando internações hospitalares desnecessárias.",
-      "possibleComorbidities": ["Desnutrição leve"],
-      "sources": [
-        { "name": "Ministério da Saúde. AIDPI Criança: Atenção Integrada às Doenças Prevalentes na Infância", "url": "https://bvsms.saude.gov.br", "accessedOn": "2026-10-23" },
-        { "name": "RENAME", "url": "https://www.gov.br/saude/pt-br/composicao/sectics/rename", "accessedOn": "2026-10-23" }
-      ],
-      "version": "0.1.0",
-      "reviewedOn": "",
+      "version": "0.8.0",
+      "reviewedOn": "2026-10-24",
       "reviewStatus": "pending"
     }
   ]

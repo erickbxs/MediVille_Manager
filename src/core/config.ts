@@ -58,6 +58,7 @@ export interface ClinicalCaseDefinition {
   suggestedConduct: { id: string; text: string };
   distractorConducts: { id: string; text: string; whyWrong: string }[];
   medications: { genericName: string; route: string; indication: string }[];
+  medicationIds?: string[];
   requiresPharmacy: boolean;
   explanation: string;
   possibleComorbidities: string[];

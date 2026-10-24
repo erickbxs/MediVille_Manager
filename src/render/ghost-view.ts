@@ -27,7 +27,7 @@ export class GhostView {
     isValid: boolean
   ): void {
     this.graphics.clear();
-    if (!def) return;
+    if (!def || col < 0 || row < 0 || !Number.isFinite(col) || !Number.isFinite(row)) return;
 
     const { tileSize } = THEME;
     const width = (rotated ? def.height : def.width) * tileSize;

@@ -70,6 +70,7 @@ class MediVilleApp {
       onToggleDemolish: () => this.toggleDemolish(),
       onToggleMove: () => this.toggleMove(),
       onCancelSelection: () => this.cancelSelection(),
+      onRecenterMap: () => this.renderer.recenter(),
     });
 
     this.setupInput(canvasContainer);

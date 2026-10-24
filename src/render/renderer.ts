@@ -68,13 +68,25 @@ export class HospitalRenderer {
 
     containerElement.appendChild(this.app.canvas);
     this.camera.resize(this.app.screen.width, this.app.screen.height);
-    this.camera.centerOnGrid();
+    this.camera.fitMapToScreen();
     this.createLayers();
     this.app.stage.addChild(this.world);
 
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       this.camera.resize(this.app.screen.width, this.app.screen.height);
-    });
+      this.camera.fitMapToScreen();
+    };
+
+    window.addEventListener('resize', onResize);
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(() => onResize());
+      observer.observe(containerElement);
+    }
+  }
+
+  public recenter(): void {
+    this.camera.resize(this.app.screen.width, this.app.screen.height);
+    this.camera.fitMapToScreen();
   }
 
   private createLayers(): void {

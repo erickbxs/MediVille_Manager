@@ -89,6 +89,8 @@ export class PatientsView {
   }
 
   private drawCharacter(x: number, y: number, color: number, isDoctor: boolean): void {
+    if (!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)) return;
+
     // Sombra no chão
     this.graphics.ellipse(x, y + 8, 7, 3).fill({ color: 0x000000, alpha: 0.18 });
 
@@ -103,8 +105,9 @@ export class PatientsView {
       .fill({ color: 0xfde047 }) // Tom de pele caricato
       .stroke({ color: 0x1e293b, width: 1 });
 
-    // Cabelo ou estetoscópio
+    // Cabelo ou estetoscópio (moveTo explícito antes do arc para evitar linha espúria até (0,0))
     if (isDoctor) {
+      this.graphics.moveTo(x + 4, y - 4);
       this.graphics.arc(x, y - 4, 4, 0, Math.PI).stroke({ color: 0x0284c7, width: 1.5 });
     }
   }

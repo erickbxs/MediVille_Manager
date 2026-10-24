@@ -1,8 +1,15 @@
 /**
  * Arquivo: src/ui/finances-modal.ts
- * O que faz: Exibe o demonstrativo financeiro do SUS (procedimentos BPA faturados, repasses do Ministério da Saúde) e permite solicitar verba imediata com a Secretaria de Saúde para reforma.
- * Para que foi criado: Cumprir o Prompt 6 do GDD e o pedido do usuário de injeção imediata de verba municipal para ampliação da unidade.
- * Como modificar/debugar: Valores de repasse e verbas vêm de src/data/balance.json e src/systems/economy-system.ts.
+ *
+ * 1. O que este arquivo faz?
+ * Exibe o demonstrativo financeiro do SUS (procedimentos BPA faturados, repasses do Ministério da Saúde) e permite solicitar verba imediata com a Secretaria de Saúde para reforma.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir o Prompt 6 do GDD e o pedido do usuário de controle orçamentário transparente adaptado para mobile em formato bottom sheet.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Valores de repasse e verbas vêm de src/data/balance.json e src/systems/economy-system.ts.
+ *
  * Importa: src/core/simulation.ts, src/systems/economy-system.ts, src/core/config.ts
  * Conecta-se with: src/ui/hud.ts, src/main.ts
  */
@@ -26,8 +33,8 @@ export class FinancesModal {
     const procedures = SIGTAP_CATALOG.procedures;
 
     this.container.innerHTML = `
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-        <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[85dvh]">
           
           <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
             <div class="flex items-center gap-3">

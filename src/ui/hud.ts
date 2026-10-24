@@ -48,9 +48,9 @@ export class HospitalHUD {
 
   private renderInitial(): void {
     this.container.innerHTML = `
-      <header class="pointer-events-auto flex flex-wrap items-center justify-between gap-3 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-slate-200/60 dark:border-slate-800/60 text-slate-800 dark:text-slate-100">
-        <div class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-xl">
+      <header class="pointer-events-auto flex flex-wrap items-center justify-between gap-2 sm:gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-lg border border-slate-200/60 dark:border-slate-800/60 text-slate-800 dark:text-slate-100 max-w-full overflow-x-hidden">
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <div class="flex items-center justify-center w-10 sm:w-11 h-10 sm:h-11 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-lg sm:text-xl">
             🏥
           </div>
           <div>
@@ -58,11 +58,11 @@ export class HospitalHUD {
               <span class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">MediVille</span>
               <span id="hud-unit-level" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400">UBS</span>
             </div>
-            <div id="hud-cash" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100.000</div>
+            <div id="hud-cash" class="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100.000</div>
           </div>
         </div>
 
-        <div class="flex items-center gap-2.5 flex-1 max-w-2xl justify-center flex-wrap">
+        <div class="flex items-center gap-1.5 sm:gap-2.5 flex-1 max-w-2xl justify-center flex-wrap">
           <div class="min-w-[70px]">
             <div class="flex justify-between text-xs font-semibold mb-1">
               <span>Reputação</span>

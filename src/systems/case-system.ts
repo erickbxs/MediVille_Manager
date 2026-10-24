@@ -1,15 +1,25 @@
 /**
  * Arquivo: src/systems/case-system.ts
- * O que faz: Gera pacientes individuais sorteando casos clínicos reais do SUS, variando idade, sexo, comorbidades e opções de conduta.
- * Para que foi criado: Implementar o micro-aprendizado do GDD baseado em diretrizes médicas oficiais da RENAME e Ministério da Saúde.
- * Como modificar/debugar: Para adicionar mais opções distratoras ou alterar probabilidades, consulte src/data/cases.json e balance.json.
+ *
+ * 1. O que este arquivo faz?
+ * Gera instâncias de pacientes e casos clínicos sorteados a partir do catálogo expandido do SUS (15 casos reais da APS),
+ * utilizando seleção aleatória ponderada (weight) e garantindo que o mesmo caso clínico nunca se repita duas vezes consecutivas.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Implementar o micro-aprendizado em saúde pública com condutas e distratores fidedignos às diretrizes do Ministério da Saúde e da RENAME.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Para adicionar ou alterar pesos de casos, edite src/data/cases.json. Para validar a distribuição e não-repetição, execute tests/cases-and-mobile.test.ts.
+ *
  * Importa: src/core/config.ts, src/entities/clinical-case.ts, src/entities/patient.ts
- * Conecta-se com: src/systems/arrival-system.ts, src/entities/patient.ts
+ * Conecta-se com: src/systems/arrival-system.ts, src/core/simulation.ts
  */
 
-import { BALANCE, CASES_CATALOG, NAMES_CATALOG } from '../core/config';
+import { BALANCE, CASES_CATALOG, NAMES_CATALOG, type ClinicalCaseDefinition } from '../core/config';
 import type { ConductOption, PatientCase } from '../entities/clinical-case';
 import type { PatientInstance } from '../entities/patient';
+
+let lastGeneratedCaseId: string | undefined;
 
 function getRandomItem<T>(arr: T[]): T {
   const index = Math.floor(Math.random() * arr.length);
@@ -24,7 +34,7 @@ function generatePatientName(gender: 'female' | 'male'): string {
   return `${firstName} ${lastName}`;
 }
 
-function buildConductOptions(def: typeof CASES_CATALOG.cases[0]): ConductOption[] {
+function buildConductOptions(def: ClinicalCaseDefinition): ConductOption[] {
   const options: ConductOption[] = [
     {
       id: def.suggestedConduct.id,
@@ -41,8 +51,40 @@ function buildConductOptions(def: typeof CASES_CATALOG.cases[0]): ConductOption[
   return options.sort(() => Math.random() - 0.5);
 }
 
-export function generatePatientCase(): PatientCase {
-  const def = getRandomItem(CASES_CATALOG.cases);
+/**
+ * Seleciona um caso clínico da lista usando sorteio ponderado (weight)
+ * e evitando estritamente a repetição do caso anterior (lastCaseId).
+ */
+export function selectWeightedCase(
+  cases: ClinicalCaseDefinition[],
+  lastCaseId?: string
+): ClinicalCaseDefinition {
+  if (cases.length === 0) {
+    throw new Error('Nenhum caso clínico disponível no catálogo.');
+  }
+
+  const pool = (lastCaseId && cases.length > 1)
+    ? cases.filter((c) => c.id !== lastCaseId)
+    : cases;
+
+  const totalWeight = pool.reduce((sum, c) => sum + (c.weight > 0 ? c.weight : 1), 0);
+  let randomVal = Math.random() * totalWeight;
+
+  for (const item of pool) {
+    const w = item.weight > 0 ? item.weight : 1;
+    if (randomVal < w) {
+      return item;
+    }
+    randomVal -= w;
+  }
+
+  return pool[pool.length - 1]!;
+}
+
+export function generatePatientCase(overrideLastId?: string): PatientCase {
+  const def = selectWeightedCase(CASES_CATALOG.cases, overrideLastId ?? lastGeneratedCaseId);
+  lastGeneratedCaseId = def.id;
+
   const intensity = getRandomItem(BALANCE.queue.intensityLevels);
   const hasComorbidity = Math.random() < BALANCE.population.comorbidityChance;
   const comorbidity = hasComorbidity && def.possibleComorbidities.length > 0
