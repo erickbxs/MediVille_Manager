@@ -2,6 +2,37 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.9.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Evolução Core & Visual 3D — Mecânica On-Click, Relógio Determinístico, Personagens Voxel 2.5D, Mapa CityRT 3D e UI Compacta Mobile/Tablet
+- **Atendimento Clínico On-Click & Fim de Popups Automáticos**:
+  - Quando um paciente entra no consultório médico com médico disponível, ele entra no estado `ready_for_treatment` sem disparar popups intrusivos.
+  - Balão pulsante `🩺 Atender` renderizado de forma interativa diretamente sobre o consultório (área de toque `>= 44x44px`), além do botão de ação rápida no dock inferior com badge numérico em tempo real.
+  - A resolução do caso deduz os medicamentos correspondentes da RENAME em `pharmacy.json`, credita a consulta médica SIGTAP (+R$ 3.600) e exibe texto flutuante animado sobre a sala.
+- **Relógio Determinístico & Auto-Pausa Inteligente**:
+  - Pausa absoluta (`0x`): acumulador de ticks zerado determinísticamente, congelando tempo, chegada de pacientes, queda de paciência, fechamento do dia e temporizadores de eventos sem dependência de `setInterval` ou `setTimeout`.
+  - Auto-pausa inteligente em modais clínicos e administrativos (`DecisionModal`, `StaffModal`, `PharmacyModal`, `FinancesModal`), preservando e restaurando `previousSpeed`.
+  - Escalamento rigoroso em `1x`, `2x` e `3x` com `maxDeltaTime = 100ms` prevenindo saltos abruptos por perda de foco na janela.
+- **Personagens Voxel 2.5D Procedurais (Estilo Crossy Road / Minecraft)**:
+  - Nova fábrica procedural `src/render/voxel-character.ts` usando exclusivamente `PIXI.Container` e `PIXI.Graphics` (cubos com face superior iluminada, frontal base e lateral sombreada + sombra elíptica).
+  - 5 papéis com estética única e reconhecível: Médico (jaleco sobre roupa azul e estetoscópio), Enfermeiro (uniforme teal `#0D9488` com cruz branca), Farmacêutico (jaleco com camisa azul royal), Recepcionista (camisa âmbar e crachá) e Paciente (roupas casuais variadas com indicador visual de paciência: calmo, gota de suor ou alerta).
+  - Animações determinísticas proceduralmente sincronizadas com o relógio: `WALKING` (balanço oposto de membros e bobbing vertical), `IDLE` (respiração) e `WORKING` (atendimento dinâmico).
+- **Coreografia e Rotas dos NPCs (`src/systems/npc-movement-system.ts`)**:
+  - Navegação fluida por waypoints (`lerp`) entre salas na grade 12x12 sincronizada com a equipe contratada e o ciclo dos pacientes SUS (Entrada ➔ Recepção ➔ Espera ➔ Consultório ➔ Farmácia).
+- **UI Compacta Mobile & Tablet (> 82% da Tela Livre)**:
+  - **Top Bar Ultra-Compacta**: Pílula horizontal única de 48px com caixa curto (`formatShortCash`), reputação, estoque RENAME, relógio e botão de detalhes colapsável.
+  - **Dock Inferior Colapsável (56px)**: Botões icônicos mínimos (`>= 44x44px`) para `🏗️ Obras`, `🩺 Atender (N)`, `👥 Equipe`, `💊 Farmácia`, `💰 Finanças` e `🎯 Centralizar`.
+  - **Build Drawer Sob Demanda**: As cartas de salas permanecem ocultas e deslizam em carrossel horizontal compacto (`snap-x`) somente quando o jogador toca em `🏗️ Obras`, recolhendo-se automaticamente ao posicionar uma sala ou fechar.
+  - **Event Banner Compacto**: Pílula de linha única sob a Top Bar com contagem regressiva e toque para expandir.
+  - **Auto-Enquadramento**: Função `fitMapToViewport` calcula a escala da câmera descontando Top Bar (48px) e Dock (56px), garantindo mais de 82% de área útil em telas mobile (`375x667`, `390x844`) e tablets.
+- **Suíte de Testes Automatizados (Vitest)**:
+  - Adicionado `tests/voxel-and-mobile-evolution.test.ts` cobrindo os 5 papéis de voxel, animações, sistema de movimentação, congelamento em pausa, garantia de >82% de tela livre e formatação de caixa.
+  - Total de 66 testes passando com 100% de sucesso.
+- **Orçamento de Peso**:
+  - Bundle compilado em apenas 0.73 MB (limite GDD: 2.00 MB), sem dependências pesadas externas.
+
 ## [0.8.0] - 2026-10-24
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

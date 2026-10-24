@@ -66,6 +66,22 @@ export function fitMapToScreen(
   };
 }
 
+/**
+ * Calcula o enquadramento ideal descontando a Top Bar de 48px e o Dock Inferior de 56px,
+ * liberando mais de 82% da tela para visualização e toque direto do hospital.
+ */
+export function fitMapToViewport(
+  viewportWidth: number,
+  viewportHeight: number,
+  options?: { topHeight?: number; bottomHeight?: number; sidePadding?: number }
+): FitMapResult {
+  return fitMapToScreen(viewportWidth, viewportHeight, {
+    topMargin: options?.topHeight ?? 48,
+    bottomMargin: options?.bottomHeight ?? 56,
+    sidePadding: options?.sidePadding ?? 12,
+  });
+}
+
 export class Camera {
   public x = 0;
   public y = 0;
@@ -106,8 +122,8 @@ export class Camera {
 
   public zoomAt(screenX: number, screenY: number, factor: number): void {
     const prevZoom = this.zoom;
-    const minLimit = Math.min(0.6, (this.viewportWidth / (BALANCE.grid.cols * THEME.tileSize)) * 0.95);
-    const nextZoom = Math.max(minLimit, Math.min(1.8, prevZoom * factor));
+    const minLimit = Math.min(0.55, (this.viewportWidth / (BALANCE.grid.cols * THEME.tileSize)) * 0.95);
+    const nextZoom = Math.max(minLimit, Math.min(2.0, prevZoom * factor));
     if (nextZoom === prevZoom) return;
 
     this.x = screenX - (screenX - this.x) * (nextZoom / prevZoom);
@@ -116,7 +132,11 @@ export class Camera {
   }
 
   public fitMapToScreen(options?: FitMapOptions): FitMapResult {
-    const result = fitMapToScreen(this.viewportWidth, this.viewportHeight, options);
+    const result = fitMapToViewport(this.viewportWidth, this.viewportHeight, {
+      topHeight: options?.topMargin,
+      bottomHeight: options?.bottomMargin,
+      sidePadding: options?.sidePadding,
+    });
     this.zoom = result.scale;
     this.x = result.x;
     this.y = result.y;

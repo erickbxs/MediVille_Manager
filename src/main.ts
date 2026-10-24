@@ -52,6 +52,7 @@ class MediVilleApp {
   private pharmacyModal!: PharmacyModal;
   private financesModal!: FinancesModal;
   private eventBanner!: EventBannerView;
+  private buildMenu!: BuildMenu;
   private ghost: GhostState = { def: null, col: 0, row: 0, rotated: false, isValid: false };
   private isDemolishMode = false;
   private isMoveMode = false;
@@ -64,13 +65,17 @@ class MediVilleApp {
 
     this.setupModalsAndHud(document.getElementById('modal-container')!);
 
-    new BuildMenu(document.getElementById('build-menu-container')!, {
+    this.buildMenu = new BuildMenu(document.getElementById('build-menu-container')!, {
       onSelectRoom: (def: RoomDefinition) => this.selectRoomToBuild(def),
       onToggleRotate: () => this.toggleRotate(),
       onToggleDemolish: () => this.toggleDemolish(),
       onToggleMove: () => this.toggleMove(),
       onCancelSelection: () => this.cancelSelection(),
       onRecenterMap: () => this.renderer.recenter(),
+      onOpenPendingCase: () => this.openNextPendingCase(),
+      onOpenStaff: () => this.staffModal.open(),
+      onOpenPharmacy: () => this.pharmacyModal.open(),
+      onOpenFinances: () => this.financesModal.open(),
     });
 
     this.setupInput(canvasContainer);
@@ -167,13 +172,18 @@ class MediVilleApp {
   }
 
   private handleGridClick(col: number, row: number): void {
+    this.hud.closeDetails();
     if (this.movingRoomId) {
       this.applyRoomMove(col, row);
+      this.buildMenu.closeDrawer();
       return;
     }
     if (this.ghost.def) {
       const placed = this.simulation.buildRoom(this.ghost.def.id, col, row, this.ghost.rotated);
-      if (placed) this.ghost.def = null;
+      if (placed) {
+        this.ghost.def = null;
+        this.buildMenu.closeDrawer();
+      }
       return;
     }
     this.handleExistingRoomInteraction(col, row);
@@ -255,6 +265,8 @@ class MediVilleApp {
       this.hud.update(this.simulation.state);
       this.advisorView.update(this.simulation.state);
       this.eventBanner.update(this.simulation.state.activeEvents);
+      const hasZeroStock = Object.values(this.simulation.state.pharmacyStock).some((c) => c === 0);
+      this.buildMenu.updateBadges(this.simulation.state.pendingDecisionPatientIds.length, hasZeroStock);
     });
 
     globalBus.on('feedback:gain_float', ({ text, col, row }) => {

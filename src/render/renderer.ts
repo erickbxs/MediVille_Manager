@@ -121,7 +121,7 @@ export class HospitalRenderer {
     this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), performance.now());
     this.roomsView.render(rooms, selectedRoomId, stockRatio);
     this.lightingView.render(dayProgress, rooms);
-    this.patientsView.render(Array.from(state.patients.values()), state.rooms);
+    this.patientsView.render(state);
     this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid);
   }
 }
