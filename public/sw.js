@@ -5,7 +5,7 @@
  * Como modificar/debugar: Atualize CACHE_VERSION ao publicar novas versões com alterações críticas de assets.
  */
 
-const CACHE_NAME = 'mediville-cache-v0.4.0';
+const CACHE_NAME = 'mediville-cache-v0.7.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

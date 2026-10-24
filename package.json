@@ -21,7 +21,7 @@
     "build": "tsc --noEmit && vite build && node scripts/check-bundle-size.mjs",
     "preview": "vite preview --host",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
-    "deploy": "npm run verify && wrangler pages deploy dist --project-name=mediville-manager"
+    "deploy": "npm run verify && wrangler pages deploy dist --project-name=mediville-manager --branch=master"
   },
   "dependencies": {
     "pixi.js": "^8.22.0"
