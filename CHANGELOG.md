@@ -5,6 +5,7 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 ## [0.5.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Deployment Preview v0.5.0: [https://9ef90a06.mediville-manager.pages.dev](https://9ef90a06.mediville-manager.pages.dev)
 
 ### Adicionado (Fase 3: Salvamento, Modo Convidado & PWA Instalável)
 - **Sistema de Salvamento Completo & Backup JSON (Prompt 12 do GDD)**:
