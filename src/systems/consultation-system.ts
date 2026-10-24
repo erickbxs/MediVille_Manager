@@ -17,6 +17,9 @@ import { getBestDoctorSkill } from './staff-system';
 import { consumeMedicationsForCase } from './economy-system';
 import { checkHospitalProgression } from './progression-system';
 
+const AUTO_TREATMENT_BASE_SEC = 3.5;
+const AUTO_TREATMENT_MIN_SEC = 1.5;
+
 export function findAvailableConsultationRoom(state: GameState): RoomInstance | null {
   for (const room of state.rooms.values()) {
     if (room.definition.role === 'treatment' && room.occupantIds.length < room.definition.capacity) {
@@ -40,6 +43,38 @@ export function hasDoctorAvailable(state: GameState): boolean {
   return false;
 }
 
+function startAutoTreatment(state: GameState, patient: PatientInstance, roomId: string): void {
+  const doctorSkill = getBestDoctorSkill(state);
+  const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
+  const durationSec = Math.max(AUTO_TREATMENT_MIN_SEC, AUTO_TREATMENT_BASE_SEC * skillFactor);
+
+  patient.state = 'in_consultation';
+  patient.consultationTimeSec = 0;
+  patient.consultationDurationSec = durationSec;
+
+  globalBus.emit('patient:auto_treatment_started', {
+    patientId: patient.id,
+    roomId,
+    caseId: patient.clinicalCase.definition.id,
+    durationSec,
+  });
+}
+
+function startManualTreatment(state: GameState, patient: PatientInstance, roomId: string): void {
+  patient.state = 'ready_for_treatment';
+
+  if (!state.pendingDecisionPatientIds.includes(patient.id)) {
+    state.pendingDecisionPatientIds.push(patient.id);
+    globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
+  }
+
+  globalBus.emit('patient:ready_for_treatment', {
+    patientId: patient.id,
+    roomId,
+    patientName: patient.name,
+  });
+}
+
 function startConsultationForNextPatient(state: GameState): void {
   if (!hasDoctorAvailable(state)) return;
   if (state.queueIds.length === 0) return;
@@ -50,20 +85,15 @@ function startConsultationForNextPatient(state: GameState): void {
   const patient = state.patients.get(patientId);
   if (!patient || patient.state !== 'waiting') return;
 
-  patient.state = 'ready_for_treatment';
   patient.currentRoomId = room.id;
   addOccupant(room, patient.id);
 
-  if (!state.pendingDecisionPatientIds.includes(patient.id)) {
-    state.pendingDecisionPatientIds.push(patient.id);
-    globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
+  const isMastered = state.masteredCaseIds.includes(patient.clinicalCase.definition.id);
+  if (isMastered) {
+    startAutoTreatment(state, patient, room.id);
+  } else {
+    startManualTreatment(state, patient, room.id);
   }
-
-  globalBus.emit('patient:ready_for_treatment', {
-    patientId: patient.id,
-    roomId: room.id,
-    patientName: patient.name,
-  });
 }
 
 function handleConsultationAbandonment(state: GameState, patient: PatientInstance): void {
@@ -83,14 +113,27 @@ function handleConsultationAbandonment(state: GameState, patient: PatientInstanc
 
 function progressConsultation(state: GameState, deltaSec: number): void {
   for (const patient of state.patients.values()) {
-    if (patient.state !== 'ready_for_treatment' && patient.state !== 'in_consultation') continue;
+    if (patient.state === 'ready_for_treatment') {
+      const doctorSkill = getBestDoctorSkill(state);
+      const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
+      patient.waitTimeSec += deltaSec * (BALANCE.consultation.waitingPatienceFactor * skillFactor);
 
-    const doctorSkill = getBestDoctorSkill(state);
-    const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
-    patient.waitTimeSec += deltaSec * (BALANCE.consultation.waitingPatienceFactor * skillFactor);
+      if (patient.waitTimeSec >= patient.patienceSec) {
+        handleConsultationAbandonment(state, patient);
+      }
+    } else if (patient.state === 'in_consultation') {
+      patient.consultationTimeSec += deltaSec;
+      if (patient.consultationTimeSec >= patient.consultationDurationSec) {
+        // Concluir auto-resolução com sucesso
+        patient.clinicalCase.decisionMade = true;
+        patient.clinicalCase.isDecisionCorrect = true;
+        patient.clinicalCase.chosenConductId = patient.clinicalCase.definition.suggestedConduct.id;
+        patient.clinicalCase.feedbackText = patient.clinicalCase.definition.explanation;
+        state.stats.totalDecisions += 1;
+        state.stats.correctDecisions += 1;
 
-    if (patient.waitTimeSec >= patient.patienceSec) {
-      handleConsultationAbandonment(state, patient);
+        dischargePatient(state, patient.id, true);
+      }
     }
   }
 }
@@ -115,11 +158,7 @@ export function finishPatientDecision(state: GameState, patientId: string): void
   globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
 }
 
-export function dischargePatient(state: GameState, patientId: string): void {
-  const patient = state.patients.get(patientId);
-  if (!patient) return;
-
-  finishPatientDecision(state, patient.id);
+function releasePatientRoom(state: GameState, patient: PatientInstance): { col: number; row: number } {
   let col = 0;
   let row = 0;
   if (patient.currentRoomId) {
@@ -130,7 +169,10 @@ export function dischargePatient(state: GameState, patientId: string): void {
       removeOccupant(room, patient.id);
     }
   }
+  return { col, row };
+}
 
+function processDischargeRevenue(state: GameState, patient: PatientInstance): number {
   const pharmacyOk = hasPharmacy(state);
   let medStockOk = true;
   if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk) {
@@ -149,10 +191,23 @@ export function dischargePatient(state: GameState, patientId: string): void {
   state.finances.bpaRevenue += revenue;
   state.stats.treatedCount += 1;
   checkHospitalProgression(state);
+  return revenue;
+}
+
+export function dischargePatient(state: GameState, patientId: string, isAuto = false): void {
+  const patient = state.patients.get(patientId);
+  if (!patient) return;
+
+  finishPatientDecision(state, patient.id);
+  const { col, row } = releasePatientRoom(state, patient);
+  const revenue = processDischargeRevenue(state, patient);
 
   globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue });
+  globalBus.emit('patient:consultation_completed', { patientId: patient.id });
   globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Procedimento BPA faturado (SUS)' });
-  globalBus.emit('feedback:gain_float', { text: `+R$ ${revenue.toLocaleString('pt-BR')}`, col, row });
+
+  const floatPrefix = isAuto ? '⚡ Auto ' : '';
+  globalBus.emit('feedback:gain_float', { text: `${floatPrefix}+R$ ${revenue.toLocaleString('pt-BR')}`, col, row });
 }
 
 export function updateConsultationSystem(state: GameState, deltaSec: number): void {

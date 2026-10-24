@@ -63,6 +63,7 @@ export interface SerializedGameState {
   eventTimerSec: number;
   pharmacyStock: Record<string, number>;
   finances: FinancialStats;
+  masteredCaseIds: string[];
 }
 
 function serializeRooms(rooms: Map<string, RoomInstance>): SerializedRoom[] {
@@ -117,6 +118,7 @@ export function serializeGameState(state: GameState): SerializedGameState {
     eventTimerSec: state.eventTimerSec,
     pharmacyStock: { ...state.pharmacyStock },
     finances: { ...state.finances },
+    masteredCaseIds: [...(state.masteredCaseIds ?? [])],
   };
 }
 
@@ -195,6 +197,7 @@ export function deserializeGameState(data: SerializedGameState): GameState {
     eventTimerSec: data.eventTimerSec,
     pharmacyStock: data.pharmacyStock,
     finances: data.finances,
+    masteredCaseIds: data.masteredCaseIds ? [...data.masteredCaseIds] : [],
   };
 }
 

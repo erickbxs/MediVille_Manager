@@ -44,6 +44,8 @@ export interface GameEvents {
   'sound:mute_changed': { muted: boolean };
   'goal:completed': { goal: { id: string; title: string; description: string; target: number; rewardCash: number; completed: boolean }; rewardCash: number };
   'encyclopedia:case_unlocked': { caseId: string };
+  'protocol:mastered': { caseId: string; diseaseName: string; totalMastered: number };
+  'patient:auto_treatment_started': { patientId: string; roomId: string; caseId: string; durationSec: number };
 }
 
 export type EventKey = keyof GameEvents;

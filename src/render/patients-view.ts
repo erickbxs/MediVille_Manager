@@ -72,8 +72,15 @@ export class PatientsView {
       const ratio = pat && pat.patienceSec > 0 ? 1 - pat.waitTimeSec / pat.patienceSec : 1.0;
       this.drawVoxelAgent(agent.id, 'patient', agent.x, agent.y, agent.facing, agent.animState, now, ratio);
 
-      if (pat && (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision')) {
-        this.drawSpeechBubble(agent.x, agent.y - 24, '🩺 Atender');
+      if (pat) {
+        if (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision') {
+          const isMastered = state.masteredCaseIds.includes(pat.clinicalCase.definition.id);
+          const label = isMastered ? '🩺 Atender' : '🆕 Novo Caso! 🩺';
+          this.drawSpeechBubble(agent.x, agent.y - 26, label, !isMastered);
+        } else if (pat.state === 'in_consultation') {
+          const progress = Math.min(1.0, pat.consultationTimeSec / Math.max(0.1, pat.consultationDurationSec));
+          this.drawAutoProtocolProgress(agent.x, agent.y - 28, progress);
+        }
       }
     }
   }
@@ -91,7 +98,7 @@ export class PatientsView {
           const r = waitingRooms[0]!;
           this.drawVoxelAgent(patient.id, 'patient', r.col * tileSize + 20, r.row * tileSize + 26, 'right', 'IDLE', now);
         }
-      } else if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision' || patient.state === 'in_consultation') {
+      } else if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision') {
         if (patient.currentRoomId) {
           const room = rooms.get(patient.currentRoomId);
           if (room) {
@@ -104,6 +111,12 @@ export class PatientsView {
             this.drawVoxelAgent(patient.id, 'patient', patX, patY, 'left', 'IDLE', now);
             this.drawSpeechBubble(room.col * tileSize + (room.width * tileSize) / 2, room.row * tileSize - 6, '🩺 Atender');
           }
+        }
+      } else if (patient.state === 'in_consultation' && patient.currentRoomId) {
+        const room = rooms.get(patient.currentRoomId);
+        if (room) {
+          const progress = Math.min(1.0, patient.consultationTimeSec / Math.max(0.1, patient.consultationDurationSec));
+          this.drawAutoProtocolProgress(room.col * tileSize + (room.width * tileSize) / 2, room.row * tileSize - 8, progress);
         }
       }
     }
@@ -142,19 +155,43 @@ export class PatientsView {
     char.update(timeSec, animState);
   }
 
-  private drawSpeechBubble(x: number, y: number, icon: string): void {
-    const pulse = 1 + 0.08 * Math.sin(Date.now() / 150);
-    const halfW = 28 * pulse;
+  private drawAutoProtocolProgress(x: number, y: number, progress: number): void {
+    const width = 84;
+    const height = 10;
+    const halfW = width / 2;
+
+    this.graphics.roundRect(x - halfW, y - height / 2, width, height, 4)
+      .fill({ color: 0x0f172a, alpha: 0.85 })
+      .stroke({ color: 0x334155, width: 1 });
+
+    const fillWidth = Math.max(2, (width - 4) * Math.min(1.0, Math.max(0, progress)));
+    this.graphics.roundRect(x - halfW + 2, y - height / 2 + 2, fillWidth, height - 4, 2)
+      .fill({ color: 0x10b981 });
+
+    const label = new Text({
+      text: '⚡ Protocolo...',
+      style: { fontSize: 8, fontWeight: 'bold', align: 'center', fill: 0xffffff },
+      anchor: 0.5,
+      x,
+      y: y - 8,
+    });
+    this.textContainer.addChild(label);
+  }
+
+  private drawSpeechBubble(x: number, y: number, text: string, isNewCase = false): void {
+    const pulse = isNewCase ? 1 + 0.08 * Math.sin(Date.now() / 150) : 1;
+    const halfW = (isNewCase ? 48 : 32) * pulse;
     const halfH = 12 * pulse;
+    const strokeColor = isNewCase ? 0xf59e0b : 0x10b981;
 
     this.graphics.roundRect(x - halfW, y - halfH, halfW * 2, halfH * 2, 7)
       .fill({ color: 0xffffff })
-      .stroke({ color: 0x10b981, width: 2 });
+      .stroke({ color: strokeColor, width: 2 });
     this.graphics.moveTo(x - 3, y + halfH).lineTo(x + 3, y + halfH).lineTo(x, y + halfH + 4).fill({ color: 0xffffff });
 
     const iconText = new Text({
-      text: icon,
-      style: { fontSize: 11, fontWeight: 'bold', align: 'center', fill: 0x0f172a },
+      text,
+      style: { fontSize: isNewCase ? 9 : 11, fontWeight: 'bold', align: 'center', fill: 0x0f172a },
       anchor: 0.5,
       x,
       y: y - 1,

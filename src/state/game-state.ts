@@ -55,4 +55,5 @@ export interface GameState {
   eventTimerSec: number;
   pharmacyStock: Record<string, number>;
   finances: FinancialStats;
+  masteredCaseIds: string[];
 }

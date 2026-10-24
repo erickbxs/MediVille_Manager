@@ -115,6 +115,21 @@ export class HospitalSimulation {
     return true;
   }
 
+  private handleMasteredProtocolCheck(caseDefId: string, diseaseName: string): void {
+    if (this.state.masteredCaseIds.includes(caseDefId)) return;
+    this.state.masteredCaseIds.push(caseDefId);
+    const count = this.state.masteredCaseIds.length;
+    globalBus.emit('protocol:mastered', {
+      caseId: caseDefId,
+      diseaseName,
+      totalMastered: count,
+    });
+    globalBus.emit('advisor:alert', {
+      id: `protocol_${caseDefId}`,
+      message: `🏆 Novo Protocolo Instituído: ${diseaseName}! Próximos casos serão atendidos automaticamente pela equipe (${count}/100)`,
+    });
+  }
+
   public submitClinicalDecision(patientId: string, conductId: string): boolean {
     const patient = this.state.patients.get(patientId);
     if (!patient || (patient.state !== 'needs_decision' && patient.state !== 'ready_for_treatment')) return false;
@@ -133,6 +148,7 @@ export class HospitalSimulation {
     if (chosen.isCorrect) {
       this.state.stats.correctDecisions += 1;
       goalsSystem.unlockCase(patient.clinicalCase.definition.id);
+      this.handleMasteredProtocolCheck(patient.clinicalCase.definition.id, patient.clinicalCase.definition.name);
     } else {
       patient.errorsCount += 1;
     }

@@ -28,7 +28,7 @@ export function updateArrivalSystem(state: GameState, deltaSec: number): void {
   if (state.arrivalTimerSec >= interval) {
     state.arrivalTimerSec -= interval;
     const patientId = `pat_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    const patient = createPatient(patientId);
+    const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel);
 
     state.patients.set(patientId, patient);
     state.queueIds.push(patientId);

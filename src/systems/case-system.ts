@@ -51,13 +51,41 @@ function buildConductOptions(def: ClinicalCaseDefinition): ConductOption[] {
   return options.sort(() => Math.random() - 0.5);
 }
 
+const UNIT_MATCH_WEIGHT_MULTIPLIER = 1.5;
+const UNMASTERED_CASE_WEIGHT_MULTIPLIER = 2.0;
+
+function calculateCaseEffectiveWeight(
+  c: ClinicalCaseDefinition,
+  masteredCaseIds?: string[],
+  hospitalLevel?: string
+): number {
+  let w = c.weight > 0 ? c.weight : 1;
+
+  if (hospitalLevel) {
+    const levelLower = hospitalLevel.toLowerCase();
+    const unitLower = c.typicalUnit.toLowerCase();
+    if (unitLower.includes(levelLower)) {
+      w *= UNIT_MATCH_WEIGHT_MULTIPLIER;
+    }
+  }
+
+  if (masteredCaseIds && !masteredCaseIds.includes(c.id)) {
+    w *= UNMASTERED_CASE_WEIGHT_MULTIPLIER;
+  }
+
+  return w;
+}
+
 /**
  * Seleciona um caso clínico da lista usando sorteio ponderado (weight)
- * e evitando estritamente a repetição do caso anterior (lastCaseId).
+ * priorizando o nível da unidade e casos ainda não dominados,
+ * evitando a repetição do caso anterior (lastCaseId).
  */
 export function selectWeightedCase(
   cases: ClinicalCaseDefinition[],
-  lastCaseId?: string
+  lastCaseId?: string,
+  masteredCaseIds?: string[],
+  hospitalLevel?: string
 ): ClinicalCaseDefinition {
   if (cases.length === 0) {
     throw new Error('Nenhum caso clínico disponível no catálogo.');
@@ -67,11 +95,14 @@ export function selectWeightedCase(
     ? cases.filter((c) => c.id !== lastCaseId)
     : cases;
 
-  const totalWeight = pool.reduce((sum, c) => sum + (c.weight > 0 ? c.weight : 1), 0);
+  const totalWeight = pool.reduce(
+    (sum, c) => sum + calculateCaseEffectiveWeight(c, masteredCaseIds, hospitalLevel),
+    0
+  );
   let randomVal = Math.random() * totalWeight;
 
   for (const item of pool) {
-    const w = item.weight > 0 ? item.weight : 1;
+    const w = calculateCaseEffectiveWeight(item, masteredCaseIds, hospitalLevel);
     if (randomVal < w) {
       return item;
     }
@@ -81,8 +112,17 @@ export function selectWeightedCase(
   return pool[pool.length - 1]!;
 }
 
-export function generatePatientCase(overrideLastId?: string): PatientCase {
-  const def = selectWeightedCase(CASES_CATALOG.cases, overrideLastId ?? lastGeneratedCaseId);
+export function generatePatientCase(
+  overrideLastId?: string,
+  masteredCaseIds?: string[],
+  hospitalLevel?: string
+): PatientCase {
+  const def = selectWeightedCase(
+    CASES_CATALOG.cases,
+    overrideLastId ?? lastGeneratedCaseId,
+    masteredCaseIds,
+    hospitalLevel
+  );
   lastGeneratedCaseId = def.id;
 
   const intensity = getRandomItem(BALANCE.queue.intensityLevels);
@@ -103,10 +143,14 @@ export function generatePatientCase(overrideLastId?: string): PatientCase {
   };
 }
 
-export function createPatient(id: string): PatientInstance {
+export function createPatient(
+  id: string,
+  masteredCaseIds?: string[],
+  hospitalLevel?: string
+): PatientInstance {
   const gender = Math.random() < BALANCE.population.femaleChance ? 'female' : 'male';
   const name = generatePatientName(gender);
-  const pCase = generatePatientCase();
+  const pCase = generatePatientCase(undefined, masteredCaseIds, hospitalLevel);
   const minAge = pCase.definition.ageRange.min;
   const maxAge = pCase.definition.ageRange.max;
   const age = Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;

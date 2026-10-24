@@ -6,30 +6,40 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
 
-### Versão 1.0.0 — Tela Inicial Interativa (Main Menu), Tráfego Urbano Voxel com Desembarque de Pacientes, Remoção da Linha Verde e Sistema de Metas/Enciclopédia
-- **Correção Visual da Linha Verde na Recepção**:
-  - Removido o traçado vetor residual em `src/render/room-renderer-3d.ts` (`drawFloorDetails`), mantendo o piso porcelanato esteticamente limpo e o capacho azul SUS na entrada.
-- **Tráfego Urbano Dinâmico 3D & Desembarque de Pacientes (`Drop-off`)**:
-  - Nova fábrica procedural `src/render/voxel-vehicles.ts` com carros de passeio (paleta de 6 cores), ônibus urbano e ambulância SAMU com giroflex reativo e faróis noturnos sincronizados com `day-lighting-view.ts`.
-  - Sistema de física e tráfego `src/systems/traffic-system.ts` com desaceleração suave quando pedestres atravessam a faixa de pedestres (`crosswalk`).
-  - Animação de desembarque de pacientes: quando a simulação gera um paciente, um veículo encosta na baia frontal, para por 1.5s, abre a porta e o paciente surge na calçada caminhando até a recepção.
-- **Tela Inicial (Main Menu) Tycoon & Máquina de Estados**:
-  - Nova `src/ui/title-screen.ts` no estilo Apple/Tycoon rodando sobre o canvas vivo com hospital e tráfego urbano em segundo plano.
-  - Botão `▶️ Continuar Hospital` (destacado e exibindo Dia e Caixa quando há save existente).
-  - Seletor de `🏥 Novo Hospital` com 4 perfis de unidade inicial: *UBS - Posto de Saúde* (R$ 30.000), *UPA 24h* (R$ 45.000), *Clínica Integrada* (R$ 60.000) e *Hospital Geral SUS* (R$ 100.000).
-  - Seletores rápidos de idioma no topo (`🇧🇷 PT`, `🇪🇸 ES`, `🇺🇸 EN`).
-  - Rodapé obrigatório com aviso educativo SUS/RENAME/MS.
-- **Enciclopédia Médica do SUS (`src/ui/encyclopedia-modal.ts`)**:
-  - Catálogo pedagógico interativo dos 15 casos clínicos da APS com explicação médica, conduta oficial e medicamentos da RENAME desbloqueados permanentemente ao acertar os diagnósticos.
-- **Metas de Saúde Pública e Retenção (`src/systems/goals-system.ts`)**:
-  - Sistema de marcos do SUS com recompensas financeiras automáticas (+R$ 3.000 a +R$ 6.000) e notificações no topo.
-  - Modal de consulta de metas em `src/ui/goals-modal.ts`.
+### Versão 1.0.0 — Mecânica de Protocolo Dominado (Auto-Resolução), Catálogo de 100 Casos Clínicos SUS, Tela Inicial, Tráfego Voxel e Limpeza Visual
+- **Nova Mecânica Core: "Marco de Protocolo Clínico" e Auto-Resolução (`masteredCaseIds`)**:
+  - `masteredCaseIds: string[]` integrado ao estado do jogo (`GameState`) com persistência completa em `save-system.ts`.
+  - **Caso Inédito (`!masteredCaseIds.includes(caseId)`)**: Paciente entra no consultório e exibe o balão `🆕 Novo Caso! 🩺 Atender` sobre a sala e no botão do dock. Ao acertar a conduta clínica pela 1ª vez:
+    1. O `caseId` é adicionado permanentemente a `masteredCaseIds`.
+    2. Emite notificação comemorativa: `🏆 Novo Protocolo Instituído: [Nome]! Próximos casos serão atendidos automaticamente pela equipe (X/100)`.
+    3. Deduz medicamento RENAME, credita SIGTAP (+R$ 3.600) e libera a fila.
+  - **Auto-Resolução para Casos Dominados (`masteredCaseIds.includes(caseId)`)**:
+    - Não exige clique manual nem abre popup intrusivo.
+    - O médico realiza o atendimento automaticamente em tempo modulado pela habilidade $H$ ($T_{atend} = \max(1.5, T_{base} \times (1 - 0.05 \times (H - 1)))$).
+    - Barra de progresso verde esmeralda procedural sobre o consultório com label `⚡ Protocolo em andamento...`.
+    - Ao concluir: consome automaticamente a medicação RENAME, fatura BPA/SIGTAP (+R$ 3.600), exibe texto flutuante no mapa `⚡ Auto +R$ 3.600` e avança o próximo paciente.
+- **Catálogo Oficial dos 100 Casos Clínicos Reais do SUS**:
+  - Base de dados expandida de 15 para **exatamente 100 casos clínicos únicos** em `src/data/cases.json` e `src/data/clinical-cases.json`:
+    - *50 Casos Canônicos do GDD*: Respiratórios (1-7), Virais (8-12), Bacterianos (13-18), ISTs e Tropicais (19-23), Digestivos (24-27), Cardiovasculares (28-31), Neurológicos (32-34), Endócrinos (35-37), Trauma/Alergia (38-44), Obstetrícia/Pediatria/Saúde Mental (45-50).
+    - *50 Casos Complementares do SUS*: Rinossinusite bacteriana, Febre reumática, Cefaleia tensional, Roséola, Golpe de calor, Zika, Febre amarela, Coqueluche, Mononucleose, Herpes-zóster, Impetigo, Escabiose, Candidíase, Tricomoníase, Gonorreia/clamídia, Hanseníase, Leishmanioses, Chagas, Esquistossomose, Parasitoses intestinais, Úlcera por H. pylori, Colecistite, Pancreatite, Diverticulite, Constipação, Angina estável, TVP, TEP, Edema de pulmão, Pericardite, Paralisia de Bell, VPPB, Estado de mal epiléptico, Hipotireoidismo, Hipertireoidismo, Gota, Artrite reumatoide, Lombalgia mecânica, Entorse, Pneumotórax hipertensivo, Acidentes por jararaca e escorpião, Conjuntivite, Glaucoma agudo, Epistaxe, Diabetes gestacional, Mastite puerperal e Depressão maior.
+  - **Integridade Referencial 100% Estrita**: Todos os 100 casos referenciam exclusivamente medicamentos válidos cadastrados em `pharmacy.json` da RENAME.
+  - **Balanceamento Dinâmico de Sorteio (`selectWeightedCase`)**: Prioriza casos compatíveis com o nível da unidade (`UBS`, `UPA`, `Hospital`) e concede multiplicador de peso para casos inéditos (estimulando o progresso rumo aos 100/100) enquanto intercala casos dominados para sustentar o faturamento contínuo.
+- **Tela Inicial (Main Menu) Tycoon & Enciclopédia SUS Expandida**:
+  - Tela Inicial em `src/ui/title-screen.ts` com painel Apple-style sob hospital 3D e trânsito vivo:
+    - `▶️ Continuar Hospital` com Dia, Caixa e contagem de `Protocolos Dominados: X/100`.
+    - `🏥 Novo Hospital` com seleção de tipo de unidade (*UBS*, *UPA 24h*, *Clínica Integrada*, *Hospital Geral SUS*).
+    - `📖 Enciclopédia SUS (X/100)` com abas de filtro por especialidade médica e botão `"🔄 Praticar Novamente"` para revisar manualmente casos já dominados.
+- **Tráfego Urbano Voxel 3D e Desembarque de Pacientes (`Drop-off`)**:
+  - Carros de passeio Voxel, ônibus e ambulâncias SAMU transitando na avenida frontal em `src/systems/traffic-system.ts` e `src/render/voxel-vehicles.ts`.
+  - Desaceleração suave na faixa de pedestres e ciclo de desembarque: veículos encostam no meio-fio em frente à entrada, param por ~1,5s, abrem a porta e o paciente desce na calçada caminhando até a recepção.
+- **Limpeza Visual na Recepção**:
+  - Remoção de qualquer vetor ou linha verde residual em `src/render/room-renderer-3d.ts`.
 - **Efeitos Sonoros Procedurais Web Audio API (`src/core/sound-system.ts`)**:
-  - Sintetizador sonoro leve sem dependências externas (cliques de interface, sucesso diagnóstico, construção de salas e alertas de emergência).
-  - Botão de Mute (`🔊 / 🔇`) no topo do HUD e nas configurações.
-- **Qualidade, Testes & Bundle**:
-  - 8 novos testes automatizados em `tests/traffic-and-menu.test.ts` (total de 74 testes passando com 100% de sucesso).
-  - Bundle compilado em apenas 0.77 MB (limite do GDD: 2.00 MB).
+  - Áudio procedural leve sintetizado em tempo real (clique, caixa registradora, vitória de protocolo e sirene SAMU) com controle Mute (`🔊/🔇`).
+- **Suíte de Testes Automatizados (Vitest)**:
+  - Adicionado `tests/auto-protocol-and-100-cases.test.ts` validando os 100 casos únicos, integridade de medicamentos RENAME, transição de caso inédito para dominado, auto-resolução rápida com receita SIGTAP (+R$ 3.600) e tráfego urbano.
+  - 100% dos testes aprovados (79 testes em 13 suítes).
+  - Bundle compilado em **0.90 MB**, cumprindo com folga o teto de 2.00 MB do GDD.
 
 ## [0.9.0] - 2026-10-24
 ### Deploy Online

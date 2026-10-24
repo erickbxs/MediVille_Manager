@@ -97,6 +97,7 @@ export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 
     eventTimerSec: BALANCE.events.firstEventDelaySec,
     pharmacyStock: buildStarterPharmacyStock(),
     finances: buildInitialFinances(),
+    masteredCaseIds: [],
   };
 }
 
