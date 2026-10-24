@@ -1,8 +1,18 @@
 /**
  * Arquivo: src/render/grid-view.ts
- * O que faz: Desenha a grade e o piso hospitalar estilizado com padrão de ladrilhos claros, calçada externa e marcação de piso em PixiJS.
- * Para que foi criado: Elevar a qualidade gráfica do MediVille Manager para visual profissional e atraente.
- * Como modificar/debugar: Ajuste as cores ou dimensões dos ladrilhos em drawTiles().
+ *
+ * 1. O que este arquivo faz?
+ * Desenha o terreno livre da grade 12x12 do hospital como uma laje de concreto limpa com quadrícula sutil,
+ * borda extrudada do lote e marcação central, facilitando o modo construção.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Servir de base visual entre o entorno urbano (city-environment.ts) e as salas 2.5D (room-renderer-3d.ts).
+ * É desenhado uma única vez (estático) para não custar nada por quadro.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Ajuste cores/espessuras em draw(). Se a grade não alinhar com os cliques, confira THEME.tileSize e
+ * camera.screenToGrid().
+ *
  * Importa: pixi.js, src/core/config.ts, src/render/theme-config.ts
  * Conecta-se com: src/render/renderer.ts
  */
@@ -25,53 +35,25 @@ export class GridView {
     const { tileSize } = THEME;
     const width = cols * tileSize;
     const height = rows * tileSize;
-    const margin = 20;
+    const g = this.graphics;
 
-    this.graphics.clear();
-    this.graphics.roundRect(-margin, -margin, width + margin * 2, height + margin * 2, 24)
-      .fill({ color: 0xe2e8f0, alpha: 0.85 });
-    this.graphics.roundRect(0, 4, width, height, THEME.grid.cornerRadius)
-      .fill({ color: 0x94a3b8, alpha: 0.35 });
-    this.graphics.roundRect(0, 0, width, height, THEME.grid.cornerRadius)
-      .fill({ color: 0xf8fafc, alpha: 1 })
-      .stroke({ color: 0xcfd8dc, width: 2.5 });
+    g.clear();
+    g.rect(-20, -20, width + 40, height + 40).fill({ color: 0xd6d3d1 });
+    g.rect(0, height, width, 5).fill({ color: 0x9ca3af });
+    g.rect(0, 0, width, height).fill({ color: 0xeceae6 }).stroke({ color: 0xa8a29e, width: 2 });
 
-    this.drawTiles(cols, rows, tileSize);
-    this.drawGridLines(cols, rows, tileSize, width, height);
-    this.drawCentralEmblem(cols, rows, tileSize);
-  }
-
-  private drawTiles(cols: number, rows: number, tileSize: number): void {
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
-        const x = c * tileSize;
-        const y = r * tileSize;
-        const isAlternate = (c + r) % 2 === 0;
-        const tileColor = isAlternate ? 0xffffff : 0xf1f5f9;
-        this.graphics.rect(x + 1, y + 1, tileSize - 2, tileSize - 2)
-          .fill({ color: tileColor, alpha: 0.7 });
+        if ((c * 7 + r * 13) % 5 === 0) {
+          g.rect(c * tileSize + 2, r * tileSize + 2, tileSize - 4, tileSize - 4).fill({ color: 0xe4e1dc, alpha: 0.8 });
+        }
       }
     }
-  }
-
-  private drawGridLines(cols: number, rows: number, tileSize: number, width: number, height: number): void {
     for (let c = 1; c < cols; c++) {
-      const x = c * tileSize;
-      this.graphics.moveTo(x, 0).lineTo(x, height).stroke({ color: 0xe2e8f0, width: 1, alpha: 0.8 });
+      g.moveTo(c * tileSize, 0).lineTo(c * tileSize, height).stroke({ color: 0xd4d0ca, width: 1 });
     }
     for (let r = 1; r < rows; r++) {
-      const y = r * tileSize;
-      this.graphics.moveTo(0, y).lineTo(width, y).stroke({ color: 0xe2e8f0, width: 1, alpha: 0.8 });
+      g.moveTo(0, r * tileSize).lineTo(width, r * tileSize).stroke({ color: 0xd4d0ca, width: 1 });
     }
   }
-
-  private drawCentralEmblem(cols: number, rows: number, tileSize: number): void {
-    const midX = (cols / 2) * tileSize;
-    const midY = (rows / 2) * tileSize;
-    const arm = 16;
-    const thick = 6;
-    this.graphics.rect(midX - thick / 2, midY - arm, thick, arm * 2).fill({ color: 0x38bdf8, alpha: 0.25 });
-    this.graphics.rect(midX - arm, midY - thick / 2, arm * 2, thick).fill({ color: 0x38bdf8, alpha: 0.25 });
-  }
 }
-

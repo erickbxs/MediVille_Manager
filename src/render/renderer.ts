@@ -1,21 +1,36 @@
 /**
  * Arquivo: src/render/renderer.ts
- * O que faz: Inicializa o PixiJS v8, orquestra a câmera, o contêiner do mundo 2D e atualiza as camadas gráficas a cada quadro.
- * Para que foi criado: Ponto central de renderização do jogo, mantendo a camada de desenho desacoplada da simulação.
- * Como modificar/debugar: Para adicionar novos efeitos visuais ou filtros, adicione contêineres filhos a worldContainer.
- * Importa: pixi.js, src/render/camera.ts, src/render/grid-view.ts, src/render/rooms-view.ts, src/render/patients-view.ts, src/render/ghost-view.ts
+ *
+ * 1. O que este arquivo faz?
+ * Inicializa o PixiJS v8 e orquestra as camadas do mundo com Y-sorting (sortableChildren): entorno urbano,
+ * laje da grade, salas 2.5D em corte, iluminação diurna, pacientes/indicadores e fantasma de construção.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Ponto central de renderização, apenas LÊ o GameState (nunca o altera), mantendo o desacoplamento
+ * simulação ↔ render. Deriva do estado: progresso do dia, alerta SAMU e razão de estoque RENAME.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Para mudar a ordem de profundidade, ajuste LAYER_Z. Para novas camadas, crie um Container e adicione em init().
+ * Se a ambulância não piscar, confira isAmbulanceAlertActive(state.activeEvents).
+ *
+ * Importa: pixi.js, src/core/config.ts, src/render/camera.ts, src/render/grid-view.ts,
+ *          src/render/room-renderer-3d.ts, src/render/patients-view.ts, src/render/ghost-view.ts,
+ *          src/render/city-environment.ts, src/render/day-lighting-view.ts, src/render/environment-state.ts
  * Conecta-se com: src/main.ts, src/core/game-loop.ts
  */
 
 import { Application, Container } from 'pixi.js';
 import { Camera } from './camera';
 import { GridView } from './grid-view';
-import { RoomsView } from './rooms-view';
+import { RoomRenderer3D } from './room-renderer-3d';
 import { PatientsView } from './patients-view';
 import { GhostView } from './ghost-view';
+import { CityEnvironment } from './city-environment';
+import { DayLightingView } from './day-lighting-view';
+import { getPharmacyStockRatio, isAmbulanceAlertActive } from './environment-state';
 import { THEME } from './theme-config';
+import { BALANCE, PHARMACY_CATALOG, type RoomDefinition } from '../core/config';
 import type { GameState } from '../state/game-state';
-import type { RoomDefinition } from '../core/config';
 
 export interface GhostState {
   def: RoomDefinition | null;
@@ -25,19 +40,27 @@ export interface GhostState {
   isValid: boolean;
 }
 
+const LAYER_Z = { city: 0, grid: 10, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
+
+const INITIAL_STOCK: Record<string, number> = Object.fromEntries(
+  PHARMACY_CATALOG.medications.map((m) => [m.id, m.initialStock])
+);
+
 export class HospitalRenderer {
   public app = new Application();
   public camera = new Camera();
   private world = new Container();
+  private cityEnv!: CityEnvironment;
   private gridView!: GridView;
-  private roomsView!: RoomsView;
+  private roomsView!: RoomRenderer3D;
+  private lightingView!: DayLightingView;
   private patientsView!: PatientsView;
   private ghostView!: GhostView;
 
   public async init(containerElement: HTMLElement): Promise<void> {
     await this.app.init({
       resizeTo: containerElement,
-      backgroundColor: THEME.palettes.light.background,
+      backgroundColor: 0x86c96b,
       antialias: true,
       autoDensity: true,
       resolution: Math.min(window.devicePixelRatio || 1, THEME.maxResolution),
@@ -46,16 +69,7 @@ export class HospitalRenderer {
     containerElement.appendChild(this.app.canvas);
     this.camera.resize(this.app.screen.width, this.app.screen.height);
     this.camera.centerOnGrid();
-
-    this.gridView = new GridView();
-    this.roomsView = new RoomsView();
-    this.patientsView = new PatientsView();
-    this.ghostView = new GhostView();
-
-    this.world.addChild(this.gridView.container);
-    this.world.addChild(this.roomsView.container);
-    this.world.addChild(this.patientsView.container);
-    this.world.addChild(this.ghostView.container);
+    this.createLayers();
     this.app.stage.addChild(this.world);
 
     window.addEventListener('resize', () => {
@@ -63,11 +77,38 @@ export class HospitalRenderer {
     });
   }
 
+  private createLayers(): void {
+    this.cityEnv = new CityEnvironment();
+    this.gridView = new GridView();
+    this.roomsView = new RoomRenderer3D();
+    this.lightingView = new DayLightingView();
+    this.patientsView = new PatientsView();
+    this.ghostView = new GhostView();
+
+    this.world.sortableChildren = true;
+    this.cityEnv.container.zIndex = LAYER_Z.city;
+    this.gridView.container.zIndex = LAYER_Z.grid;
+    this.roomsView.container.zIndex = LAYER_Z.rooms;
+    this.lightingView.container.zIndex = LAYER_Z.lighting;
+    this.patientsView.container.zIndex = LAYER_Z.patients;
+    this.ghostView.container.zIndex = LAYER_Z.ghost;
+    this.world.addChild(
+      this.cityEnv.container, this.gridView.container, this.roomsView.container,
+      this.lightingView.container, this.patientsView.container, this.ghostView.container,
+    );
+  }
+
   public render(state: GameState, ghost: GhostState, selectedRoomId: string | null): void {
     this.world.position.set(this.camera.x, this.camera.y);
     this.world.scale.set(this.camera.zoom);
 
-    this.roomsView.render(Array.from(state.rooms.values()), selectedRoomId);
+    const rooms = Array.from(state.rooms.values());
+    const stockRatio = getPharmacyStockRatio(state.pharmacyStock, INITIAL_STOCK);
+    const dayProgress = state.dayTimeSec / BALANCE.time.dayDurationSec;
+
+    this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), performance.now());
+    this.roomsView.render(rooms, selectedRoomId, stockRatio);
+    this.lightingView.render(dayProgress, rooms);
     this.patientsView.render(Array.from(state.patients.values()), state.rooms);
     this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid);
   }

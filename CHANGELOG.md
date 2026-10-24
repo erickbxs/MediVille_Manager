@@ -2,6 +2,32 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.7.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Adicionado & Aprimorado (Prompt 10: Mapa Urbano CityRT, Arquitetura 2.5D & Mobília Volumétrica)
+- **Entorno Urbano Exterior Estilo CityRT (`src/render/city-environment.ts`)**:
+  - Geração procedural 100% vetorial com `PIXI.Graphics` de todo o lote urbano externo ao hospital: gramado verde texturizado, avenida asfaltada com faixas de pedestres, meio-fio em 2.5D e calçadas conectadas à entrada da unidade.
+  - Baia de ambulância de emergência com demarcação no piso `AMBULÂNCIA / SUS` e veículo SAMU em bloco 3D com giroflex reativo animado (luzes vermelhas/brancas piscando durante eventos dinâmicos de Acidentes e Surtos).
+  - Mobiliário urbano e vegetação voxel: árvores cúbicas com copa em camadas e sombra projetada, bancos de praça em madeira, postes de luz de aço e ponto de ônibus com cobertura azul.
+- **Estrutura Hospitalar 2.5D em Corte Arquitetônico (`src/render/room-renderer-3d.ts` & `src/render/room-layout.ts`)**:
+  - Substituição das caixas planas por paredes extrudadas em corte baixo (cutaway mode): paredes traseiras e laterais com altura e volume clínico (topo claro, face interna na cor do setor e rodapé), e paredes frontais em corte rebaixado para permitir visão perfeita dos interiores sem obstruir os cliques do jogador.
+  - Vãos de portas reais com batentes calculados proceduralmente conforme o ângulo de rotação da sala (`0°`, `90°`, `180°`, `270°`).
+  - Pisos hospitalares diferenciados: porcelanato com tapete SUS na Recepção, baldosas acolhedoras na Sala de Espera, piso clínico asséptico com reflexo sutil no Consultório, piso cinza técnico com faixa azul na Farmácia e laje de concreto com quadrícula sutil para o terreno livre.
+- **Mobília Hospitalar Volumétrica 3D (`src/render/furniture-factory.ts`)**:
+  - Modelagem procedural 2.5D com sombras suaves: balcão em "L" com monitor e totem de senhas na Recepção; fileiras de cadeiras azuis, bebedouro e TV na Espera; mesa médica, cadeira, maca com travesseiro, biombo e pia no Consultório; leitos de observação e mesa de triagem.
+  - Prateleiras da Farmácia RENAME reativas: número de caixas de medicamentos diminui visualmente conforme o estoque geral decresce até o esgotamento (0 un).
+- **Iluminação Dinâmica Diurna & Y-Sorting (`src/render/day-lighting-view.ts`)**:
+  - Ciclo diurno sincronizado com o relógio (`state.dayTimeSec`): manhã fresca, tarde dourada e entardecer suave, acendendo postes de iluminação e luz interna das salas no final do turno.
+  - Sistema de Y-sorting com `sortableChildren = true` para sobreposição perfeita de profundidade.
+- **Gerenciamento de Memória & Performance 60 FPS (`src/render/render-cache.ts`)**:
+  - Sistema de cache por assinatura com limpeza estrita via `destroy({ children: true })` ao mover, girar ou demolir salas, eliminando vazamento de memória em sessões longas.
+- **Suíte de Testes Automatizados (Vitest)**:
+  - 11 novos testes em `tests/render-3d.test.ts` cobrindo cálculo de portas e móveis nas 4 rotações, destruição de memória no cache, alerta SAMU, estantes reativas e iluminação (totalizando 48 testes 100% aprovados).
+- **Orçamento de Peso**:
+  - Bundle total otimizado em **0.71 MB** (orçamento GDD < 2.00 MB).
+
 ## [0.6.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

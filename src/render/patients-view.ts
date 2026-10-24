@@ -31,7 +31,7 @@ export class PatientsView {
 
   public render(patients: PatientInstance[], rooms: Map<string, RoomInstance>): void {
     this.graphics.clear();
-    this.textContainer.removeChildren();
+    for (const child of this.textContainer.removeChildren()) child.destroy();
 
     const waitingPatients = patients.filter((p) => p.state === 'waiting');
     const waitingRooms = Array.from(rooms.values()).filter(
@@ -82,7 +82,8 @@ export class PatientsView {
       this.drawCharacter(patientX, patientY, this.getPatienceColor(patient), false);
 
       if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision') {
-        this.drawSpeechBubble(patientX, patientY - 20, '🩺');
+        const centerX = room.col * tileSize + (room.width * tileSize) / 2;
+        this.drawSpeechBubble(centerX, room.row * tileSize - 6, '🩺 Atender');
       }
     }
   }
@@ -110,8 +111,9 @@ export class PatientsView {
 
   private drawSpeechBubble(x: number, y: number, icon: string): void {
     const pulse = 1 + 0.1 * Math.sin(Date.now() / 150);
-    const halfW = 12 * pulse;
-    const halfH = 9 * pulse;
+    const baseW = icon.length > 2 ? 30 : 12;
+    const halfW = baseW * pulse;
+    const halfH = 10 * pulse;
     this.graphics.roundRect(x - halfW, y - halfH, halfW * 2, halfH * 2, 6)
       .fill({ color: 0xffffff })
       .stroke({ color: 0x10b981, width: 2 });
