@@ -33,9 +33,14 @@ import { requestEmergencyGrant } from './systems/economy-system';
 import { getNextPendingDecision } from './systems/consultation-system';
 import { TutorialView } from './ui/tutorial-view';
 import { triggerTutorialTip } from './systems/tutorial-system';
+import { TitleScreen, type HospitalTypeChoice } from './ui/title-screen';
+import { EncyclopediaModal } from './ui/encyclopedia-modal';
+import { GoalsModal } from './ui/goals-modal';
+import { trafficSystem } from './systems/traffic-system';
+import { soundSystem } from './core/sound-system';
 import { SettingsModal } from './ui/settings-modal';
 import { AgeGateModal } from './ui/age-gate-modal';
-import { loadGameState, saveGameState } from './systems/save-system';
+import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
 import { isAgeVerificationRequired } from './systems/player-profile';
 import type { RoomDefinition } from './core/config';
 
@@ -44,6 +49,9 @@ class MediVilleApp {
   private renderer = new HospitalRenderer();
   private gameLoop!: GameLoop;
   private hud!: HospitalHUD;
+  private titleScreen!: TitleScreen;
+  private encyclopediaModal!: EncyclopediaModal;
+  private goalsModal!: GoalsModal;
   private decisionModal!: DecisionModal;
   private settingsModal!: SettingsModal;
   private advisorView!: AdvisorView;
@@ -58,13 +66,57 @@ class MediVilleApp {
   private isMoveMode = false;
   private movingRoomId: string | null = null;
   private selectedRoomId: string | null = null;
+  private appMode: 'MENU' | 'PLAYING' = 'MENU';
 
   public async start(): Promise<void> {
     const canvasContainer = document.getElementById('game-canvas-container')!;
     await this.renderer.init(canvasContainer);
 
-    this.setupModalsAndHud(document.getElementById('modal-container')!);
+    const modalContainer = document.getElementById('modal-container')!;
+    this.setupModalsAndHud(modalContainer);
+    this.setupTitleScreen(modalContainer);
 
+    this.setupBuildMenu();
+    this.setupInput(canvasContainer);
+    this.setupEventSubscriptions();
+
+    this.simulation.setSpeed(0);
+    this.gameLoop = new GameLoop(this.simulation, () => {
+      trafficSystem.update(0.016);
+      this.renderer.render(this.simulation.state, this.ghost, this.selectedRoomId);
+    });
+    this.gameLoop.start();
+  }
+
+  private setupTitleScreen(modalContainer: HTMLElement): void {
+    const uiRoot = document.getElementById('ui-root');
+    uiRoot?.classList.add('hidden');
+
+    this.encyclopediaModal = new EncyclopediaModal(modalContainer);
+    this.goalsModal = new GoalsModal(modalContainer);
+    this.titleScreen = new TitleScreen(document.getElementById('title-screen-container')!, {
+      onContinue: () => this.startPlaying(),
+      onNewGame: (choice: HospitalTypeChoice) => {
+        clearSavedGame();
+        this.simulation = new HospitalSimulation(choice);
+        this.startPlaying();
+      },
+      onOpenEncyclopedia: () => this.encyclopediaModal.open(),
+      onOpenGoals: () => this.goalsModal.open(),
+      onOpenSettings: () => this.settingsModal.open(),
+    });
+  }
+
+  private startPlaying(): void {
+    this.appMode = 'PLAYING';
+    document.getElementById('ui-root')?.classList.remove('hidden');
+    this.titleScreen.hide();
+    this.simulation.setSpeed(1);
+    this.renderer.recenter();
+    triggerTutorialTip(this.simulation.state, 'game_start');
+  }
+
+  private setupBuildMenu(): void {
     this.buildMenu = new BuildMenu(document.getElementById('build-menu-container')!, {
       onSelectRoom: (def: RoomDefinition) => this.selectRoomToBuild(def),
       onToggleRotate: () => this.toggleRotate(),
@@ -77,15 +129,6 @@ class MediVilleApp {
       onOpenPharmacy: () => this.pharmacyModal.open(),
       onOpenFinances: () => this.financesModal.open(),
     });
-
-    this.setupInput(canvasContainer);
-    this.setupEventSubscriptions();
-    triggerTutorialTip(this.simulation.state, 'game_start');
-
-    this.gameLoop = new GameLoop(this.simulation, () => {
-      this.renderer.render(this.simulation.state, this.ghost, this.selectedRoomId);
-    });
-    this.gameLoop.start();
   }
 
   private setupModalsAndHud(modalContainer: HTMLElement): void {
@@ -105,6 +148,8 @@ class MediVilleApp {
         onRequestGrant: () => requestEmergencyGrant(this.simulation.state),
         onOpenPendingCase: () => this.openNextPendingCase(),
         onOpenSettings: () => this.settingsModal.open(),
+        onOpenEncyclopedia: () => this.encyclopediaModal.open(),
+        onOpenGoals: () => this.goalsModal.open(),
       }
     );
     this.decisionModal = new DecisionModal(modalContainer, this.simulation);
@@ -172,6 +217,7 @@ class MediVilleApp {
   }
 
   private handleGridClick(col: number, row: number): void {
+    if (this.appMode === 'MENU') return;
     this.hud.closeDetails();
     if (this.movingRoomId) {
       this.applyRoomMove(col, row);
@@ -260,6 +306,20 @@ class MediVilleApp {
     setTimeout(() => badge.remove(), removeDelayMs);
   }
 
+  private showToast(text: string): void {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-slate-900/95 text-white font-black text-xs shadow-2xl border border-amber-400/50 backdrop-blur-md animate-in slide-in-from-top duration-300 pointer-events-none';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    const toastDurationMs = 2800;
+    const fadeDurationMs = 500;
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.5s ease';
+      setTimeout(() => toast.remove(), fadeDurationMs);
+    }, toastDurationMs);
+  }
+
   private setupEventSubscriptions(): void {
     globalBus.on('tick', () => {
       this.hud.update(this.simulation.state);
@@ -269,19 +329,21 @@ class MediVilleApp {
       this.buildMenu.updateBadges(this.simulation.state.pendingDecisionPatientIds.length, hasZeroStock);
     });
 
-    globalBus.on('feedback:gain_float', ({ text, col, row }) => {
-      this.showGainFeedback(text, col, row);
+    globalBus.on('feedback:gain_float', ({ text, col, row }) => this.showGainFeedback(text, col, row));
+    globalBus.on('goal:completed', ({ goal, rewardCash }) => {
+      soundSystem.playSuccess();
+      this.showToast(`🏆 Meta Concluída: ${goal.title} (+R$ ${rewardCash.toLocaleString('pt-BR')})`);
+    });
+    globalBus.on('encyclopedia:case_unlocked', () => {
+      this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!');
     });
 
     globalBus.on('day:end', () => saveGameState(this.simulation.state));
-
     const autoSaveIntervalMs = 45000;
     window.setInterval(() => saveGameState(this.simulation.state), autoSaveIntervalMs);
 
     globalBus.on('game:defeat', ({ reason }) => {
-      this.defeatModal.show(reason, () => {
-        window.location.reload();
-      });
+      this.defeatModal.show(reason, () => window.location.reload());
     });
   }
 }

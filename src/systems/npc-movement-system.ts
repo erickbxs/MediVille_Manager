@@ -21,6 +21,7 @@ import type { PatientInstance } from '../entities/patient';
 import type { RoomInstance } from '../entities/room';
 import { THEME } from '../render/theme-config';
 import type { AnimationState } from '../render/voxel-character';
+import { globalBus } from '../core/event-bus';
 
 export interface Waypoint {
   x: number;
@@ -69,6 +70,9 @@ const NAV = {
   RECEPT_DESK_OFFSET: 26,
   RECEPT_STEP_X: 14,
   RECEPT_STEP_Y: 8,
+  SIDEWALK_CROSS_Y: 580,
+  CROSSWALK_CENTER_X: 144,
+  CROSSWALK_HALF_W: 30,
 } as const;
 
 function getDoctorWaypoints(agent: NpcAgent, rooms: RoomInstance[]): Waypoint[] {
@@ -119,6 +123,28 @@ function getReceptionistWaypoints(agent: NpcAgent, rooms: RoomInstance[]): Waypo
 export class NpcMovementSystem {
   public staffAgents = new Map<string, NpcAgent>();
   public patientAgents = new Map<string, NpcAgent>();
+  private disembarkedPatients = new Map<string, { x: number; y: number }>();
+
+  constructor() {
+    globalBus.on('traffic:patient_disembarked', ({ patientId, x, y }) => {
+      const existing = this.patientAgents.get(patientId);
+      if (existing) {
+        existing.x = x;
+        existing.y = y;
+      } else {
+        this.disembarkedPatients.set(patientId, { x, y });
+      }
+    });
+  }
+
+  public isAnyPatientCrossingCrosswalk(): boolean {
+    for (const agent of this.patientAgents.values()) {
+      if (agent.y > NAV.SIDEWALK_CROSS_Y && Math.abs(agent.x - NAV.CROSSWALK_CENTER_X) < NAV.CROSSWALK_HALF_W) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   public update(state: GameState, deltaSec: number): void {
     if (state.speed === 0 || deltaSec <= 0) return;
@@ -266,8 +292,11 @@ export class NpcMovementSystem {
   private syncPatientAgents(state: GameState): void {
     for (const patient of state.patients.values()) {
       if (!this.patientAgents.has(patient.id) && patient.state !== 'abandoned' && patient.state !== 'treated') {
-        const startX = NAV.SPAWN_COL * THEME.tileSize;
-        const startY = NAV.SPAWN_ROW * THEME.tileSize;
+        const drop = this.disembarkedPatients.get(patient.id);
+        const startX = drop ? drop.x : NAV.SPAWN_COL * THEME.tileSize;
+        const startY = drop ? drop.y : NAV.SPAWN_ROW * THEME.tileSize;
+        this.disembarkedPatients.delete(patient.id);
+
         this.patientAgents.set(patient.id, {
           id: patient.id,
           role: 'patient',

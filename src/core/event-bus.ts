@@ -38,6 +38,12 @@ export interface GameEvents {
   'patient:ready_for_treatment': { patientId: string; roomId: string; patientName: string };
   'simulation:speed_changed': { speed: number };
   'feedback:gain_float': { text: string; col: number; row: number };
+  'patient:spawned': { patientId: string };
+  'patient:consultation_completed': { patientId: string };
+  'traffic:patient_disembarked': { patientId: string; x: number; y: number };
+  'sound:mute_changed': { muted: boolean };
+  'goal:completed': { goal: { id: string; title: string; description: string; target: number; rewardCash: number; completed: boolean }; rewardCash: number };
+  'encyclopedia:case_unlocked': { caseId: string };
 }
 
 export type EventKey = keyof GameEvents;

@@ -68,7 +68,6 @@ function drawFloorTiles(g: Graphics, r: PixelRect, style: FloorStyle): void {
 
 function drawFloorDetails(g: Graphics, typeId: string, r: PixelRect, door: DoorPosition): void {
   if (typeId === 'reception') {
-    g.moveTo(door.x, door.y).lineTo(r.x + r.w * 0.45, r.y + r.h * 0.55).stroke({ color: 0x22c55e, width: 3, alpha: 0.7 });
     g.roundRect(door.x - 14, door.y - 9, 28, 18, 3).fill({ color: 0x1d4ed8, alpha: 0.85 });
     g.rect(door.x - 1.5, door.y - 6, 3, 12).fill({ color: 0xffffff });
     g.rect(door.x - 6, door.y - 1.5, 12, 3).fill({ color: 0xffffff });

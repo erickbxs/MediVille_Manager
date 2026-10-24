@@ -58,13 +58,23 @@ function buildInitialFinances(): {
   };
 }
 
-export function createInitialGameState(): GameState {
+const UNIT_CASH = {
+  ubs: 30000,
+  upa: 45000,
+  clinica: 60000,
+  hospital: 100000,
+} as const;
+
+export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hospital'): GameState {
+  const chosenCash = unitChoice ? UNIT_CASH[unitChoice] : BALANCE.economy.startingCash;
+  const level = unitChoice === 'upa' || unitChoice === 'hospital' ? unitChoice : 'ubs';
+
   return {
     day: 1,
     dayTimeSec: 0,
     speed: BALANCE.time.initialSpeed,
     previousSpeed: BALANCE.time.initialSpeed,
-    cash: BALANCE.economy.startingCash,
+    cash: chosenCash,
     reputation: BALANCE.reputation.initial,
     satisfactionAverage: BALANCE.satisfaction.initial,
     consecutiveNegativeCashDays: 0,
@@ -76,7 +86,7 @@ export function createInitialGameState(): GameState {
     queueIds: [],
     activeDecisionPatientId: null,
     pendingDecisionPatientIds: [],
-    hospitalLevel: 'ubs',
+    hospitalLevel: level,
     unlockedRoomIds: ['reception', 'waiting', 'consultation', 'pharmacy'],
     seenTutorialTips: [],
     movingRoomId: null,

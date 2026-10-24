@@ -2,6 +2,35 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.0.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.0.0 — Tela Inicial Interativa (Main Menu), Tráfego Urbano Voxel com Desembarque de Pacientes, Remoção da Linha Verde e Sistema de Metas/Enciclopédia
+- **Correção Visual da Linha Verde na Recepção**:
+  - Removido o traçado vetor residual em `src/render/room-renderer-3d.ts` (`drawFloorDetails`), mantendo o piso porcelanato esteticamente limpo e o capacho azul SUS na entrada.
+- **Tráfego Urbano Dinâmico 3D & Desembarque de Pacientes (`Drop-off`)**:
+  - Nova fábrica procedural `src/render/voxel-vehicles.ts` com carros de passeio (paleta de 6 cores), ônibus urbano e ambulância SAMU com giroflex reativo e faróis noturnos sincronizados com `day-lighting-view.ts`.
+  - Sistema de física e tráfego `src/systems/traffic-system.ts` com desaceleração suave quando pedestres atravessam a faixa de pedestres (`crosswalk`).
+  - Animação de desembarque de pacientes: quando a simulação gera um paciente, um veículo encosta na baia frontal, para por 1.5s, abre a porta e o paciente surge na calçada caminhando até a recepção.
+- **Tela Inicial (Main Menu) Tycoon & Máquina de Estados**:
+  - Nova `src/ui/title-screen.ts` no estilo Apple/Tycoon rodando sobre o canvas vivo com hospital e tráfego urbano em segundo plano.
+  - Botão `▶️ Continuar Hospital` (destacado e exibindo Dia e Caixa quando há save existente).
+  - Seletor de `🏥 Novo Hospital` com 4 perfis de unidade inicial: *UBS - Posto de Saúde* (R$ 30.000), *UPA 24h* (R$ 45.000), *Clínica Integrada* (R$ 60.000) e *Hospital Geral SUS* (R$ 100.000).
+  - Seletores rápidos de idioma no topo (`🇧🇷 PT`, `🇪🇸 ES`, `🇺🇸 EN`).
+  - Rodapé obrigatório com aviso educativo SUS/RENAME/MS.
+- **Enciclopédia Médica do SUS (`src/ui/encyclopedia-modal.ts`)**:
+  - Catálogo pedagógico interativo dos 15 casos clínicos da APS com explicação médica, conduta oficial e medicamentos da RENAME desbloqueados permanentemente ao acertar os diagnósticos.
+- **Metas de Saúde Pública e Retenção (`src/systems/goals-system.ts`)**:
+  - Sistema de marcos do SUS com recompensas financeiras automáticas (+R$ 3.000 a +R$ 6.000) e notificações no topo.
+  - Modal de consulta de metas em `src/ui/goals-modal.ts`.
+- **Efeitos Sonoros Procedurais Web Audio API (`src/core/sound-system.ts`)**:
+  - Sintetizador sonoro leve sem dependências externas (cliques de interface, sucesso diagnóstico, construção de salas e alertas de emergência).
+  - Botão de Mute (`🔊 / 🔇`) no topo do HUD e nas configurações.
+- **Qualidade, Testes & Bundle**:
+  - 8 novos testes automatizados em `tests/traffic-and-menu.test.ts` (total de 74 testes passando com 100% de sucesso).
+  - Bundle compilado em apenas 0.77 MB (limite do GDD: 2.00 MB).
+
 ## [0.9.0] - 2026-10-24
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

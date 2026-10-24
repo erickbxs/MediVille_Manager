@@ -18,6 +18,7 @@
 import type { HospitalSimulation } from '../core/simulation';
 import type { GameState } from '../state/game-state';
 import { globalBus } from '../core/event-bus';
+import { soundSystem } from '../core/sound-system';
 
 export interface HudCallbacks {
   onOpenStaff?: () => void;
@@ -26,6 +27,8 @@ export interface HudCallbacks {
   onRequestGrant?: () => void;
   onOpenPendingCase?: () => void;
   onOpenSettings?: () => void;
+  onOpenEncyclopedia?: () => void;
+  onOpenGoals?: () => void;
 }
 
 export function formatShortCash(amount: number): string {
@@ -72,6 +75,9 @@ export class HospitalHUD {
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
+            <button id="btn-toggle-sound" title="Ligar / Desligar Som" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
+              ${soundSystem.isMuted() ? '🔇' : '🔊'}
+            </button>
             <button id="btn-toggle-details" title="Ver detalhes financeiros e controles" class="min-h-[36px] px-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-1 text-[11px] font-bold active:scale-95">
               <span>▾ Detalhes</span>
             </button>
@@ -103,9 +109,17 @@ export class HospitalHUD {
           </div>
 
           <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800 gap-2 flex-wrap">
-            <button id="btn-request-grant" class="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold flex items-center gap-1.5 transition-all active:scale-95">
-              <span>🏛️ Verba Reforma</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <button id="btn-request-grant" class="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold flex items-center gap-1.5 transition-all active:scale-95">
+                <span>🏛️ Verba</span>
+              </button>
+              <button id="btn-hud-encyclopedia" class="min-h-[44px] px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1 transition-all active:scale-95">
+                <span>📖 Enciclopédia</span>
+              </button>
+              <button id="btn-hud-goals" class="min-h-[44px] px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-1 transition-all active:scale-95">
+                <span>🏆 Metas</span>
+              </button>
+            </div>
             <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
               <button id="btn-1x" class="min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold">1x</button>
               <button id="btn-2x" class="min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold">2x</button>
@@ -124,23 +138,48 @@ export class HospitalHUD {
 
   private bindButtons(): void {
     const bind = (id: string, spd: number) => {
-      document.getElementById(id)?.addEventListener('click', () => this.simulation.setSpeed(spd));
+      document.getElementById(id)?.addEventListener('click', () => {
+        soundSystem.playClick();
+        this.simulation.setSpeed(spd);
+      });
     };
     bind('btn-1x', 1);
     bind('btn-2x', 2);
     bind('btn-3x', 3);
 
-    document.getElementById('btn-quick-pause')?.addEventListener('click', () => this.simulation.togglePause());
+    document.getElementById('btn-toggle-sound')?.addEventListener('click', () => {
+      const isMuted = soundSystem.toggleMute();
+      const btn = document.getElementById('btn-toggle-sound');
+      if (btn) btn.textContent = isMuted ? '🔇' : '🔊';
+    });
+
+    document.getElementById('btn-quick-pause')?.addEventListener('click', () => {
+      soundSystem.playClick();
+      this.simulation.togglePause();
+    });
     document.getElementById('btn-request-grant')?.addEventListener('click', () => {
+      soundSystem.playClick();
       this.callbacks?.onRequestGrant?.();
       this.closeDetails();
     });
+    document.getElementById('btn-hud-encyclopedia')?.addEventListener('click', () => {
+      soundSystem.playClick();
+      this.callbacks?.onOpenEncyclopedia?.();
+      this.closeDetails();
+    });
+    document.getElementById('btn-hud-goals')?.addEventListener('click', () => {
+      soundSystem.playClick();
+      this.callbacks?.onOpenGoals?.();
+      this.closeDetails();
+    });
     document.getElementById('btn-open-settings')?.addEventListener('click', () => {
+      soundSystem.playClick();
       this.callbacks?.onOpenSettings?.();
       this.closeDetails();
     });
 
     document.getElementById('btn-toggle-details')?.addEventListener('click', () => {
+      soundSystem.playClick();
       this.isDetailsOpen = !this.isDetailsOpen;
       const panel = document.getElementById('hud-details-panel');
       if (panel) panel.classList.toggle('hidden', !this.isDetailsOpen);

@@ -28,6 +28,8 @@ import { GhostView } from './ghost-view';
 import { CityEnvironment } from './city-environment';
 import { DayLightingView } from './day-lighting-view';
 import { getPharmacyStockRatio, isAmbulanceAlertActive } from './environment-state';
+import { TrafficView } from './traffic-view';
+import { trafficSystem } from '../systems/traffic-system';
 import { THEME } from './theme-config';
 import { BALANCE, PHARMACY_CATALOG, type RoomDefinition } from '../core/config';
 import type { GameState } from '../state/game-state';
@@ -40,7 +42,7 @@ export interface GhostState {
   isValid: boolean;
 }
 
-const LAYER_Z = { city: 0, grid: 10, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
+const LAYER_Z = { city: 0, traffic: 5, grid: 10, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
 
 const INITIAL_STOCK: Record<string, number> = Object.fromEntries(
   PHARMACY_CATALOG.medications.map((m) => [m.id, m.initialStock])
@@ -54,6 +56,7 @@ export class HospitalRenderer {
   private gridView!: GridView;
   private roomsView!: RoomRenderer3D;
   private lightingView!: DayLightingView;
+  private trafficView!: TrafficView;
   private patientsView!: PatientsView;
   private ghostView!: GhostView;
 
@@ -91,6 +94,7 @@ export class HospitalRenderer {
 
   private createLayers(): void {
     this.cityEnv = new CityEnvironment();
+    this.trafficView = new TrafficView();
     this.gridView = new GridView();
     this.roomsView = new RoomRenderer3D();
     this.lightingView = new DayLightingView();
@@ -99,14 +103,16 @@ export class HospitalRenderer {
 
     this.world.sortableChildren = true;
     this.cityEnv.container.zIndex = LAYER_Z.city;
+    this.trafficView.container.zIndex = LAYER_Z.traffic;
     this.gridView.container.zIndex = LAYER_Z.grid;
     this.roomsView.container.zIndex = LAYER_Z.rooms;
     this.lightingView.container.zIndex = LAYER_Z.lighting;
     this.patientsView.container.zIndex = LAYER_Z.patients;
     this.ghostView.container.zIndex = LAYER_Z.ghost;
     this.world.addChild(
-      this.cityEnv.container, this.gridView.container, this.roomsView.container,
-      this.lightingView.container, this.patientsView.container, this.ghostView.container,
+      this.cityEnv.container, this.trafficView.container, this.gridView.container,
+      this.roomsView.container, this.lightingView.container, this.patientsView.container,
+      this.ghostView.container,
     );
   }
 
@@ -117,8 +123,10 @@ export class HospitalRenderer {
     const rooms = Array.from(state.rooms.values());
     const stockRatio = getPharmacyStockRatio(state.pharmacyStock, INITIAL_STOCK);
     const dayProgress = state.dayTimeSec / BALANCE.time.dayDurationSec;
+    const isNight = dayProgress > 0.75 || dayProgress < 0.2;
 
     this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), performance.now());
+    this.trafficView.render(trafficSystem.vehicles, state.dayTimeSec, isNight);
     this.roomsView.render(rooms, selectedRoomId, stockRatio);
     this.lightingView.render(dayProgress, rooms);
     this.patientsView.render(state);

@@ -19,13 +19,18 @@ import { updateDaySystem } from '../systems/day-system';
 import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom, moveRoom as sysMoveRoom } from '../systems/grid-system';
 import { updateEventSystem } from '../systems/event-system';
 import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems/staff-system';
+import { goalsSystem } from '../systems/goals-system';
 
 export class HospitalSimulation {
   public state: GameState;
   private modalPauseSpeed: number | null = null;
 
-  constructor(initialState?: GameState) {
-    this.state = initialState ?? createInitialGameState();
+  constructor(initialStateOrChoice?: GameState | 'ubs' | 'upa' | 'clinica' | 'hospital') {
+    if (typeof initialStateOrChoice === 'string') {
+      this.state = createInitialGameState(initialStateOrChoice);
+    } else {
+      this.state = initialStateOrChoice ?? createInitialGameState();
+    }
   }
 
   public step(deltaSec: number): void {
@@ -127,11 +132,13 @@ export class HospitalSimulation {
     this.state.stats.totalDecisions += 1;
     if (chosen.isCorrect) {
       this.state.stats.correctDecisions += 1;
+      goalsSystem.unlockCase(patient.clinicalCase.definition.id);
     } else {
       patient.errorsCount += 1;
     }
 
     dischargePatient(this.state, patient.id);
+    goalsSystem.checkGoals(this.state);
     if (this.state.activeDecisionPatientId === patient.id) {
       this.state.activeDecisionPatientId = null;
     }
