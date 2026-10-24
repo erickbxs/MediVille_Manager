@@ -26,14 +26,19 @@ import { requestEmergencyGrant } from './systems/economy-system';
 import { getNextPendingDecision } from './systems/consultation-system';
 import { TutorialView } from './ui/tutorial-view';
 import { triggerTutorialTip } from './systems/tutorial-system';
+import { SettingsModal } from './ui/settings-modal';
+import { AgeGateModal } from './ui/age-gate-modal';
+import { loadGameState, saveGameState } from './systems/save-system';
+import { isAgeVerificationRequired } from './systems/player-profile';
 import type { RoomDefinition } from './core/config';
 
 class MediVilleApp {
-  private simulation = new HospitalSimulation();
+  private simulation = new HospitalSimulation(loadGameState() ?? undefined);
   private renderer = new HospitalRenderer();
   private gameLoop!: GameLoop;
   private hud!: HospitalHUD;
   private decisionModal!: DecisionModal;
+  private settingsModal!: SettingsModal;
   private advisorView!: AdvisorView;
   private defeatModal!: DefeatModal;
   private staffModal!: StaffModal;
@@ -74,6 +79,7 @@ class MediVilleApp {
     this.staffModal = new StaffModal(modalContainer, this.simulation);
     this.pharmacyModal = new PharmacyModal(modalContainer, this.simulation);
     this.financesModal = new FinancesModal(modalContainer, this.simulation);
+    this.settingsModal = new SettingsModal(modalContainer, this.simulation);
     this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
     new TutorialView(document.getElementById('tutorial-container') || document.body);
     this.hud = new HospitalHUD(
@@ -88,11 +94,16 @@ class MediVilleApp {
           const next = getNextPendingDecision(this.simulation.state);
           if (next) this.decisionModal.open(next);
         },
+        onOpenSettings: () => this.settingsModal.open(),
       }
     );
     this.decisionModal = new DecisionModal(modalContainer, this.simulation);
     this.advisorView = new AdvisorView(document.getElementById('advisor-container')!);
     this.defeatModal = new DefeatModal(modalContainer);
+
+    if (isAgeVerificationRequired()) {
+      new AgeGateModal(modalContainer, () => {}).show();
+    }
   }
 
   private selectRoomToBuild(def: RoomDefinition): void {
@@ -222,6 +233,11 @@ class MediVilleApp {
       if (patient) this.decisionModal.open(patient);
     });
 
+    globalBus.on('day:end', () => saveGameState(this.simulation.state));
+
+    const autoSaveIntervalMs = 45000;
+    window.setInterval(() => saveGameState(this.simulation.state), autoSaveIntervalMs);
+
     globalBus.on('game:defeat', ({ reason }) => {
       this.defeatModal.show(reason, () => {
         window.location.reload();
@@ -230,7 +246,14 @@ class MediVilleApp {
   }
 }
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 const app = new MediVilleApp();
 app.start().catch((err: unknown) => {
   console.error('[MediVille] Falha ao iniciar aplicação:', err);
 });
+

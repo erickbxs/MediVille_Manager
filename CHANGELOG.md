@@ -2,6 +2,31 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.5.0] - 2026-10-23
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Adicionado (Fase 3: Salvamento, Modo Convidado & PWA Instalável)
+- **Sistema de Salvamento Completo & Backup JSON (Prompt 12 do GDD)**:
+  - Salvamento automático contínuo (`save-system.ts`) ao fechamento de cada dia (`day:end`) e a cada 45 segundos de jogo real.
+  - Carregamento automático da partida salva ao abrir ou recarregar o navegador (`loadGameState()`), restaurando salas, pacientes, equipe, reputação, caixa e finanças.
+  - **Exportação de Backup**: Download de arquivo `.json` com timestamp e dia de jogo para salvar no computador ou celular.
+  - **Importação de Backup**: Leitor de arquivos JSON com validação de esquema para restaurar hospitais antigos ou migrar de aparelho.
+  - **Reinício de Hospital**: Ação com confirmação para apagar o save e iniciar um novo hospital do zero.
+- **Modal Apple-Style de Configurações & Save (`src/ui/settings-modal.ts`)**:
+  - Novo botão `⚙️` no HUD superior dando acesso rápido às opções de salvamento manual, exportação, importação e reinício.
+- **Tela Neutra de Idade & Modo Convidado (Prompt 13 do GDD)**:
+  - Verificação amigável de ano de nascimento (`age-gate-modal.ts` e `player-profile.ts`) sem armazenamento de dados pessoais ou sensíveis.
+  - Ativação automática do **Modo Convidado** para menores de 13 anos (armazenamento estritamente local no aparelho, sem telemetria nem envio de dados a servidores, conforme LGPD e ECA Digital).
+- **Progressive Web App (PWA) Instalável para Celular e PC**:
+  - `manifest.webmanifest` com modo `display: standalone`, orientação adaptável e paleta de cores hospitalar.
+  - Service Worker (`sw.js`) com cache estratégico para funcionamento offline e inicialização ultrarrápida.
+  - Ícones vetoriais de alta resolução (`icon-192.svg` e `icon-512.svg`) integrados nas tags de cabeçalho do `index.html`.
+- **Suíte de Testes Expandida**:
+  - 32 testes automatizados cobrindo serialização de dados, exportação/importação JSON, verificação de idade e Modo Convidado.
+- **Orçamento de Peso**:
+  - Pacote otimizado com **0.69 MB** (muito abaixo do teto de 2.00 MB).
+
 ## [0.4.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

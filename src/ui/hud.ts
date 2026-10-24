@@ -16,6 +16,7 @@ export interface HudCallbacks {
   onOpenFinances?: () => void;
   onRequestGrant?: () => void;
   onOpenPendingCase?: () => void;
+  onOpenSettings?: () => void;
 }
 
 export class HospitalHUD {
@@ -108,6 +109,9 @@ export class HospitalHUD {
             <button id="btn-2x" class="min-w-[44px] min-h-[44px] px-3 rounded-lg text-sm font-bold transition-all hover:bg-white dark:hover:bg-slate-700 active:scale-95">2x</button>
             <button id="btn-3x" class="min-w-[44px] min-h-[44px] px-3 rounded-lg text-sm font-bold transition-all hover:bg-white dark:hover:bg-slate-700 active:scale-95">3x</button>
           </div>
+          <button id="btn-open-settings" title="Configurações & Salvamento" class="min-w-[44px] min-h-[44px] px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm font-bold flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+            ⚙️
+          </button>
         </div>
       </header>
     `;
@@ -133,6 +137,9 @@ export class HospitalHUD {
     });
     document.getElementById('btn-pending-cases')?.addEventListener('click', () => {
       this.callbacks?.onOpenPendingCase?.();
+    });
+    document.getElementById('btn-open-settings')?.addEventListener('click', () => {
+      this.callbacks?.onOpenSettings?.();
     });
     bind('btn-1x', 1);
     bind('btn-2x', 2);

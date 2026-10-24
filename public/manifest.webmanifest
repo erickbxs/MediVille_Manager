@@ -1,0 +1,25 @@
+{
+  "name": "MediVille Manager — Gestão Hospitalar & SUS",
+  "short_name": "MediVille",
+  "description": "Administre seu hospital e aprenda condutas médicas reais com protocolos do SUS. Protótipo jogável no navegador e instalável no celular.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
+  "orientation": "any",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
