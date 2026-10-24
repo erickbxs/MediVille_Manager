@@ -37,6 +37,12 @@ const ROOM_FRIENDLY_NAMES: Record<string, string> = {
   pharmacy: 'Farmácia',
   triage: 'Triagem',
   observation: 'Leitos',
+  vaccination: 'Vacinação',
+  laboratory: 'Laboratório',
+  xray: 'Raio-X',
+  surgery: 'Cirurgia',
+  icu: 'UTI',
+  staff_room: 'Descanso',
 };
 
 export class BuildMenu {
@@ -212,5 +218,19 @@ export class BuildMenu {
       this.isMoveActive = false;
       this.callbacks.onToggleDemolish();
     });
+  }
+
+  public openDrawerForRoom(typeId?: string): void {
+    this.isDrawerOpen = true;
+    const drawer = document.getElementById('build-drawer');
+    if (drawer) drawer.classList.remove('hidden');
+    if (typeId) {
+      const def = ROOMS_CATALOG.rooms.find((r) => r.id === typeId);
+      if (def) {
+        this.isDemolishActive = false;
+        this.isMoveActive = false;
+        this.callbacks.onSelectRoom(def);
+      }
+    }
   }
 }

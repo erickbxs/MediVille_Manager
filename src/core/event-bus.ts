@@ -46,6 +46,7 @@ export interface GameEvents {
   'encyclopedia:case_unlocked': { caseId: string };
   'protocol:mastered': { caseId: string; diseaseName: string; totalMastered: number };
   'patient:auto_treatment_started': { patientId: string; roomId: string; caseId: string; durationSec: number };
+  'economy:negotiation_completed': { outcome: 'total' | 'partial' | 'denied'; bonus: number; message: string };
 }
 
 export type EventKey = keyof GameEvents;

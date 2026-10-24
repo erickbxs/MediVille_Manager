@@ -2,6 +2,45 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.1.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.1.0 — Novos Setores Hospitalares 3D, Negociação Governamental SUS e Conselheiro Hospitalar Inteligente
+- **Novos Setores Hospitalares 3D por Evolução de Unidade (`rooms.json` & `furniture-factory.ts`)**:
+  - **Sala de Vacinação (`vaccination`) — Nível UBS**: Geladeira térmica de imunobiológicos PNI com visor digital de temperatura (+2°C a +8°C), maca/poltrona de aplicação e arquivo fichário vertical de cartões de vacina. Concede bônus diário de meta de cobertura vacinal (+R$ 1.200 e +0.5 de Reputação).
+  - **Laboratório de Análises Clínicas (`laboratory`) — Nível UPA / Hospital**: Bancada em aço inox com suporte de tubos de ensaio coloridos, microscópio óptico voxel e centrífuga clínica com tampa âmbar. Acelera em 25% o diagnóstico automático de casos de Infectologia e Endocrinologia.
+  - **Sala de Raio-X e Imagem (`xray`) — Nível UPA / Hospital**: Aparelho de radiografia volumétrico com coluna telescópica e cabeçote colimador articulado, biombo plumbífero móvel com visor de chumbo âmbar translúcido e negatoscópio luminoso na parede com radiografia de tórax. Destrava bônus de faturamento BPA/SIGTAP (+R$ 1.200) em casos respiratórios e de trauma.
+  - **Centro Cirúrgico (`surgery`) — Nível Hospital Médio/Grande**: Mesa cirúrgica em inox com colchão impermeável, foco cirúrgico de teto duplo com feixe luminoso suave e monitor cirúrgico multiparamétrico. Permite atender casos graves com faturamento hospitalar AIH de +R$ 7.200.
+  - **UTI - Terapia Intensiva (`icu`) — Nível Hospital Médio/Grande**: Cama hospitalar elétrica articulada com grades de segurança laterais, ventilador mecânico com traqueias e monitor cardíaco multiparamétrico com onda de ECG pulsante. Permite resolver casos de gravidade `Grave` e `Crítica` com alto repasse financeiro (+R$ 7.200).
+  - **Sala de Descanso da Equipe (`staff_room`) — Disponível desde UBS**: Sofá acolchoado moderno de 2 lugares, mesa com cafeteira e canecas e armários de vestiário metálicos. Recupera a energia da equipe médica e de enfermagem, reduzindo o tempo de consulta em 15%.
+- **Sistema de Negociação Governamental de Repasses (Ciclo de 30 Dias do GDD)**:
+  - Adicionado painel de Negociação no modal de Finanças SUS (`finances-modal.ts` e `economy-system.ts`).
+  - Permite pactuação de aumento permanente do repasse diário PAB/MAC com o Ministério da Saúde / Secretaria de Saúde.
+  - Probabilidades calculadas matematicamente a partir da **Reputação Atual ($R$)**, dos **Protocolos Clínicos Dominados ($M$)** e do número de pacientes atendidos ($T$):
+    - 🟢 **Aceite Total (+40% no repasse diário)**.
+    - 🟡 **Aceite Parcial (+20% no repasse diário)**.
+    - 🔴 **Negado (0%)**.
+  - Intervalo rigoroso de **30 dias de jogo** (`governmentNegotiationCooldownDays`) entre renegociações consecutivas, decrementado a cada virada de dia.
+- **Conselheiro Hospitalar Inteligente (Máximo 3 Sugestões por Ordem de Urgência)**:
+  - Novo sistema analítico `advisor-system.ts` detectando gargalos em tempo real:
+    - Caixa baixo / risco de déficit orçamentário.
+    - Fila congestionada na recepção com risco de desistência.
+    - Estoque de medicamentos RENAME zerado na farmácia.
+    - Casos graves chegando sem leito de UTI ou Centro Cirúrgico.
+    - Diagnósticos lentos de infectologia/endocrinologia sem laboratório clínico.
+    - Casos de trauma/tórax sem sala de Raio-X.
+    - Equipe sobrecarregada sem sala de descanso.
+    - Reputação alta pronta para pactuação de repasse.
+  - Filtro e ordenação estrita por gravidade (`Crítica/Alta > Média > Oportunidade`) com **teto máximo de 3 alertas simultâneos**.
+  - Botões de ação direta no card do conselheiro:
+    - **Resolver**: dispara diretamente a ação correta (abrir menu de construção na sala indicada, abrir modal da farmácia ou painel de finanças).
+    - **Adiar**: silencia temporariamente o aviso.
+    - **Ignorar (`✕`)**: dispensa o card da interface.
+- **Testes Automatizados (Vitest)**:
+  - Adicionado `tests/sectors-and-negotiation.test.ts` com 9 testes cobrindo catálogo, rendering 3D procedural, bônus clínicos, cálculo probabilístico e cooldown da negociação e limite de 3 alertas do conselheiro.
+  - Suíte total expandida para **88 testes 100% aprovados**.
+
 ## [1.0.0] - 2026-10-24
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

@@ -93,6 +93,84 @@
       "capacity": 4,
       "hasStaff": false,
       "color": "#06b6d4"
+    },
+    {
+      "id": "vaccination",
+      "role": "treatment",
+      "nameKey": "room.vaccination",
+      "icon": "💉",
+      "width": 2,
+      "height": 2,
+      "cost": 7000,
+      "dailyUpkeep": 600,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#10b981"
+    },
+    {
+      "id": "laboratory",
+      "role": "treatment",
+      "nameKey": "room.laboratory",
+      "icon": "🔬",
+      "width": 3,
+      "height": 2,
+      "cost": 16000,
+      "dailyUpkeep": 1200,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "xray",
+      "role": "treatment",
+      "nameKey": "room.xray",
+      "icon": "🩻",
+      "width": 3,
+      "height": 2,
+      "cost": 22000,
+      "dailyUpkeep": 1500,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#6366f1"
+    },
+    {
+      "id": "surgery",
+      "role": "treatment",
+      "nameKey": "room.surgery",
+      "icon": "🏥",
+      "width": 3,
+      "height": 3,
+      "cost": 40000,
+      "dailyUpkeep": 2500,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#ec4899"
+    },
+    {
+      "id": "icu",
+      "role": "treatment",
+      "nameKey": "room.icu",
+      "icon": "🫀",
+      "width": 3,
+      "height": 3,
+      "cost": 50000,
+      "dailyUpkeep": 3200,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#dc2626"
+    },
+    {
+      "id": "staff_room",
+      "role": "queue",
+      "nameKey": "room.staff_room",
+      "icon": "☕",
+      "width": 2,
+      "height": 2,
+      "cost": 6000,
+      "dailyUpkeep": 300,
+      "capacity": 4,
+      "hasStaff": false,
+      "color": "#f59e0b"
     }
   ]
 }

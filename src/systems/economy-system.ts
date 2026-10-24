@@ -53,6 +53,88 @@ export function buyMedicationBatch(state: GameState, medId: string): { success: 
   return { success: true };
 }
 
+const TOTAL_CHANCE_BASE = 0.05;
+const TOTAL_CHANCE_MAX = 0.7;
+const TOTAL_REP_FACTOR = 0.0035;
+const TOTAL_MASTERED_FACTOR = 0.003;
+const TOTAL_TREATED_FACTOR = 0.001;
+const PARTIAL_CHANCE_BASE = 0.2;
+const PARTIAL_CHANCE_MAX = 0.4;
+const PARTIAL_REP_FACTOR = 0.002;
+const DENIED_CHANCE_MIN = 0.05;
+const PERCENT_TOTAL_ACCEPT = 40;
+const PERCENT_PARTIAL_ACCEPT = 20;
+const PERCENT_SCALE = 100;
+
+export interface NegotiationChances {
+  totalAcceptChance: number;
+  partialAcceptChance: number;
+  deniedChance: number;
+}
+
+export type NegotiationOutcome = 'total' | 'partial' | 'denied';
+
+export interface NegotiationResult {
+  success: boolean;
+  outcome: NegotiationOutcome;
+  bonusPercent: number;
+  message: string;
+  error?: string;
+}
+
+export function calculateNegotiationChances(state: GameState): NegotiationChances {
+  const rep = state.reputation;
+  const mastered = state.masteredCaseIds ? state.masteredCaseIds.length : 0;
+  const treated = state.stats.treatedCount;
+
+  const rawTotal = TOTAL_CHANCE_BASE + rep * TOTAL_REP_FACTOR + mastered * TOTAL_MASTERED_FACTOR + treated * TOTAL_TREATED_FACTOR;
+  const totalAcceptChance = Math.min(TOTAL_CHANCE_MAX, Math.max(TOTAL_CHANCE_BASE, Math.round(rawTotal * PERCENT_SCALE) / PERCENT_SCALE));
+
+  const rawPartial = PARTIAL_CHANCE_BASE + rep * PARTIAL_REP_FACTOR;
+  const partialAcceptChance = Math.min(PARTIAL_CHANCE_MAX, Math.max(PARTIAL_CHANCE_BASE, Math.round(rawPartial * PERCENT_SCALE) / PERCENT_SCALE));
+
+  const remaining = 1 - (totalAcceptChance + partialAcceptChance);
+  const deniedChance = Math.max(DENIED_CHANCE_MIN, Math.round(remaining * PERCENT_SCALE) / PERCENT_SCALE);
+
+  return { totalAcceptChance, partialAcceptChance, deniedChance };
+}
+
+export function executeGovernmentNegotiation(state: GameState, forcedRoll?: number): NegotiationResult {
+  if (state.governmentNegotiationCooldownDays > 0) {
+    return {
+      success: false,
+      outcome: 'denied',
+      bonusPercent: 0,
+      message: `Aguarde ${state.governmentNegotiationCooldownDays} dias para nova negociação com o Ministério da Saúde.`,
+      error: 'Cooldown ativo',
+    };
+  }
+
+  const chances = calculateNegotiationChances(state);
+  const roll = forcedRoll !== undefined ? forcedRoll : Math.random();
+  state.governmentNegotiationCooldownDays = BALANCE.governmentNegotiation.cooldownDays;
+
+  if (roll < chances.totalAcceptChance) {
+    const bonus = BALANCE.governmentNegotiation.totalAcceptBonus;
+    state.governmentGrantBonusMultiplier += bonus;
+    const msg = 'Aceite Total (+40%) concedido pelo Ministério da Saúde devido à alta qualidade técnica!';
+    globalBus.emit('economy:negotiation_completed', { outcome: 'total', bonus, message: msg });
+    return { success: true, outcome: 'total', bonusPercent: PERCENT_TOTAL_ACCEPT, message: msg };
+  }
+
+  if (roll < chances.totalAcceptChance + chances.partialAcceptChance) {
+    const bonus = BALANCE.governmentNegotiation.partialAcceptBonus;
+    state.governmentGrantBonusMultiplier += bonus;
+    const msg = 'Aceite Parcial (+20%) aprovado pela comissão tripartite de repasses SUS.';
+    globalBus.emit('economy:negotiation_completed', { outcome: 'partial', bonus, message: msg });
+    return { success: true, outcome: 'partial', bonusPercent: PERCENT_PARTIAL_ACCEPT, message: msg };
+  }
+
+  const deniedMsg = 'Pedido negado pela Secretaria de Saúde. Melhore a reputação e domine protocolos para o próximo ciclo.';
+  globalBus.emit('economy:negotiation_completed', { outcome: 'denied', bonus: 0, message: deniedMsg });
+  return { success: false, outcome: 'denied', bonusPercent: 0, message: deniedMsg };
+}
+
 export function processMinistryDailyTransfer(state: GameState): { fixedPab: number; bonus: number; total: number } {
   const { dailyFixedPab, performanceBonusThreshold, performanceBonusPerPoint } = BALANCE.ministryOfHealth;
   let bonus = 0;
@@ -60,7 +142,8 @@ export function processMinistryDailyTransfer(state: GameState): { fixedPab: numb
     const diff = state.satisfactionAverage - performanceBonusThreshold;
     bonus = Math.round(diff * performanceBonusPerPoint);
   }
-  const total = dailyFixedPab + bonus;
+  const multiplier = 1 + (state.governmentGrantBonusMultiplier || 0);
+  const total = Math.round((dailyFixedPab + bonus) * multiplier);
 
   state.cash += total;
   state.finances.ministryTransfers += total;
@@ -69,7 +152,7 @@ export function processMinistryDailyTransfer(state: GameState): { fixedPab: numb
   globalBus.emit('cash:changed', {
     cash: state.cash,
     delta: total,
-    reason: 'Repasse diário do Ministério da Saúde (PAB + Desempenho)',
+    reason: 'Repasse diário do Ministério da Saúde (PAB + Desempenho + Negociação)',
   });
 
   return { fixedPab: dailyFixedPab, bonus, total };

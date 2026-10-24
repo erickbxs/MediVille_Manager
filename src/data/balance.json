@@ -132,22 +132,35 @@
         "name": "Unidade Básica de Saúde (UBS)",
         "minTreatedCount": 0,
         "minReputation": 0,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "vaccination", "staff_room"]
       },
       {
         "id": "upa",
         "name": "Unidade de Pronto Atendimento (UPA 24h)",
         "minTreatedCount": 10,
         "minReputation": 55,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray"]
       },
       {
         "id": "hospital",
         "name": "Hospital Geral Municipal",
         "minTreatedCount": 30,
         "minReputation": 70,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray", "surgery", "icu"]
       }
     ]
+  },
+  "sectors": {
+    "vaccinationDailyBonus": 1200,
+    "vaccinationReputationBonus": 0.5,
+    "laboratorySpeedMultiplier": 0.75,
+    "xraySigtapBonus": 1200,
+    "surgeryIcuRevenue": 7200,
+    "staffRoomSpeedMultiplier": 0.85
+  },
+  "governmentNegotiation": {
+    "cooldownDays": 30,
+    "totalAcceptBonus": 0.4,
+    "partialAcceptBonus": 0.2
   }
 }

@@ -40,7 +40,13 @@ export type FurnitureKind =
   | 'chairRow' | 'waterCooler' | 'plant' | 'wallTv'
   | 'desk' | 'officeChair' | 'examBed' | 'screen' | 'sink'
   | 'shelves' | 'dispenseCounter'
-  | 'bpMonitor' | 'wardBed';
+  | 'bpMonitor' | 'wardBed'
+  | 'pniFridge' | 'vaxBed' | 'cardArchive'
+  | 'labBench' | 'microscope' | 'centrifuge'
+  | 'xrayMachine' | 'leadScreen' | 'negatoscope'
+  | 'surgeryTable' | 'surgicalLight' | 'surgeryMonitor'
+  | 'icuBed' | 'ventilator' | 'icuMonitor'
+  | 'staffSofa' | 'coffeeMachine' | 'staffLockers';
 
 export interface FurnitureSlot {
   kind: FurnitureKind;
@@ -88,6 +94,36 @@ export const FURNITURE_LAYOUTS: Record<string, FurnitureSlot[]> = {
     { kind: 'wardBed', u: 0.2, v: 0.5 },
     { kind: 'wardBed', u: 0.5, v: 0.5 },
     { kind: 'wardBed', u: 0.8, v: 0.5 },
+  ],
+  vaccination: [
+    { kind: 'pniFridge', u: 0.25, v: 0.3 },
+    { kind: 'cardArchive', u: 0.75, v: 0.3 },
+    { kind: 'vaxBed', u: 0.5, v: 0.65 },
+  ],
+  laboratory: [
+    { kind: 'labBench', u: 0.5, v: 0.3 },
+    { kind: 'microscope', u: 0.28, v: 0.65 },
+    { kind: 'centrifuge', u: 0.72, v: 0.65 },
+  ],
+  xray: [
+    { kind: 'negatoscope', u: 0.75, v: 0.2 },
+    { kind: 'xrayMachine', u: 0.35, v: 0.5 },
+    { kind: 'leadScreen', u: 0.8, v: 0.65 },
+  ],
+  surgery: [
+    { kind: 'surgeryTable', u: 0.5, v: 0.5 },
+    { kind: 'surgicalLight', u: 0.5, v: 0.25 },
+    { kind: 'surgeryMonitor', u: 0.8, v: 0.45 },
+  ],
+  icu: [
+    { kind: 'icuBed', u: 0.35, v: 0.55 },
+    { kind: 'ventilator', u: 0.75, v: 0.35 },
+    { kind: 'icuMonitor', u: 0.75, v: 0.65 },
+  ],
+  staff_room: [
+    { kind: 'staffLockers', u: 0.25, v: 0.28 },
+    { kind: 'coffeeMachine', u: 0.75, v: 0.28 },
+    { kind: 'staffSofa', u: 0.5, v: 0.68 },
   ],
 };
 

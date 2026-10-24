@@ -117,6 +117,19 @@ export interface GameBalanceConfig {
   progression: {
     levels: HospitalProgressionLevel[];
   };
+  sectors: {
+    vaccinationDailyBonus: number;
+    vaccinationReputationBonus: number;
+    laboratorySpeedMultiplier: number;
+    xraySigtapBonus: number;
+    surgeryIcuRevenue: number;
+    staffRoomSpeedMultiplier: number;
+  };
+  governmentNegotiation: {
+    cooldownDays: number;
+    totalAcceptBonus: number;
+    partialAcceptBonus: number;
+  };
 }
 
 export interface HospitalProgressionLevel {

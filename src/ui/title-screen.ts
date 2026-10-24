@@ -70,7 +70,7 @@ export class TitleScreen {
           
           <!-- Seletor de Idioma -->
           <div class="flex items-center justify-between text-xs font-bold text-slate-500 pb-2 border-b border-slate-100 dark:border-slate-800">
-            <span class="tracking-wider uppercase text-[10px]">Versão 1.0.0</span>
+            <span class="tracking-wider uppercase text-[10px]">Versão 1.1.0</span>
             <div class="flex items-center gap-1.5">
               <button class="px-2 py-1 rounded-lg bg-blue-500 text-white font-extrabold text-[11px] shadow-xs">🇧🇷 PT</button>
               <button class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] text-slate-400">🇪🇸 ES</button>

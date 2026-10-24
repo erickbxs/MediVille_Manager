@@ -65,6 +65,20 @@ const UNIT_CASH = {
   hospital: 100000,
 } as const;
 
+function getInitialUnlockedRooms(level: 'ubs' | 'upa' | 'hospital'): string[] {
+  const found = BALANCE.progression.levels.find((l) => l.id === level);
+  return found ? [...found.unlockedRooms] : ['reception', 'waiting', 'consultation', 'pharmacy'];
+}
+
+function buildInitialNegotiationState() {
+  return {
+    masteredCaseIds: [],
+    governmentNegotiationCooldownDays: 0,
+    governmentGrantBonusMultiplier: 0,
+    dismissedAdvisorAlertIds: [],
+  };
+}
+
 export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hospital'): GameState {
   const chosenCash = unitChoice ? UNIT_CASH[unitChoice] : BALANCE.economy.startingCash;
   const level = unitChoice === 'upa' || unitChoice === 'hospital' ? unitChoice : 'ubs';
@@ -87,7 +101,7 @@ export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 
     activeDecisionPatientId: null,
     pendingDecisionPatientIds: [],
     hospitalLevel: level,
-    unlockedRoomIds: ['reception', 'waiting', 'consultation', 'pharmacy'],
+    unlockedRoomIds: getInitialUnlockedRooms(level),
     seenTutorialTips: [],
     movingRoomId: null,
     stats: { treatedCount: 0, abandonedCount: 0, totalDecisions: 0, correctDecisions: 0 },
@@ -97,7 +111,7 @@ export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 
     eventTimerSec: BALANCE.events.firstEventDelaySec,
     pharmacyStock: buildStarterPharmacyStock(),
     finances: buildInitialFinances(),
-    masteredCaseIds: [],
+    ...buildInitialNegotiationState(),
   };
 }
 

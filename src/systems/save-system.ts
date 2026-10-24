@@ -64,6 +64,9 @@ export interface SerializedGameState {
   pharmacyStock: Record<string, number>;
   finances: FinancialStats;
   masteredCaseIds: string[];
+  governmentNegotiationCooldownDays?: number;
+  governmentGrantBonusMultiplier?: number;
+  dismissedAdvisorAlertIds?: string[];
 }
 
 function serializeRooms(rooms: Map<string, RoomInstance>): SerializedRoom[] {
@@ -88,6 +91,18 @@ function serializeStaff(staff: Map<string, StaffMember>): SerializedStaff[] {
   }));
 }
 
+function serializeProgressState(state: GameState) {
+  return {
+    hospitalLevel: state.hospitalLevel,
+    unlockedRoomIds: [...state.unlockedRoomIds],
+    seenTutorialTips: [...state.seenTutorialTips],
+    masteredCaseIds: [...(state.masteredCaseIds ?? [])],
+    governmentNegotiationCooldownDays: state.governmentNegotiationCooldownDays ?? 0,
+    governmentGrantBonusMultiplier: state.governmentGrantBonusMultiplier ?? 0,
+    dismissedAdvisorAlertIds: [...(state.dismissedAdvisorAlertIds ?? [])],
+  };
+}
+
 export function serializeGameState(state: GameState): SerializedGameState {
   return {
     version: 1,
@@ -107,9 +122,6 @@ export function serializeGameState(state: GameState): SerializedGameState {
     queueIds: [...state.queueIds],
     activeDecisionPatientId: state.activeDecisionPatientId,
     pendingDecisionPatientIds: [...state.pendingDecisionPatientIds],
-    hospitalLevel: state.hospitalLevel,
-    unlockedRoomIds: [...state.unlockedRoomIds],
-    seenTutorialTips: [...state.seenTutorialTips],
     movingRoomId: null,
     stats: { ...state.stats },
     arrivalTimerSec: state.arrivalTimerSec,
@@ -118,7 +130,7 @@ export function serializeGameState(state: GameState): SerializedGameState {
     eventTimerSec: state.eventTimerSec,
     pharmacyStock: { ...state.pharmacyStock },
     finances: { ...state.finances },
-    masteredCaseIds: [...(state.masteredCaseIds ?? [])],
+    ...serializeProgressState(state),
   };
 }
 
@@ -198,6 +210,9 @@ export function deserializeGameState(data: SerializedGameState): GameState {
     pharmacyStock: data.pharmacyStock,
     finances: data.finances,
     masteredCaseIds: data.masteredCaseIds ? [...data.masteredCaseIds] : [],
+    governmentNegotiationCooldownDays: data.governmentNegotiationCooldownDays ?? 0,
+    governmentGrantBonusMultiplier: data.governmentGrantBonusMultiplier ?? 0,
+    dismissedAdvisorAlertIds: data.dismissedAdvisorAlertIds ? [...data.dismissedAdvisorAlertIds] : [],
   };
 }
 

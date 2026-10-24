@@ -56,4 +56,7 @@ export interface GameState {
   pharmacyStock: Record<string, number>;
   finances: FinancialStats;
   masteredCaseIds: string[];
+  governmentNegotiationCooldownDays: number;
+  governmentGrantBonusMultiplier: number;
+  dismissedAdvisorAlertIds: string[];
 }

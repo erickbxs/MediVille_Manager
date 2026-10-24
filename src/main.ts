@@ -153,12 +153,29 @@ class MediVilleApp {
       }
     );
     this.decisionModal = new DecisionModal(modalContainer, this.simulation);
-    this.advisorView = new AdvisorView(document.getElementById('advisor-container')!);
     this.defeatModal = new DefeatModal(modalContainer);
+    this.setupAdvisorView();
 
     if (isAgeVerificationRequired()) {
       new AgeGateModal(modalContainer, () => {}).show();
     }
+  }
+
+  private setupAdvisorView(): void {
+    const container = document.getElementById('advisor-container')!;
+    this.advisorView = new AdvisorView(container, {
+      onResolve: (actionType, targetRoomType) => {
+        if (actionType === 'open_pharmacy') {
+          this.pharmacyModal.open();
+        } else if (actionType === 'open_finances') {
+          this.financesModal.open();
+        } else if (actionType === 'open_staff') {
+          this.staffModal.open();
+        } else if (actionType === 'build_room') {
+          this.buildMenu.openDrawerForRoom(targetRoomType);
+        }
+      },
+    });
   }
 
   private openNextPendingCase(): void {

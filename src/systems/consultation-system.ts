@@ -43,10 +43,27 @@ export function hasDoctorAvailable(state: GameState): boolean {
   return false;
 }
 
-function startAutoTreatment(state: GameState, patient: PatientInstance, roomId: string): void {
+function calculateAutoTreatmentDuration(state: GameState, patient: PatientInstance): number {
   const doctorSkill = getBestDoctorSkill(state);
   const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
-  const durationSec = Math.max(AUTO_TREATMENT_MIN_SEC, AUTO_TREATMENT_BASE_SEC * skillFactor);
+  let duration = Math.max(AUTO_TREATMENT_MIN_SEC, AUTO_TREATMENT_BASE_SEC * skillFactor);
+
+  const hasLab = Array.from(state.rooms.values()).some((r) => r.typeId === 'laboratory');
+  const area = patient.clinicalCase.definition.area;
+  if (hasLab && (area === 'Infectologia' || area === 'Endocrinologia')) {
+    duration *= BALANCE.sectors.laboratorySpeedMultiplier;
+  }
+
+  const hasStaffRoom = Array.from(state.rooms.values()).some((r) => r.typeId === 'staff_room');
+  if (hasStaffRoom) {
+    duration *= BALANCE.sectors.staffRoomSpeedMultiplier;
+  }
+
+  return duration;
+}
+
+function startAutoTreatment(state: GameState, patient: PatientInstance, roomId: string): void {
+  const durationSec = calculateAutoTreatmentDuration(state, patient);
 
   patient.state = 'in_consultation';
   patient.consultationTimeSec = 0;
@@ -172,6 +189,28 @@ function releasePatientRoom(state: GameState, patient: PatientInstance): { col: 
   return { col, row };
 }
 
+function calculateSpecializedSectorBonus(state: GameState, patient: PatientInstance): number {
+  let bonus = 0;
+  const area = patient.clinicalCase.definition.area;
+  const symptoms = patient.clinicalCase.definition.symptoms;
+
+  const hasXray = Array.from(state.rooms.values()).some((r) => r.typeId === 'xray');
+  const isXrayArea = area === 'Pneumologia' || area === 'Ortopedia' || area === 'Trauma';
+  const hasXraySymptoms = symptoms.some((s) => s.toLowerCase().includes('tórax') || s.toLowerCase().includes('fratura') || s.toLowerCase().includes('respirat'));
+  if (hasXray && (isXrayArea || hasXraySymptoms)) {
+    bonus += BALANCE.sectors.xraySigtapBonus;
+  }
+
+  const hasSurgeryOrIcu = Array.from(state.rooms.values()).some((r) => r.typeId === 'surgery' || r.typeId === 'icu');
+  const isSevere = patient.clinicalCase.definition.severity === 'Grave' || patient.clinicalCase.definition.severity === 'Crítica';
+  if (hasSurgeryOrIcu && isSevere) {
+    bonus += BALANCE.sectors.surgeryIcuRevenue;
+    state.finances.aihRevenue += BALANCE.sectors.surgeryIcuRevenue;
+  }
+
+  return bonus;
+}
+
 function processDischargeRevenue(state: GameState, patient: PatientInstance): number {
   const pharmacyOk = hasPharmacy(state);
   let medStockOk = true;
@@ -187,6 +226,8 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): nu
   if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk && medStockOk) {
     revenue += BALANCE.economy.pharmacyRevenue;
   }
+  revenue += calculateSpecializedSectorBonus(state, patient);
+
   state.cash += revenue;
   state.finances.bpaRevenue += revenue;
   state.stats.treatedCount += 1;

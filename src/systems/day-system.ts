@@ -14,6 +14,8 @@ import { calculateNewReputation } from './reputation-system';
 import { calculateTotalDailyStaffSalaries } from './staff-system';
 import { processMinistryDailyTransfer } from './economy-system';
 
+const MAX_REPUTATION = 100;
+
 function deductDailyUpkeep(state: GameState): number {
   let totalUpkeep = 0;
   for (const room of state.rooms.values()) {
@@ -57,6 +59,23 @@ function checkDefeatConditions(state: GameState): void {
   }
 }
 
+function applyVaccinationDailyBonus(state: GameState): void {
+  const hasVax = Array.from(state.rooms.values()).some((r) => r.typeId === 'vaccination');
+  if (!hasVax) return;
+
+  const bonus = BALANCE.sectors.vaccinationDailyBonus;
+  const repBonus = BALANCE.sectors.vaccinationReputationBonus;
+  state.cash += bonus;
+  state.finances.ministryTransfers += bonus;
+  state.reputation = Math.min(MAX_REPUTATION, Math.round((state.reputation + repBonus) * 10) / 10);
+
+  globalBus.emit('cash:changed', {
+    cash: state.cash,
+    delta: bonus,
+    reason: 'Bônus diário de Cobertura Vacinal (PNI)',
+  });
+}
+
 export function updateDaySystem(state: GameState, deltaSec: number): void {
   const { dayDurationSec } = BALANCE.time;
   state.dayTimeSec += deltaSec;
@@ -65,6 +84,11 @@ export function updateDaySystem(state: GameState, deltaSec: number): void {
     state.dayTimeSec -= dayDurationSec;
     deductDailyUpkeep(state);
     processMinistryDailyTransfer(state);
+    applyVaccinationDailyBonus(state);
+
+    if (state.governmentNegotiationCooldownDays > 0) {
+      state.governmentNegotiationCooldownDays -= 1;
+    }
 
     const newRep = calculateNewReputation(state.reputation, state.satisfactionAverage);
     const repDelta = Math.round((newRep - state.reputation) * 10) / 10;
