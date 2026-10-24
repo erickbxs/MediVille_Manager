@@ -2,6 +2,28 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [0.6.0] - 2026-10-23
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Refatoração Core (Atendimento Sob Demanda & Relógio Determinístico)
+- **Eliminação de Popups Automáticos & Atendimento On-Demand (`On-Demand Treatment`)**:
+  - Pacientes não abrem mais o modal clínico intrusivamente na tela do jogador.
+  - Novo estado `ready_for_treatment` para pacientes posicionados no consultório médico.
+  - Indicador visual interativo com balão pulsante `🩺` sobre o consultório/paciente e botão de ação rápida de toque mínimo no HUD (`🩺 Atender: ${count}`).
+  - Abertura de caso clínico estritamente por clique do jogador no consultório ou no botão rápido do HUD.
+  - Decaimento de paciência modulado pela habilidade médica $H$ de 1 a 5 estrelas: $T_{atend} = T_{base} \times (1 - 0.05 \times (H - 1))$.
+  - Liberação imediata do consultório ao resolver a consulta, avanço de 1 na fila, dedução de estoque de medicamentos RENAME e registro de faturamento SIGTAP (+R$ 3.600) com feedback flutuante na tela.
+- **Correção Integral do Relógio Central (`Pausa`, `1x`, `2x`, `3x`)**:
+  - **Pausa Absoluta (0x)**: Acumulador de simulação zerado e congelamento total de chegadas, paciência, duração de consultas, temporizadores dos 12 eventos dinâmicos e fechamento do dia (0 ticks).
+  - **Auto-Pausa Inteligente em Modais**: Abertura de modais (Casos Clínicos, Finanças, Farmácia, Equipe, Configurações) memoriza a velocidade atual (`previousSpeed`), pausa automaticamente o jogo para leitura tranquila e restaura a velocidade exata ao fechar.
+  - **Proteção Anti-Espiral da Morte**: Limitador `maxFrameDeltaSec = 0.1s` (100ms) e teto de 5 passos com descarte de tempo excedente ao retornar de abas inativas do navegador.
+  - **Sincronização dos Botões de Velocidade**: Estado visual unificado no HUD refletindo a fonte única de verdade do relógio via evento `simulation:speed_changed`.
+- **Suíte de Testes Automatizados (Vitest)**:
+  - 37 testes automatizados cobrindo atendimento sob demanda, liberação de sala, dedução RENAME, faturamento SIGTAP, pausa absoluta e taxas proporcionais em 2x e 3x.
+- **Orçamento de Peso**:
+  - 0.70 MB de bundle total (muito abaixo do limite de 2.00 MB).
+
 ## [0.5.0] - 2026-10-23
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

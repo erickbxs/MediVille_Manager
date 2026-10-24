@@ -21,6 +21,7 @@ export class StaffModal {
   }
 
   public open(): void {
+    this.simulation.pauseForModal();
     const staffList = Array.from(this.simulation.state.staff.values());
     const rolesList = STAFF_CATALOG.roles;
 
@@ -101,6 +102,7 @@ export class StaffModal {
   private bindEvents(): void {
     document.getElementById('btn-close-staff')?.addEventListener('click', () => {
       this.container.innerHTML = '';
+      this.simulation.resumeFromModal();
     });
 
     this.container.querySelectorAll('.fire-btn').forEach((btn) => {

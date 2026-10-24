@@ -13,9 +13,7 @@ import { addOccupant, removeOccupant, type RoomInstance } from '../entities/room
 import type { PatientInstance } from '../entities/patient';
 import type { GameState } from '../state/game-state';
 import { calculatePatientSatisfaction } from './satisfaction-system';
-import { calculateConsultationDuration } from '../entities/staff';
 import { getBestDoctorSkill } from './staff-system';
-import { getActiveConsultationFactor } from './event-system';
 import { consumeMedicationsForCase } from './economy-system';
 import { checkHospitalProgression } from './progression-system';
 
@@ -35,7 +33,15 @@ export function hasPharmacy(state: GameState): boolean {
   return false;
 }
 
+export function hasDoctorAvailable(state: GameState): boolean {
+  for (const member of state.staff.values()) {
+    if (member.roleId === 'doctor') return true;
+  }
+  return false;
+}
+
 function startConsultationForNextPatient(state: GameState): void {
+  if (!hasDoctorAvailable(state)) return;
   if (state.queueIds.length === 0) return;
   const room = findAvailableConsultationRoom(state);
   if (!room) return;
@@ -44,30 +50,47 @@ function startConsultationForNextPatient(state: GameState): void {
   const patient = state.patients.get(patientId);
   if (!patient || patient.state !== 'waiting') return;
 
-  patient.state = 'in_consultation';
+  patient.state = 'ready_for_treatment';
   patient.currentRoomId = room.id;
-  const doctorSkill = getBestDoctorSkill(state);
-  const eventFactor = getActiveConsultationFactor(state);
-  patient.consultationDurationSec = calculateConsultationDuration(BALANCE.consultation.baseTimeSec, doctorSkill) * eventFactor;
   addOccupant(room, patient.id);
-  globalBus.emit('patient:consultation_started', { patientId: patient.id, roomId: room.id });
+
+  if (!state.pendingDecisionPatientIds.includes(patient.id)) {
+    state.pendingDecisionPatientIds.push(patient.id);
+    globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
+  }
+
+  globalBus.emit('patient:ready_for_treatment', {
+    patientId: patient.id,
+    roomId: room.id,
+    patientName: patient.name,
+  });
+}
+
+function handleConsultationAbandonment(state: GameState, patient: PatientInstance): void {
+  if (patient.currentRoomId) {
+    const room = state.rooms.get(patient.currentRoomId);
+    if (room) removeOccupant(room, patient.id);
+  }
+  patient.state = 'abandoned';
+  patient.satisfaction = BALANCE.satisfaction.abandonedSatisfaction;
+  state.stats.abandonedCount += 1;
+  finishPatientDecision(state, patient.id);
+  globalBus.emit('patient:abandoned', {
+    patientId: patient.id,
+    reason: 'Demora para atendimento médico no consultório',
+  });
 }
 
 function progressConsultation(state: GameState, deltaSec: number): void {
   for (const patient of state.patients.values()) {
-    if (patient.state !== 'in_consultation') continue;
-    patient.consultationTimeSec += deltaSec;
+    if (patient.state !== 'ready_for_treatment' && patient.state !== 'in_consultation') continue;
 
-    if (patient.consultationTimeSec >= patient.consultationDurationSec && !patient.clinicalCase.decisionMade) {
-      patient.state = 'needs_decision';
-      if (!state.pendingDecisionPatientIds.includes(patient.id)) {
-        state.pendingDecisionPatientIds.push(patient.id);
-        globalBus.emit('decision:queue_updated', { pendingCount: state.pendingDecisionPatientIds.length });
-      }
-      if (!state.activeDecisionPatientId) {
-        state.activeDecisionPatientId = patient.id;
-        globalBus.emit('patient:needs_decision', { patientId: patient.id });
-      }
+    const doctorSkill = getBestDoctorSkill(state);
+    const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
+    patient.waitTimeSec += deltaSec * (BALANCE.consultation.waitingPatienceFactor * skillFactor);
+
+    if (patient.waitTimeSec >= patient.patienceSec) {
+      handleConsultationAbandonment(state, patient);
     }
   }
 }
@@ -76,7 +99,7 @@ export function getNextPendingDecision(state: GameState): PatientInstance | null
   while (state.pendingDecisionPatientIds.length > 0) {
     const nextId = state.pendingDecisionPatientIds[0]!;
     const pat = state.patients.get(nextId);
-    if (pat && pat.state === 'needs_decision' && !pat.clinicalCase.decisionMade) {
+    if (pat && (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision') && !pat.clinicalCase.decisionMade) {
       return pat;
     }
     state.pendingDecisionPatientIds.shift();
@@ -96,9 +119,16 @@ export function dischargePatient(state: GameState, patientId: string): void {
   const patient = state.patients.get(patientId);
   if (!patient) return;
 
+  finishPatientDecision(state, patient.id);
+  let col = 0;
+  let row = 0;
   if (patient.currentRoomId) {
     const room = state.rooms.get(patient.currentRoomId);
-    if (room) removeOccupant(room, patient.id);
+    if (room) {
+      col = room.col;
+      row = room.row;
+      removeOccupant(room, patient.id);
+    }
   }
 
   const pharmacyOk = hasPharmacy(state);
@@ -122,6 +152,7 @@ export function dischargePatient(state: GameState, patientId: string): void {
 
   globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue });
   globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Procedimento BPA faturado (SUS)' });
+  globalBus.emit('feedback:gain_float', { text: `+R$ ${revenue.toLocaleString('pt-BR')}`, col, row });
 }
 
 export function updateConsultationSystem(state: GameState, deltaSec: number): void {

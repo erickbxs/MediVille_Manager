@@ -1,8 +1,15 @@
 /**
  * Arquivo: src/render/patients-view.ts
- * O que faz: Renderiza os pacientes e profissionais de saúde com arte caricata estilizada, sombras no chão, jalecos médicos e balões visuais de status clínico.
- * Para que foi criado: Aprimorar a imersão e expressividade visual dos personagens conforme solicitado pelo usuário.
- * Como modificar/debugar: Ajuste tamanhos de avatares ou cores em drawCharacter().
+ *
+ * 1. O que este arquivo faz?
+ * Renderiza pacientes e profissionais com arte caricata estilizada, sombras dinâmicas, jalecos e balão pulsante 🩺 indicando pacientes prontos para consulta médica.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Permitir que o jogador visualize claramente o fluxo de pacientes na fila e nos consultórios, identificando prontamente quem aguarda atendimento on-demand.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Ajuste tamanhos, cores ou animações em drawCharacter e drawSpeechBubble.
+ *
  * Importa: pixi.js, src/entities/patient.ts, src/entities/room.ts, src/render/theme-config.ts
  * Conecta-se com: src/render/renderer.ts
  */
@@ -33,7 +40,7 @@ export class PatientsView {
     this.drawWaitingPatients(waitingPatients, waitingRooms);
 
     const inConsultation = patients.filter(
-      (p) => p.state === 'in_consultation' || p.state === 'needs_decision'
+      (p) => p.state === 'in_consultation' || p.state === 'needs_decision' || p.state === 'ready_for_treatment'
     );
     this.drawConsultationPatients(inConsultation, rooms);
   }
@@ -68,17 +75,14 @@ export class PatientsView {
 
       const doctorX = room.col * tileSize + 20;
       const doctorY = room.row * tileSize + 34;
-      // Desenha o médico da sala de jaleco branco
       this.drawCharacter(doctorX, doctorY, 0xffffff, true);
 
-      // Desenha o paciente atendido
       const patientX = room.col * tileSize + room.width * tileSize - 22;
       const patientY = room.row * tileSize + 34;
       this.drawCharacter(patientX, patientY, this.getPatienceColor(patient), false);
 
-      // Balão de decisão médica pendente
-      if (patient.state === 'needs_decision') {
-        this.drawSpeechBubble(patientX, patientY - 18, '🩺');
+      if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision') {
+        this.drawSpeechBubble(patientX, patientY - 20, '🩺');
       }
     }
   }
@@ -105,17 +109,20 @@ export class PatientsView {
   }
 
   private drawSpeechBubble(x: number, y: number, icon: string): void {
-    this.graphics.roundRect(x - 10, y - 10, 20, 16, 5)
+    const pulse = 1 + 0.1 * Math.sin(Date.now() / 150);
+    const halfW = 12 * pulse;
+    const halfH = 9 * pulse;
+    this.graphics.roundRect(x - halfW, y - halfH, halfW * 2, halfH * 2, 6)
       .fill({ color: 0xffffff })
-      .stroke({ color: 0xef4444, width: 1.5 });
-    this.graphics.moveTo(x - 2, y + 6).lineTo(x + 2, y + 6).lineTo(x, y + 9).fill({ color: 0xffffff });
+      .stroke({ color: 0x10b981, width: 2 });
+    this.graphics.moveTo(x - 2, y + halfH).lineTo(x + 2, y + halfH).lineTo(x, y + halfH + 3).fill({ color: 0xffffff });
 
     const iconText = new Text({
       text: icon,
-      style: { fontSize: 10, align: 'center' },
+      style: { fontSize: 11, align: 'center' },
       anchor: 0.5,
       x,
-      y: y - 2,
+      y: y - 1,
     });
     this.textContainer.addChild(iconText);
   }

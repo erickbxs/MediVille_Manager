@@ -22,6 +22,7 @@ export class DecisionModal {
   }
 
   public open(patient: PatientInstance): void {
+    this.simulation.pauseForModal();
     this.currentPatient = patient;
     const pCase = patient.clinicalCase;
     const def = pCase.definition;
@@ -78,6 +79,15 @@ export class DecisionModal {
     this.bindOptionClicks();
   }
 
+  private close(): void {
+    if (this.currentPatient) {
+      finishPatientDecision(this.simulation.state, this.currentPatient.id);
+    }
+    this.container.innerHTML = '';
+    this.currentPatient = null;
+    this.simulation.resumeFromModal();
+  }
+
   private bindOptionClicks(): void {
     const box = document.getElementById('feedback-box');
     const closeBtn = document.getElementById('btn-close-modal');
@@ -92,13 +102,7 @@ export class DecisionModal {
       });
     });
 
-    closeBtn?.addEventListener('click', () => {
-      if (this.currentPatient) {
-        finishPatientDecision(this.simulation.state, this.currentPatient.id);
-      }
-      this.container.innerHTML = '';
-      this.currentPatient = null;
-    });
+    closeBtn?.addEventListener('click', () => this.close());
   }
 
   private showFeedback(box: HTMLElement | null): void {
@@ -144,8 +148,7 @@ export class DecisionModal {
         if (next) {
           this.open(next);
         } else {
-          this.container.innerHTML = '';
-          this.currentPatient = null;
+          this.close();
         }
       });
     } else {
@@ -156,11 +159,7 @@ export class DecisionModal {
       `;
     }
 
-    document.getElementById('btn-close-modal')?.addEventListener('click', () => {
-      if (this.currentPatient) finishPatientDecision(this.simulation.state, this.currentPatient.id);
-      this.container.innerHTML = '';
-      this.currentPatient = null;
-    });
+    document.getElementById('btn-close-modal')?.addEventListener('click', () => this.close());
   }
 
   public isOpen(): boolean {

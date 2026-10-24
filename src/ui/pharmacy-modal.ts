@@ -21,6 +21,7 @@ export class PharmacyModal {
   }
 
   public open(): void {
+    this.simulation.pauseForModal();
     const meds = PHARMACY_CATALOG.medications;
     const stock = this.simulation.state.pharmacyStock;
 
@@ -100,6 +101,7 @@ export class PharmacyModal {
   private bindEvents(): void {
     const close = () => {
       this.container.innerHTML = '';
+      this.simulation.resumeFromModal();
     };
 
     document.getElementById('btn-close-pharmacy')?.addEventListener('click', close);

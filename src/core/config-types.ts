@@ -43,6 +43,7 @@ export interface GameBalanceConfig {
   consultation: {
     baseTimeSec: number;
     skillReductionPerLevel: number;
+    waitingPatienceFactor: number;
     skillMin: number;
     skillMax: number;
     decisionTimeoutSec: number;

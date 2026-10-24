@@ -21,6 +21,7 @@ export class FinancesModal {
   }
 
   public open(): void {
+    this.simulation.pauseForModal();
     const { finances, cash } = this.simulation.state;
     const procedures = SIGTAP_CATALOG.procedures;
 
@@ -110,6 +111,7 @@ export class FinancesModal {
   private bindEvents(): void {
     const close = () => {
       this.container.innerHTML = '';
+      this.simulation.resumeFromModal();
     };
 
     document.getElementById('btn-close-finances')?.addEventListener('click', close);

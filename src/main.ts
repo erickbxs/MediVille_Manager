@@ -1,8 +1,15 @@
 /**
  * Arquivo: src/main.ts
- * O que faz: Ponto de entrada da aplicação: inicializa a simulação, renderizador PixiJS, HUD, dock de construção, modais e laço de jogo.
- * Para que foi criado: Integrar os subsistemas mantendo o desacoplamento arquitetural exigido pelo GDD.
- * Como modificar/debugar: Caso precise de novas conexões entre UI e simulação, registre os ouvintes no globalBus aqui.
+ *
+ * 1. O que este arquivo faz?
+ * Ponto de entrada da aplicação que inicializa o loop de jogo, PixiJS, HUD, dock de construção, modais clínicos e administrativos, ouvintes de eventos e feedback flutuante.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Integrar todos os subsistemas de simulação, interface e renderização mantendo desacoplamento estrito via EventBus conforme o GDD.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Para adicionar novas integrações de entrada ou eventos globais, configure listeners em setupEventSubscriptions ou trate cliques em handleGridClick.
+ *
  * Importa: src/core/*, src/render/*, src/ui/*, src/input/*, src/systems/*
  * Conecta-se com: index.html
  */
@@ -90,10 +97,7 @@ class MediVilleApp {
         onOpenPharmacy: () => this.pharmacyModal.open(),
         onOpenFinances: () => this.financesModal.open(),
         onRequestGrant: () => requestEmergencyGrant(this.simulation.state),
-        onOpenPendingCase: () => {
-          const next = getNextPendingDecision(this.simulation.state);
-          if (next) this.decisionModal.open(next);
-        },
+        onOpenPendingCase: () => this.openNextPendingCase(),
         onOpenSettings: () => this.settingsModal.open(),
       }
     );
@@ -103,6 +107,14 @@ class MediVilleApp {
 
     if (isAgeVerificationRequired()) {
       new AgeGateModal(modalContainer, () => {}).show();
+    }
+  }
+
+  private openNextPendingCase(): void {
+    const next = getNextPendingDecision(this.simulation.state);
+    if (next) {
+      this.simulation.triggerConsultation(next.id);
+      this.decisionModal.open(next);
     }
   }
 
@@ -203,7 +215,8 @@ class MediVilleApp {
 
     for (const patId of room.occupantIds) {
       const pat = this.simulation.state.patients.get(patId);
-      if (pat && pat.state === 'needs_decision') {
+      if (pat && (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision')) {
+        this.simulation.triggerConsultation(pat.id);
         this.decisionModal.open(pat);
         break;
       }
@@ -220,6 +233,22 @@ class MediVilleApp {
     }
   }
 
+  private showGainFeedback(text: string, col: number, row: number): void {
+    const screenPos = this.renderer.camera.gridToScreen(col + 1, row + 1);
+    const badge = document.createElement('div');
+    badge.className = 'fixed pointer-events-none z-50 font-black text-emerald-400 bg-slate-900/90 px-3 py-1.5 rounded-xl shadow-xl border border-emerald-500/50 text-sm transition-all duration-1000 -translate-x-1/2 -translate-y-1/2';
+    badge.style.left = `${screenPos.x}px`;
+    badge.style.top = `${screenPos.y}px`;
+    badge.textContent = text;
+    document.body.appendChild(badge);
+    requestAnimationFrame(() => {
+      badge.style.transform = 'translate(-50%, -160%) scale(1.1)';
+      badge.style.opacity = '0';
+    });
+    const removeDelayMs = 1000;
+    setTimeout(() => badge.remove(), removeDelayMs);
+  }
+
   private setupEventSubscriptions(): void {
     globalBus.on('tick', () => {
       this.hud.update(this.simulation.state);
@@ -227,10 +256,8 @@ class MediVilleApp {
       this.eventBanner.update(this.simulation.state.activeEvents);
     });
 
-    globalBus.on('patient:needs_decision', ({ patientId }) => {
-      if (this.decisionModal.isOpen()) return;
-      const patient = this.simulation.state.patients.get(patientId);
-      if (patient) this.decisionModal.open(patient);
+    globalBus.on('feedback:gain_float', ({ text, col, row }) => {
+      this.showGainFeedback(text, col, row);
     });
 
     globalBus.on('day:end', () => saveGameState(this.simulation.state));
@@ -256,4 +283,3 @@ const app = new MediVilleApp();
 app.start().catch((err: unknown) => {
   console.error('[MediVille] Falha ao iniciar aplicação:', err);
 });
-

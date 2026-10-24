@@ -27,7 +27,7 @@
   },
   "time": {
     "fixedStepSec": 0.1,
-    "maxFrameDeltaSec": 0.25,
+    "maxFrameDeltaSec": 0.1,
     "dayDurationSec": 60,
     "speedLevels": [0, 1, 2, 3],
     "initialSpeed": 1
@@ -48,6 +48,7 @@
   "consultation": {
     "baseTimeSec": 20,
     "skillReductionPerLevel": 0.05,
+    "waitingPatienceFactor": 0.35,
     "skillMin": 1,
     "skillMax": 5,
     "decisionTimeoutSec": 25,

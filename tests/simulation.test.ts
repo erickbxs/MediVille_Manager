@@ -52,7 +52,7 @@ describe('Simulação Central do Hospital', () => {
     sim.step(16); // Intervalo base para gerar paciente e iniciar consulta
 
     const inConsult = Array.from(sim.state.patients.values()).find(
-      (p) => p.state === 'in_consultation' || p.state === 'waiting'
+      (p) => p.state === 'ready_for_treatment' || p.state === 'in_consultation' || p.state === 'waiting'
     );
     expect(inConsult).toBeDefined();
 

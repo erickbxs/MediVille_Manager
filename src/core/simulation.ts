@@ -11,6 +11,7 @@ import { BALANCE } from './config';
 import { globalBus } from './event-bus';
 import { createInitialGameState } from './new-game';
 import type { GameState } from '../state/game-state';
+import type { PatientInstance } from '../entities/patient';
 import { updateArrivalSystem } from '../systems/arrival-system';
 import { updateQueueSystem } from '../systems/queue-system';
 import { dischargePatient, updateConsultationSystem } from '../systems/consultation-system';
@@ -21,6 +22,7 @@ import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems
 
 export class HospitalSimulation {
   public state: GameState;
+  private modalPauseSpeed: number | null = null;
 
   constructor(initialState?: GameState) {
     this.state = initialState ?? createInitialGameState();
@@ -45,7 +47,33 @@ export class HospitalSimulation {
       this.state.previousSpeed = this.state.speed;
     }
     this.state.speed = speed;
+    globalBus.emit('simulation:speed_changed', { speed });
     globalBus.emit('state:changed', undefined);
+  }
+
+  public pauseForModal(): void {
+    if (this.modalPauseSpeed === null) {
+      this.modalPauseSpeed = this.state.speed;
+      this.setSpeed(0);
+    }
+  }
+
+  public resumeFromModal(): void {
+    if (this.modalPauseSpeed !== null) {
+      const restore = this.modalPauseSpeed;
+      this.modalPauseSpeed = null;
+      this.setSpeed(restore > 0 ? restore : 1);
+    }
+  }
+
+  public triggerConsultation(patientId: string): PatientInstance | null {
+    const patient = this.state.patients.get(patientId);
+    if (!patient) return null;
+    if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision') {
+      patient.state = 'needs_decision';
+      return patient;
+    }
+    return null;
   }
 
   public togglePause(): void {
@@ -84,7 +112,7 @@ export class HospitalSimulation {
 
   public submitClinicalDecision(patientId: string, conductId: string): boolean {
     const patient = this.state.patients.get(patientId);
-    if (!patient || patient.state !== 'needs_decision') return false;
+    if (!patient || (patient.state !== 'needs_decision' && patient.state !== 'ready_for_treatment')) return false;
 
     const chosen = patient.clinicalCase.conductOptions.find((c) => c.id === conductId);
     if (!chosen) return false;

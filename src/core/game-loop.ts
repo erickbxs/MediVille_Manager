@@ -45,22 +45,31 @@ export class GameLoop {
   private loop(currentTimeMs: number): void {
     if (!this.running) return;
 
-    const frameDeltaSec = Math.min(
-      (currentTimeMs - this.lastTimeMs) / 1000,
-      BALANCE.time.maxFrameDeltaSec
-    );
+    if (this.simulation.state.speed === 0) {
+      this.lastTimeMs = currentTimeMs;
+      this.accumulatorSec = 0;
+      this.onRender(0);
+      this.animationFrameId = requestAnimationFrame(this.loop);
+      return;
+    }
+
+    const maxFrameDeltaSec = BALANCE.time.maxFrameDeltaSec;
+    const rawDeltaSec = (currentTimeMs - this.lastTimeMs) / 1000;
+    const frameDeltaSec = Math.min(Math.max(0, rawDeltaSec), maxFrameDeltaSec);
     this.lastTimeMs = currentTimeMs;
     this.accumulatorSec += frameDeltaSec;
 
     const fixedStep = BALANCE.time.fixedStepSec;
-    while (this.accumulatorSec >= fixedStep) {
+    let maxSteps = 5;
+    while (this.accumulatorSec >= fixedStep && maxSteps > 0) {
       this.simulation.step(fixedStep);
       this.accumulatorSec -= fixedStep;
+      maxSteps--;
     }
+    if (maxSteps === 0) this.accumulatorSec = 0;
 
     const alpha = this.accumulatorSec / fixedStep;
     this.onRender(alpha);
-
     this.animationFrameId = requestAnimationFrame(this.loop);
   }
 }

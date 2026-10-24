@@ -35,6 +35,9 @@ export interface GameEvents {
   'tutorial:tip_triggered': { tipId: string; title: string; message: string };
   'room:moved': { roomId: string; col: number; row: number; rotated: boolean };
   'decision:queue_updated': { pendingCount: number };
+  'patient:ready_for_treatment': { patientId: string; roomId: string; patientName: string };
+  'simulation:speed_changed': { speed: number };
+  'feedback:gain_float': { text: string; col: number; row: number };
 }
 
 export type EventKey = keyof GameEvents;

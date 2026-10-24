@@ -21,6 +21,7 @@ export class SettingsModal {
   }
 
   public open(): void {
+    this.simulation.pauseForModal();
     const profile = getPlayerProfile();
     const modeLabel = profile?.guestMode ? 'Convidado (Estritamente Local)' : 'Padrão (Salvo no Navegador)';
 
@@ -81,6 +82,7 @@ export class SettingsModal {
   private bindEvents(): void {
     document.getElementById('btn-close-settings')?.addEventListener('click', () => {
       this.container.innerHTML = '';
+      this.simulation.resumeFromModal();
     });
 
     document.getElementById('btn-manual-save')?.addEventListener('click', () => {

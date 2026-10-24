@@ -13,6 +13,7 @@ export type PatientState =
   | 'arrived'
   | 'waiting'
   | 'in_consultation'
+  | 'ready_for_treatment'
   | 'needs_decision'
   | 'dispensing'
   | 'treated'
