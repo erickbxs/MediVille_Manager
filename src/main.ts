@@ -38,7 +38,7 @@ import { EncyclopediaModal } from './ui/encyclopedia-modal';
 import { GoalsModal } from './ui/goals-modal';
 import { trafficSystem } from './systems/traffic-system';
 import { soundSystem } from './core/sound-system';
-import { SettingsModal } from './ui/settings-modal';
+import { SettingsModal, applySavedFontScale } from './ui/settings-modal';
 import { AgeGateModal } from './ui/age-gate-modal';
 import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
 import { isAgeVerificationRequired } from './systems/player-profile';
@@ -371,7 +371,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+applySavedFontScale();
 const app = new MediVilleApp();
 app.start().catch((err: unknown) => {
   console.error('[MediVille] Falha ao iniciar aplicação:', err);
 });
+

@@ -20,6 +20,21 @@
     font-family: 'Fredoka', ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #e8eef6;
   }
+
+  /* Escalas tipográficas de acessibilidade */
+  html[data-font-scale="large"] {
+    font-size: 112.5%;
+  }
+
+  html[data-font-scale="xlarge"] {
+    font-size: 125%;
+  }
+
+  /* Números tabulares para relógios, contadores e caixas */
+  .tabular-nums, [data-tabular="true"] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 }
 
 #game-canvas-container canvas {
@@ -28,3 +43,4 @@
   height: 100%;
   touch-action: none;
 }
+

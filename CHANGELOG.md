@@ -2,6 +2,38 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.2.0] - 2026-10-24
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.2.0 — Tipografia Oficial Fredoka, Correção Definitiva da Enciclopédia SUS, UX Mobile Avançada e Expansão para 150 Casos Clínicos
+- **Tipografia Oficial `Fredoka` e Escala de Acessibilidade (`index.html`, `styles.css` e `settings-modal.ts`)**:
+  - Integração da família tipográfica **Fredoka** (pesos 400, 500, 600 e 700) no CSS e nos textos do PixiJS v8 (`'Fredoka', system-ui, sans-serif`).
+  - Ativação de números tabulares (`font-variant-numeric: tabular-nums` / `font-feature-settings: "tnum"`) no relógio, caixa hospitalar, estoque da farmácia e estatísticas financeiras, eliminando saltos visuais na atualização numérica.
+  - Novo seletor de **Tamanho da Fonte (`Padrão`, `Grande`, `Extra Grande`)** no modal de Configurações, com persistência no `localStorage` e aplicação imediata no `document.documentElement` (`data-font-scale`).
+- **Correção Definitiva de Layout e Dimensionamento da Enciclopédia SUS (`encyclopedia-modal.ts`)**:
+  - Estrutura sem cortes nem truncamento: `max-h-[88dvh] w-full max-w-4xl overflow-hidden`.
+  - Cabeçalho fixo (`shrink-0`) com contador `X/150 Protocolos Dominados`, barra visual de progresso e **busca rápida reativa por nome, sintoma ou conduta**.
+  - Barra de subtipos categorizados (*Todas, Respiratória, Viral, Bacteriana, IST, Tropical, Parasitária, Digestiva, Cardiovascular, Neurológica, Endócrina, Trauma, Toxicologia, Alergia, Obstetrícia, Pediatria, Saúde Mental, Urologia, Dermatologia, Oftalmologia/ORL*):
+    - Desktop e tablet: quebra inteligente em pílulas compactas (`flex-wrap gap-1.5 max-h-28 overflow-y-auto`).
+    - Celular: carrossel horizontal fluido com snap (`flex-nowrap overflow-x-auto snap-x touch-pan-x`) com `shrink-0 whitespace-nowrap` em cada botão.
+    - Exibição da contagem exata por categoria (ex: `Respiratória (4/12)`).
+  - Corpo rolável isolado (`overscroll-contain`) em grade responsiva (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`) com cartões exibindo Nome, Gravidade, Unidade Típica, Sintomas, Conduta RENAME, Explicação Educativa e Fonte Oficial.
+- **UX Mobile Avançada e Refinamento PixiJS v8**:
+  - Ativação de `roundPixels: true` na aplicação PixiJS e nos elementos gráficos para máxima nitidez em telas retina e celulares.
+  - Correção na detecção tátil em `canvas-input.ts`: diferenciação matemática estrita entre toque simples (`tap` < 8px) e arraste de câmera (`pan` > 8px), evitando acionar cliques ou abrir salas acidentalmente durante a navegação.
+  - Ajuste de safe-area insets no container raiz (`w-[100dvw] h-[100dvh] touch-none`) e modais bottom-sheet ergonômicos em telas `< 640px`.
+- **Expansão de +50 Casos Clínicos Reais do SUS (Total de 150 Casos em `cases.json` e `clinical-cases.json`)**:
+  - **Casos 101 a 110 (Pediatria e PNI)**: Coqueluche, Caxumba, Rubéola, Eritema Infeccioso, Doença Mão-Pé-Boca, Crupe Viral, Broncoespasmo Viral, Dermatite de Fraldas por Candida, Anemia Ferropriva na Infância e Escarlatina Pediátrica.
+  - **Casos 111 a 120 (Saúde da Mulher, Obstetrícia e ISTs)**: Hiperêmese Gravídica, Bacteriúria Assintomática na Gestante, Doença Inflamatória Pélvica (DIP), Herpes Genital Primário, Cancro Mole, Linfogranuloma Venéreo, Donovanose, Dismenorreia Primária, Sangramento Uterino Disfuncional e Eclâmpsia Hospitalar.
+  - **Casos 121 a 130 (Infectologia, Dermatologia e Negligenciadas)**: Esporotricose Cutânea Felina, Tungíase (Bicho-de-pé), Larva Migrans Cutânea, Pediculose Capilar, Tinea Corporis, Pitiríase Versicolor, Furunculose/Abscesso, Febre Maculosa Brasileira, Toxoplasmose Aguda Adquirida e Teníase Intestinal.
+  - **Casos 131 a 140 (Clínica Médica, Cardiologia e Gastroenterologia)**: Pericardite Viral Aguda, Bradicardia Sintomática Instável, Taquicardia Paroxística Supraventricular (TPSV), Derrame Pleural Parapneumônico, Encefalopatia Hepática Aguda, Hemorroida Trombosada, Fissura Anal Aguda, Síndrome do Intestino Irritável, Crise Addisoniana e Hipercalemia Aguda.
+  - **Casos 141 a 150 (Neurologia, Saúde Mental, Ortopedia e Oftalmo/ORL)**: Neuralgia do Trigêmeo, Cefaleia em Salvas, Abstinência Alcoólica Aguda, Transtorno Bipolar (Mania Aguda), Insônia Primária na APS, Tendinite do Manguito Rotador, Epicondilite Lateral, Cerume Impactado, Otite Externa Difusa e Hordéolo Agudo (Terçol).
+  - Todos os 150 casos integrados com a mecânica de Auto-Resolução por Protocolo Dominado (`masteredCaseIds`) e estoque da farmácia.
+- **Testes Automatizados (Vitest)**:
+  - Adicionado `tests/polish-150-cases-and-encyclopedia.test.ts` cobrindo catálogo de 150 casos, integridade RENAME, setores, governo, conselheiro e escala tipográfica.
+  - Total de **95 testes automatizados aprovados (100% de sucesso)** e bundle de 1.03 MB (< 2.00 MB).
+
 ## [1.1.0] - 2026-10-24
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

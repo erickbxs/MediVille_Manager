@@ -65,13 +65,13 @@ export class HospitalHUD {
           <div class="flex items-center gap-1.5 shrink-0">
             <span class="text-base">🏥</span>
             <span id="hud-unit-level" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400">UBS</span>
-            <span id="hud-cash" class="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100k</span>
+            <span id="hud-cash" class="tabular-nums text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100k</span>
           </div>
 
           <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-            <span id="hud-reputation" class="flex items-center gap-0.5 text-amber-500 font-extrabold">⭐ 50%</span>
-            <span id="hud-pharmacy-pill" class="flex items-center gap-1 text-slate-600 dark:text-slate-300">💊 <span id="hud-pharmacy-stock">0</span></span>
-            <span id="hud-clock-pill" class="hidden xs:inline-block px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Dia 1 • 1x</span>
+            <span id="hud-reputation" class="tabular-nums flex items-center gap-0.5 text-amber-500 font-extrabold">⭐ 50%</span>
+            <span id="hud-pharmacy-pill" class="tabular-nums flex items-center gap-1 text-slate-600 dark:text-slate-300">💊 <span id="hud-pharmacy-stock" class="tabular-nums">0</span></span>
+            <span id="hud-clock-pill" class="tabular-nums hidden xs:inline-block px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Dia 1 • 1x</span>
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
@@ -92,21 +92,22 @@ export class HospitalHUD {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
               <span class="text-[10px] text-slate-400 font-semibold block">Satisfação</span>
-              <strong id="hud-sat-val" class="text-emerald-500 font-extrabold">50%</strong>
+              <strong id="hud-sat-val" class="tabular-nums text-emerald-500 font-extrabold">50%</strong>
             </div>
             <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
               <span class="text-[10px] text-slate-400 font-semibold block">Fila Geral</span>
-              <strong id="hud-queue" class="text-sky-500 font-extrabold">0 pac.</strong>
+              <strong id="hud-queue" class="tabular-nums text-sky-500 font-extrabold">0 pac.</strong>
             </div>
             <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
               <span class="text-[10px] text-slate-400 font-semibold block">Repasse PAB Fixo</span>
-              <strong class="text-emerald-600 font-extrabold">R$ 4.000/dia</strong>
+              <strong class="tabular-nums text-emerald-600 font-extrabold">R$ 4.000/dia</strong>
             </div>
             <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
               <span class="text-[10px] text-slate-400 font-semibold block">Equipe Ativa</span>
-              <strong id="hud-staff-count" class="text-indigo-500 font-extrabold">2 prof.</strong>
+              <strong id="hud-staff-count" class="tabular-nums text-indigo-500 font-extrabold">2 prof.</strong>
             </div>
           </div>
+
 
           <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800 gap-2 flex-wrap">
             <div class="flex items-center gap-2">

@@ -16,12 +16,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
-  <body class="relative w-screen h-screen overflow-hidden bg-slate-100 select-none">
+  <body class="relative w-[100dvw] h-[100dvh] overflow-hidden bg-slate-100 select-none touch-none">
     <!-- Camada de Canvas do PixiJS -->
     <div id="game-canvas-container" class="absolute inset-0 z-0 w-full h-full"></div>
 
     <!-- Camada de Interface de Usuário (HUD e Menus) -->
-    <div id="ui-root" class="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 sm:p-5">
+    <div id="ui-root" class="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 sm:p-5" style="padding-top: max(0.75rem, env(safe-area-inset-top)); padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+
       <!-- HUD Superior -->
       <div id="hud-container" class="w-full max-w-5xl mx-auto"></div>
 

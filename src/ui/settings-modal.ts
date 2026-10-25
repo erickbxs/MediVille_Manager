@@ -11,6 +11,25 @@ import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
 import { getPlayerProfile } from '../systems/player-profile';
 
+export type FontScale = 'normal' | 'large' | 'xlarge';
+
+const FONT_SCALE_KEY = 'mediville_font_scale';
+
+export function getSavedFontScale(): FontScale {
+  const saved = localStorage.getItem(FONT_SCALE_KEY);
+  if (saved === 'large' || saved === 'xlarge') return saved;
+  return 'normal';
+}
+
+export function applySavedFontScale(scale?: FontScale): void {
+  const target = scale ?? getSavedFontScale();
+  if (target === 'normal') {
+    document.documentElement.removeAttribute('data-font-scale');
+  } else {
+    document.documentElement.setAttribute('data-font-scale', target);
+  }
+}
+
 export class SettingsModal {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
@@ -24,10 +43,11 @@ export class SettingsModal {
     this.simulation.pauseForModal();
     const profile = getPlayerProfile();
     const modeLabel = profile?.guestMode ? 'Convidado (Estritamente Local)' : 'Padrão (Salvo no Navegador)';
+    const currentScale = getSavedFontScale();
 
     this.container.innerHTML = `
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col space-y-4">
+      <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 flex flex-col space-y-4 max-h-[90dvh] overflow-y-auto">
           
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div class="flex items-center gap-3">
@@ -35,16 +55,37 @@ export class SettingsModal {
                 ⚙️
               </div>
               <div>
-                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">Configurações & Save</h3>
+                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">Configurações & Acessibilidade</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${modeLabel}</p>
               </div>
             </div>
-            <button id="btn-close-settings" class="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 font-bold">
+            <button id="btn-close-settings" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 font-bold">
               ✕
             </button>
           </div>
 
           <div id="save-status-msg" class="hidden p-3 rounded-2xl text-xs font-bold text-center"></div>
+
+          <!-- Acessibilidade e Tamanho da Fonte -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                🔤 Tamanho da Fonte
+              </span>
+              <span class="text-[11px] text-slate-400">Escala da interface</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 text-xs font-bold">
+              <button data-scale="normal" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'normal' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
+                Padrão
+              </button>
+              <button data-scale="large" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'large' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
+                Grande
+              </button>
+              <button data-scale="xlarge" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'xlarge' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
+                Extra Grande
+              </button>
+            </div>
+          </div>
 
           <div class="space-y-2.5">
             <button id="btn-manual-save" class="w-full min-h-[48px] p-3.5 rounded-2xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-bold text-sm flex items-center justify-between hover:bg-sky-100/60 transition-all active:scale-[0.99]">
@@ -83,6 +124,17 @@ export class SettingsModal {
     document.getElementById('btn-close-settings')?.addEventListener('click', () => {
       this.container.innerHTML = '';
       this.simulation.resumeFromModal();
+    });
+
+    this.container.querySelectorAll('.btn-font-scale').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const scale = (e.currentTarget as HTMLElement).getAttribute('data-scale') as FontScale;
+        if (scale) {
+          localStorage.setItem(FONT_SCALE_KEY, scale);
+          applySavedFontScale(scale);
+          this.open();
+        }
+      });
     });
 
     document.getElementById('btn-manual-save')?.addEventListener('click', () => {
@@ -148,3 +200,4 @@ export class SettingsModal {
     reader.readAsText(file);
   }
 }
+

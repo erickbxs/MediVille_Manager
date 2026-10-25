@@ -32,9 +32,15 @@ export class PatientsView {
   private lastTimeSec = 0;
 
   constructor() {
+    this.graphics.roundPixels = true;
+    this.container.sortableChildren = true;
+    this.graphics.zIndex = 10;
+    this.textContainer.zIndex = 1000;
     this.container.addChild(this.graphics);
     this.container.addChild(this.textContainer);
   }
+
+
 
   public render(
     patientsOrState: PatientInstance[] | GameState,
@@ -170,7 +176,13 @@ export class PatientsView {
 
     const label = new Text({
       text: '⚡ Protocolo...',
-      style: { fontSize: 8, fontWeight: 'bold', align: 'center', fill: 0xffffff },
+      style: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        align: 'center',
+        fill: 0xffffff,
+        fontFamily: "'Fredoka', system-ui, sans-serif",
+      },
       anchor: 0.5,
       x,
       y: y - 8,
@@ -191,11 +203,18 @@ export class PatientsView {
 
     const iconText = new Text({
       text,
-      style: { fontSize: isNewCase ? 9 : 11, fontWeight: 'bold', align: 'center', fill: 0x0f172a },
+      style: {
+        fontSize: isNewCase ? 9 : 11,
+        fontWeight: 'bold',
+        align: 'center',
+        fill: 0x0f172a,
+        fontFamily: "'Fredoka', system-ui, sans-serif",
+      },
       anchor: 0.5,
       x,
       y: y - 1,
     });
     this.textContainer.addChild(iconText);
   }
+
 }

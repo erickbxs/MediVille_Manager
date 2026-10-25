@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "Catálogo oficial dos 100 casos clínicos reais do SUS e APS do MediVille Manager. Abrange os 50 casos canônicos do GDD e 50 casos complementares da rotina de UBS, UPA e Hospital, com condutas baseadas nos protocolos do Ministério da Saúde, ANVISA e OMS, e integridade referencial estrita para os medicamentos de pharmacy.json.",
+    "description": "Catálogo oficial dos 150 casos clínicos reais do SUS e APS do MediVille Manager. Abrange os 50 casos canônicos do GDD, 50 casos complementares e 50 novos casos de rotina de UBS, UPA e Hospital (Pediatria, Saúde da Mulher, Dermatologia, Clínica Médica e ORL/Oftalmo), com condutas baseadas nos protocolos do Ministério da Saúde, ANVISA e OMS, e integridade referencial estrita para os medicamentos de pharmacy.json.",
     "connectedFiles": [
       "src/core/config.ts",
       "src/core/config-types.ts",
@@ -11,7 +11,7 @@
       "src/systems/goals-system.ts",
       "src/ui/decision-modal.ts",
       "src/ui/encyclopedia-modal.ts",
-      "tests/auto-protocol-and-100-cases.test.ts"
+      "tests/polish-150-cases-and-encyclopedia.test.ts"
     ]
   },
   "cases": [
@@ -6278,6 +6278,3165 @@
       "sources": [
         {
           "name": "Manual de Intervenções para Transtornos Mentais na Atenção Básica (mhGAP) - OMS / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "coqueluche-lactente",
+      "name": "Coqueluche em Lactente (Tosse Comprida)",
+      "area": "Pediatria",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 3,
+      "ageRange": {
+        "min": 0,
+        "max": 2
+      },
+      "symptoms": [
+        "Paroxismos intensos de tosse seguidos de guincho inspiratório",
+        "Cianose perioral e episódios de apneia durante as crises de tosse",
+        "Febre baixa ou ausente e vômitos pós-tosse"
+      ],
+      "suggestedExams": [
+        "Coleta de secreção de nasofaringe para cultura/PCR de Bordetella pertussis e hemograma"
+      ],
+      "suggestedConduct": {
+        "id": "coqueluche-c1",
+        "text": "Isolamento respiratório de gotículas, internação para monitorização da oximetria, suporte ventilatório e macrolídeo (Azitromicina) com hidratação venosa e soro fisiológico nasal."
+      },
+      "distractorConducts": [
+        {
+          "id": "coqueluche-d1",
+          "text": "Alta com xarope sedativo da tosse e repouso domiciliar sem antibiótico.",
+          "whyWrong": "Sedativos da tosse são contraindicados em lactentes pelo alto risco de depressão respiratória e parada cardiorrespiratória."
+        },
+        {
+          "id": "coqueluche-d2",
+          "text": "Iniciar apenas oseltamivir empírico sem investigar Bordetella.",
+          "whyWrong": "Oseltamivir age sobre vírus influenza e não trata a infecção bacteriana por Bordetella pertussis."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Azitromicina 200mg/5mL",
+          "route": "Oral / SNG",
+          "indication": "Erradicação da Bordetella pertussis e quebra da cadeia de transmissão"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Nasal / Inalatório",
+          "indication": "Fluidificação de secreções espessas de vias aéreas"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Em lactentes jovens, a coqueluche é grave e potencialmente fatal por apneia; a azitromicina reduz a transmissibilidade e o suporte clínico precoce é vital.",
+      "possibleComorbidities": [
+        "Desnutrição prévia",
+        "Esquema vacinal DTPa/Pentavalente atrasado"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Vigilância em Saúde - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "caxumba-parotidite",
+      "name": "Caxumba / Parotidite Epidêmica",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 3,
+        "max": 16
+      },
+      "symptoms": [
+        "Edema e dor na região da glândula parótida unilateral ou bilateral",
+        "Dor ao mastigar ou deglutir alimentos ácidos",
+        "Febre moderada e mal-estar geral"
+      ],
+      "suggestedExams": [
+        "Avaliação clínica orofaríngea e palpação do ângulo da mandíbula"
+      ],
+      "suggestedConduct": {
+        "id": "caxumba-c1",
+        "text": "Prescrever paracetamol para alívio da dor e febre, compressas mornas locais, hidratação oral abundante e isolamento domiciliar por 9 dias após o início do edema parotídeo."
+      },
+      "distractorConducts": [
+        {
+          "id": "caxumba-d1",
+          "text": "Prescrever amoxicilina por 10 dias para erradicar a parotidite.",
+          "whyWrong": "A caxumba é de etiologia viral (Paramyxovírus); antibióticos não têm qualquer eficácia e geram resistência."
+        },
+        {
+          "id": "caxumba-d2",
+          "text": "Puncionar a glândula parótida imediatamente no consultório com agulha grossa.",
+          "whyWrong": "A punção sem evidência de abscesso bacteriano flutuante é lesiva ao parênquima glandular e ao nervo facial."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 200mg/mL",
+          "route": "Oral",
+          "indication": "Controle da dor parotídea e da febre"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A parotidite infecciosa viral é autolimitada; o manejo é sintomático com paracetamol, mantendo isolamento de gotículas para evitar surtos escolares.",
+      "possibleComorbidities": [
+        "Orquiepididimite em adolescentes pós-púberes"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Vigilância Epidemiológica das Doenças Exantemáticas - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "rubeola-pos-natal",
+      "name": "Rubéola Pós-Natal Benigna",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 2,
+        "max": 14
+      },
+      "symptoms": [
+        "Exantema maculopapular róseo de evolução céfalo-caudal rápida",
+        "Linfoadenopatia retroauricular, suboccipital e cervical dolorosa",
+        "Febre baixa e artralgia transitória"
+      ],
+      "suggestedExams": [
+        "Exame físico dermatológico e notificação compulsória imediata para sorologia IgM do SUS"
+      ],
+      "suggestedConduct": {
+        "id": "rubeola-c1",
+        "text": "Dipirona ou paracetamol para alívio álgico/térmico, hidratação oral, repouso, notificação compulsória para vigilância epidemiológica e isolamento domiciliar de contato com gestantes."
+      },
+      "distractorConducts": [
+        {
+          "id": "rubeola-d1",
+          "text": "Prescrever ácido acetilsalicílico (AAS) pediátrico para controle da febre exantemática.",
+          "whyWrong": "O uso de AAS em infecções virais pediátricas é contraindicado formalmente pelo risco fatal de Síndrome de Reye."
+        },
+        {
+          "id": "rubeola-d2",
+          "text": "Iniciar benzilpenicilina benzatina injetável profilática imediata.",
+          "whyWrong": "A rubéola é uma virose da infância; a penicilina não tem indicação e provoca dor desnecessária na criança."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio da cefaleia e do desconforto da linfoadenopatia"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Nasal",
+          "indication": "Higienização das mucosas"
+        }
+      ],
+      "medicationIds": [
+        "dipirona",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A rubéola pós-natal é benigna na criança, mas de extrema importância em saúde pública pelo risco de Síndrome da Rubéola Congênita se transmitida a gestantes suscetíveis.",
+      "possibleComorbidities": [
+        "Cartão de vacina Tríplice Viral atrasado"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Vigilância Epidemiológica - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "eritema-infeccioso-quinta-doenca",
+      "name": "Eritema Infeccioso - Quinta Doença (Parvovírus B19)",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 2,
+        "max": 12
+      },
+      "symptoms": [
+        "Eritema malar vivo e brilhante em ambas as bochechas ('aspecto de bochecha esbofeteada')",
+        "Erupção maculopapular rendilhada/reticulada no tronco e extremidades",
+        "Estado geral preservado, afebril ou com febre muito baixa"
+      ],
+      "suggestedExams": [
+        "Avaliação clínica pediátrica com dermatoscopia visual do aspecto rendilhado"
+      ],
+      "suggestedConduct": {
+        "id": "eritema-c1",
+        "text": "Orientação e tranquilização dos familiares sobre a benignidade e evolução ondulante com sol/calor, paracetamol se prurido ou desconforto e medidas de suporte clínico."
+      },
+      "distractorConducts": [
+        {
+          "id": "eritema-d1",
+          "text": "Prescrever corticoide sistêmico em alta dose por 14 dias para 'cortar a inflamação da pele'.",
+          "whyWrong": "Corticoides sistêmicos não são indicados para o eritema infeccioso benigno e causam imunossupressão indesejada na criança."
+        },
+        {
+          "id": "eritema-d2",
+          "text": "Isolar a criança em quarto escuro e administrar ceftriaxona intramuscular.",
+          "whyWrong": "A fase de exantema já não é contagiosa e o quadro é estritamente viral por Parvovírus B19."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 200mg/mL",
+          "route": "Oral",
+          "indication": "Alívio de eventual desconforto álgico ou febrícula"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O eritema infeccioso tem curso benigno e padrão rendilhado característico; quando o exantema surge, a fase de viremia ativa já cessou na criança.",
+      "possibleComorbidities": [
+        "Anemia falciforme associada (risco de crise aplásica transitória)"
+      ],
+      "sources": [
+        {
+          "name": "Tratado de Pediatria - Sociedade Brasileira de Pediatria / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "mao-pe-boca-coxsackie",
+      "name": "Doença Mão-Pé-Boca (Coxsackievírus)",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 1,
+        "max": 7
+      },
+      "symptoms": [
+        "Vesículas e pápulas eritematosas dolorosas nas palmas das mãos e plantas dos pés",
+        "Úlceras e aftas dolorosas na mucosa oral, língua e gengivas com sialorreia e recusa alimentar",
+        "Febre moderada e irritabilidade"
+      ],
+      "suggestedExams": [
+        "Inspeção minuciosa da cavidade oral, palmas, plantas e região glútea"
+      ],
+      "suggestedConduct": {
+        "id": "mao-pe-boca-c1",
+        "text": "Paracetamol ou dipirona para analgesia oral, Sais de Reidratação Oral (SRO) gelados em pequenos goles frequentes, dieta líquida/pastosa não ácida e higiene oral cuidadosa."
+      },
+      "distractorConducts": [
+        {
+          "id": "mao-pe-boca-d1",
+          "text": "Prescrever amoxicilina oral por 10 dias para as lesões orais.",
+          "whyWrong": "A doença mão-pé-boca é causada por enterovírus (Coxsackie A16/EV71); antibióticos não aceleram a cicatrização."
+        },
+        {
+          "id": "mao-pe-boca-d2",
+          "text": "Prescrever pomada de ácido salicílico para descamar as vesículas das mãos e pés.",
+          "whyWrong": "Ácidos queratolíticos provocam queimaduras químicas graves e dor excruciante na pele sensível infantil."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 200mg/mL",
+          "route": "Oral",
+          "indication": "Alívio da odinofagia intensa para possibilitar a deglutição de líquidos"
+        },
+        {
+          "genericName": "Sais para Reidratação Oral (SRO)",
+          "route": "Oral",
+          "indication": "Prevenção da desidratação decorrente da recusa alimentar"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol",
+        "sais-reidratacao"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A infecção pelo vírus Coxsackie causa aftas muito dolorosas; a analgesia precoce associada à reidratação oral gelada evita a internação por desidratação infantil.",
+      "possibleComorbidities": [
+        "Desidratação leve por hiporexia"
+      ],
+      "sources": [
+        {
+          "name": "Caderneta de Saúde da Criança - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "crupe-viral-laringotraqueite",
+      "name": "Laringotraqueobronquite Aguda - Crupe Viral",
+      "area": "Pediatria",
+      "typicalUnit": "UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 1,
+        "max": 5
+      },
+      "symptoms": [
+        "Tosse metálica característica em 'latido de cachorro' (tosse ladrante)",
+        "Estridor respiratório inspiratório pior à noite e choro rouco",
+        "Tiragem subcostal leve e febre baixa antecedida por coriza"
+      ],
+      "suggestedExams": [
+        "Avaliação da pontuação de gravidade de Westley e oximetria de pulso contínua"
+      ],
+      "suggestedConduct": {
+        "id": "crupe-c1",
+        "text": "Administração de dose única de corticoide sistêmico (Dexametasona oral/IM), nebulização com soro fisiológico 0,9% em ambiente calmo nos braços dos pais e monitorização da saturação de O2."
+      },
+      "distractorConducts": [
+        {
+          "id": "crupe-d1",
+          "text": "Realizar sedação da criança e intubação traqueal eletiva imediata sem avaliar a resposta ao corticoide.",
+          "whyWrong": "No crupe leve a moderado, o corticoide oral é altamente resolutivo; a intubação sem tentativa de suporte é invasiva e desnecessária."
+        },
+        {
+          "id": "crupe-d2",
+          "text": "Prescrever xarope antitussígeno e liberar a criança sem oferta de corticoide.",
+          "whyWrong": "Sem corticoterapia para desinflamar a laringe, o estridor pode progredir rapidamente para insuficiência respiratória obstrutiva aguda."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Inalatório",
+          "indication": "Umidificação das vias aéreas superiores sob fluxo calmo"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio do desconforto laríngeo e da febre"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A dexametasona em dose única diminui rapidamente o edema subglótico no crupe viral, reduzindo drasticamente as taxas de intubação e internação.",
+      "possibleComorbidities": [
+        "Hiper-reatividade brônquica"
+      ],
+      "sources": [
+        {
+          "name": "Protocolos de Urgência e Emergência Pediátrica - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "broncoespasmo-viral-pediatrico",
+      "name": "Broncoespasmo Induzido por Infecção Viral Pediátrica",
+      "area": "Pediatria",
+      "typicalUnit": "UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 1,
+        "max": 6
+      },
+      "symptoms": [
+        "Sibilos expiratórios difusos à ausculta pulmonar após pródromo gripal",
+        "Tosse seca frequente e aumento do esforço respiratório com taquipneia",
+        "Dificuldade para mamar ou falar frases completas"
+      ],
+      "suggestedExams": [
+        "Oximetria de pulso, contagem da frequência respiratória por minuto e ausculta pulmonar"
+      ],
+      "suggestedConduct": {
+        "id": "broncoespasmo-c1",
+        "text": "Beta-2 agonista de curta ação inalatório (Salbutamol via espaçador valvulado), inalação com soro fisiológico se necessário, reavaliação clínica a cada 20 minutos e oxigênio suplementar se saturação < 92%."
+      },
+      "distractorConducts": [
+        {
+          "id": "broncoespasmo-d1",
+          "text": "Iniciar amoxicilina oral por 10 dias e mandar a criança para casa imediatamente sem broncodilatador.",
+          "whyWrong": "O quadro é brônquico obstrutivo viral; o antibiótico não desfaz o broncoespasmo e a falta de broncodilatador causa hipóxia."
+        },
+        {
+          "id": "broncoespasmo-d2",
+          "text": "Administrar antitussígeno com codeína para cessar as tosses da criança.",
+          "whyWrong": "Opioides e sedativos respiratórios são perigosos em pediatria e abolem o reflexo protetor de tosse no broncoespasmo."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Inalatório",
+          "indication": "Fluidificação de secreções traqueobrônquicas sob névoa"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O uso precoce de broncodilatador inalatório com espaçador valvulado é padrão-ouro na RENAME do SUS para reverter o broncoespasmo infantil.",
+      "possibleComorbidities": [
+        "Lactente sibilante",
+        "História familiar de asma"
+      ],
+      "sources": [
+        {
+          "name": "Diretrizes Brasileiras para o Manejo da Asma e da Sibilância Infantil - SBP / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "dermatite-fraldas-infeccao",
+      "name": "Dermatite das Fraldas com Infecção Secundária por Candida",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 0,
+        "max": 2
+      },
+      "symptoms": [
+        "Eritema vermelho vivo e brilhante confluente na região perineal e dobras inguinais",
+        "Pápulas e pústulas eritematosas periféricas ('lesões satélites')",
+        "Choro e desconforto intenso às trocas de fraldas e micção"
+      ],
+      "suggestedExams": [
+        "Inspeção clínica cuidadosa da área perineal e das pregas cutâneas"
+      ],
+      "suggestedConduct": {
+        "id": "derm-fraldas-c1",
+        "text": "Antifúngico tópico da RENAME (Nistatina pomada perineal a cada troca), lavagem suave com algodão embebido em soro fisiológico morno, pausas diárias sem fralda e aplicação de pasta de óxido de zinco de barreira."
+      },
+      "distractorConducts": [
+        {
+          "id": "derm-fraldas-d1",
+          "text": "Prescrever corticoide tópico de alta potência (Clobetasol) sob a fralda oclusiva.",
+          "whyWrong": "Corticoides potentes sob oclusão de fralda provocam atrofia cutânea grave e absorção sistêmica tóxica em bebês."
+        },
+        {
+          "id": "derm-fraldas-d2",
+          "text": "Aplicar álcool 70% ou talco industrial diretamente sobre as feridas perineais.",
+          "whyWrong": "Álcool gera ardor insuportável e necrose química da epiderme lesada, e talco tem risco de aspiração pulmonar."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico Perineal",
+          "indication": "Limpeza delicada sem fricção para remoção de fezes e urina"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O acometimento das dobras e a presença de lesões satélites selam o diagnóstico de candidíase da área das fraldas; a nistatina tópica aliada a medidas higiênicas promove a cura rápida.",
+      "possibleComorbidities": [
+        "Uso prévio recente de antibiótico oral"
+      ],
+      "sources": [
+        {
+          "name": "Dermatologia na Atenção Primária - Cadernos de Atenção Básica nº 19 - MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "anemia-ferropriva-infancia",
+      "name": "Anemia Ferropriva na Infância - APS",
+      "area": "Pediatria",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 1,
+        "max": 5
+      },
+      "symptoms": [
+        "Palidez cutaneomucosa progressiva (conjuntivas e leito ungueal hipocorados)",
+        "Astenia, irritabilidade e menor disposição para brincadeiras habituais",
+        "Consumo excessivo de leite de vaca não fortificado e baixa ingestão de carnes e folhas verdes"
+      ],
+      "suggestedExams": [
+        "Hemograma completo (microcitose e hipocromia) e dosagem de ferritina sérica"
+      ],
+      "suggestedConduct": {
+        "id": "anemia-c1",
+        "text": "Suplementação terapêutica com Sulfato Ferroso oral em gotas (3 a 5 mg/kg/dia de ferro elementar em jejum com suco cítrico), orientação nutricional para a família e acompanhamento na UBS."
+      },
+      "distractorConducts": [
+        {
+          "id": "anemia-d1",
+          "text": "Indicar transfusão sanguínea imediata para toda criança com palidez sem hemograma.",
+          "whyWrong": "Transfusão é restrita a descompensação hemodinâmica grave com Hb < 5 g/dL; a via oral com ferro é segura e padrão no SUS."
+        },
+        {
+          "id": "anemia-d2",
+          "text": "Prescrever polivitamínico sem ferro e incentivar o aumento exclusivo do volume de leite de vaca.",
+          "whyWrong": "O leite de vaca em excesso inibe a absorção do ferro e é causa primária da anemia ferropriva na infância."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Oral / Nasal",
+          "indication": "Suporte e hidratação"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A anemia por deficiência de ferro é a carência nutricional mais prevalente na infância brasileira; a reposição oral de sulfato ferroso associada à reeducação alimentar recupera o desenvolvimento neuropsicomotor.",
+      "possibleComorbidities": [
+        "Parasitose intestinal",
+        "Desnutrição pregressa"
+      ],
+      "sources": [
+        {
+          "name": "Programa Nacional de Suplementação de Ferro - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "escarlatina-estreptococica-pediatrica",
+      "name": "Escarlatina Estreptocócica Pediátrica",
+      "area": "Pediatria",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 3,
+        "max": 12
+      },
+      "symptoms": [
+        "Exantema micropapular áspero em 'lixa' que poupa a região perioral (sinal de Filatov)",
+        "Febre súbita, dor de garganta intensa e adenomegalia cervical",
+        "Língua em framboesa com papilas gustativas hipertrofiadas e vermelhas"
+      ],
+      "suggestedExams": [
+        "Oroscopia direta evidenciando amígdalas hiperemiadas com exsudato e teste rápido para Streptococcus pyogenes se disponível"
+      ],
+      "suggestedConduct": {
+        "id": "escarlatina-c1",
+        "text": "Amoxicilina oral por 10 dias (ou Benzilpenicilina Benzatina IM dose única), paracetamol para alívio álgico e febril, hidratação oral vigorosa e prevenção primária de febre reumática."
+      },
+      "distractorConducts": [
+        {
+          "id": "escarlatina-d1",
+          "text": "Prescrever apenas corticoide tópico nas manchas da pele sem oferecer antibiótico.",
+          "whyWrong": "A escarlatina é causada pela exotoxina pirogênica do Streptococcus do grupo A; sem antibiótico há risco grave de febre reumática e glomerulonefrite."
+        },
+        {
+          "id": "escarlatina-d2",
+          "text": "Prescrever oseltamivir oral por 5 dias considerando síndrome gripal viral.",
+          "whyWrong": "A escarlatina é eminentemente bacteriana e o antiviral não tem qualquer atividade contra estreptococos."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 250mg/5mL",
+          "route": "Oral",
+          "indication": "Erradicação do Streptococcus pyogenes e profilaxia de febre reumática"
+        },
+        {
+          "genericName": "Paracetamol 200mg/mL",
+          "route": "Oral",
+          "indication": "Alívio da dor faríngea intensa e controle da febre"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina",
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A antibioticoterapia adequada com penicilina ou amoxicilina é mandatória na escarlatina para evitar as sequelas supurativas e não supurativas (febre reumática).",
+      "possibleComorbidities": [
+        "Faringite estreptocócica recente em irmãos"
+      ],
+      "sources": [
+        {
+          "name": "Protocolo Clínico e Diretrizes Terapêuticas da Febre Reumática - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "hiperemese-gravidica",
+      "name": "Hiperêmese Gravídica Leve a Moderada",
+      "area": "Obstetrícia",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 16,
+        "max": 42
+      },
+      "symptoms": [
+        "Náuseas e vômitos incoercíveis no 1º trimestre gestacional impedindo a ingesta alimentar",
+        "Perda ponderal (> 5% do peso pré-gestacional) e sinais clínicos de desidratação",
+        "Cetonúria e astenia profunda"
+      ],
+      "suggestedExams": [
+        "Urina rotina (pesquisa de corpos cetônicos), eletrólitos séricos e glicemia"
+      ],
+      "suggestedConduct": {
+        "id": "hiperemese-c1",
+        "text": "Hidratação venosa imediata com Soro Fisiológico 0,9%, antiemético injetável (Dimenidrinato/Piridoxina), dipirona se cefaleia de desidratação e fracionamento dietético seco após estabilização."
+      },
+      "distractorConducts": [
+        {
+          "id": "hiperemese-d1",
+          "text": "Orientar a gestante a apenas 'comer mais devagar em casa' sem infusão venosa de soro.",
+          "whyWrong": "Com vômitos incoercíveis e cetonúria, a via oral isolada falha e perpetua a desidratação e o desequilíbrio eletrolítico."
+        },
+        {
+          "id": "hiperemese-d2",
+          "text": "Prescrever antibiótico empírico de largo espectro para prevenir infecções gastrointestinais.",
+          "whyWrong": "A hiperêmese decorre de estímulos hormonais (hCG e estrogênio); antibióticos são inócuos e irritam ainda mais a mucosa gástrica."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Restauração volêmica e correção de perdas eletrolíticas causadas pelos vômitos"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Endovenoso / Oral",
+          "indication": "Alívio da cefaleia tensional e do mal-estar decorrente da desidratação"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A reposição hidroeletrolítica venosa vigorosa restaura a volemia materna e cessa a cetose metabólica na hiperêmese gravídica.",
+      "possibleComorbidities": [
+        "Gestação múltipla",
+        "Doença trofoblástica gestacional"
+      ],
+      "sources": [
+        {
+          "name": "Atenção ao Pré-Natal de Baixo Risco - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "bacteriuria-assintomatica-gestante",
+      "name": "Bacteriúria Assintomática na Gestante",
+      "area": "Obstetrícia",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 15,
+        "max": 44
+      },
+      "symptoms": [
+        "Ausência de sintomas urinários clássicos (sem disúria, polaciúria ou febre)",
+        "Urocultura de rotina do pré-natal com crescimento > 100.000 UFC/mL de bactéria única",
+        "Gravidez de primeiro ou segundo trimestre sob acompanhamento habitual"
+      ],
+      "suggestedExams": [
+        "Urocultura quantitativa com antibiograma confirmando bacteriúria significativa"
+      ],
+      "suggestedConduct": {
+        "id": "bact-gest-c1",
+        "text": "Tratamento antibiótico obrigatório com Nitrofurantoína 100mg oral (ou Cefalexina) conforme RENAME do SUS, estímulo à ingesta hídrica e urocultura de controle de cura 14 dias após o término."
+      },
+      "distractorConducts": [
+        {
+          "id": "bact-gest-d1",
+          "text": "Ignorar o exame e não tratar porque a gestante não relata dor ou queixas ao urinar.",
+          "whyWrong": "Na gestação, 30-40% das bacteriúrias não tratadas evoluem para pielonefrite aguda, choque séptico e parto prematuro."
+        },
+        {
+          "id": "bact-gest-d2",
+          "text": "Prescrever ciprofloxacino oral em dose alta de rotina.",
+          "whyWrong": "Quinolonas são contraindicadas na gravidez por risco de artropatias e lesões em cartilagens de crescimento fetal."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Nitrofurantoína 100mg",
+          "route": "Oral",
+          "indication": "Erradicação da bacteriúria para prevenção de pielonefrite e prematuridade"
+        }
+      ],
+      "medicationIds": [
+        "nitrofurantoina"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Diferente de mulheres não grávidas, a bacteriúria assintomática na gestante DEVE ser tratada sistematicamente no SUS para evitar pielonefrite materna e óbito fetal.",
+      "possibleComorbidities": [
+        "Diabetes gestacional"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Gestação de Alto Risco - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "doenca-inflamatoria-pelvica-dip",
+      "name": "Doença Inflamatória Pélvica - DIP Ambulatorial",
+      "area": "IST e Saúde da Mulher",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 16,
+        "max": 45
+      },
+      "symptoms": [
+        "Dor pélvica hipogástrica constante exacerbada à mobilização do colo uterino e anexial",
+        "Corrimento vaginal purulento anormal com odor fétido",
+        "Sangramento intermenstrual ou pós-coito e febre moderada"
+      ],
+      "suggestedExams": [
+        "Exame ginecológico especular e toque bimanual confirmando os critérios maiores da DIP"
+      ],
+      "suggestedConduct": {
+        "id": "dip-c1",
+        "text": "Protocolo tríplice ambulatorial da RENAME/SUS: Ceftriaxona IM dose única + Doxiciclina oral por 14 dias + Metronidazol oral por 14 dias, dipirona para analgesia, repouso e convocação dos parceiros sexuais."
+      },
+      "distractorConducts": [
+        {
+          "id": "dip-d1",
+          "text": "Prescrever apenas analgésico oral simples e liberar a paciente sem antibiótico.",
+          "whyWrong": "A DIP não tratada gera abscesso tubo-ovariano, sepse pélvica, aderências de Fitz-Hugh-Curtis e infertilidade definitiva."
+        },
+        {
+          "id": "dip-d2",
+          "text": "Realizar curetagem uterina imediata de rotina no consultório.",
+          "whyWrong": "Procedimentos intrauterinos invasivos no ápice da infecção disseminam as bactérias para a cavidade peritoneal."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Benzilpenicilina Benzatina 1.200.000 UI",
+          "route": "Intramuscular",
+          "indication": "Cobertura bacteriana parenteral associada ao esquema de IST"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio álgico da inflamação peritoneal e anexial pélvica"
+        }
+      ],
+      "medicationIds": [
+        "benzilpenicilina",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O tratamento empírico precoce da DIP preserva a fertilidade feminina e impede a progressão para quadros cirúrgicos de abscesso tubo-ovariano.",
+      "possibleComorbidities": [
+        "Infecção por Chlamydia trachomatis e Neisseria gonorrhoeae"
+      ],
+      "sources": [
+        {
+          "name": "PCDT para Atenção Integral às Pessoas com IST - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "herpes-genital-primario",
+      "name": "Herpes Genital Primário na APS",
+      "area": "IST e Saúde da Mulher",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 16,
+        "max": 55
+      },
+      "symptoms": [
+        "Múltiplas vesículas agrupadas dolorosas sobre base eritematosa na genitália externa",
+        "Evolução para úlceras superficiais rasas extremamente dolorosas ao contato e à micção",
+        "Linfadenomegalia inguinal bilateral dolorosa e febre baixa no primeiro episódio"
+      ],
+      "suggestedExams": [
+        "Inspeção visual direta da morfologia herpética clássica e testes sorológicos/PCR de rotina de IST"
+      ],
+      "suggestedConduct": {
+        "id": "herpes-c1",
+        "text": "Aciclovir oral da RENAME por 7 a 10 dias iniciado precocemente, dipirona ou paracetamol para alívio álgico, banhos de assento com soro fisiológico morno e orientação sobre transmissão."
+      },
+      "distractorConducts": [
+        {
+          "id": "herpes-d1",
+          "text": "Prescrever amoxicilina com clavulanato oral e pomada de cauterização com ácido tricloroacético.",
+          "whyWrong": "Antibióticos não têm ação contra o vírus HSV e ácidos corrosivos destroem as feridas aumentando a dor e as cicatrizes."
+        },
+        {
+          "id": "herpes-d2",
+          "text": "Efetuar punção cirúrgica de cada uma das vesículas genitais.",
+          "whyWrong": "Romper as vesículas inocula o vírus em tecidos adjacentes e favorece a infecção bacteriana secundária."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Controle da dor genital intensa e facilitação da micção"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "No primeiro episódio de herpes genital, o início precoce do aciclovir oral encurta o tempo de cicatrização das úlceras e a duração da eliminação viral.",
+      "possibleComorbidities": [
+        "Co-infecção por outras ISTs"
+      ],
+      "sources": [
+        {
+          "name": "Protocolo Clínico e Diretrizes Terapêuticas para IST - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "cancro-mole-ducreyi",
+      "name": "Cancro Mole (Haemophilus ducreyi)",
+      "area": "IST e Saúde da Mulher",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 18,
+        "max": 60
+      },
+      "symptoms": [
+        "Úlceras genitais múltiplas, dolorosas, com bordas irregulares e fundo purulento amarelado sujo",
+        "Sangramento fácil à manipulação das lesões e dor intensa",
+        "Linfadenopatia inguinal unilateral dolorosa com tendência a fistulização (bubão)"
+      ],
+      "suggestedExams": [
+        "Exame físico geniturinário e rastreio de sorologias para Sífilis e HIV"
+      ],
+      "suggestedConduct": {
+        "id": "cancro-c1",
+        "text": "Antibioticoterapia de primeira linha com Azitromicina 1g dose única (ou Ceftriaxona IM dose única), higiene local com soro fisiológico, abstinência sexual até cicatrização e tratamento dos parceiros."
+      },
+      "distractorConducts": [
+        {
+          "id": "cancro-d1",
+          "text": "Prescrever apenas pomada hidratante comum sem qualquer antibioticoterapia sistêmica.",
+          "whyWrong": "O cancro mole é bacteriano e altamente contagioso; sem antibiótico há supuração ganglionar e disseminação."
+        },
+        {
+          "id": "cancro-d2",
+          "text": "Incisar e esvaziar o bubão inguinal com bisturi no ambulatório.",
+          "whyWrong": "A incisão cirúrgica do bubão do cancro mole gera fístula crônica de difícil cicatrização; se flutuante, realiza-se apenas aspiração com agulha grossa."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral",
+          "indication": "Cobertura antibacteriana adjuvante de vias geniturinárias"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O cancro mole distingue-se do cancro duro da sífilis pela sua intensa dor e fundo purulento; a dose única de macrolídeo é curativa no protocolo do SUS.",
+      "possibleComorbidities": [
+        "Infecção simultânea pelo Treponema pallidum (cancro misto)"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Controle das Infecções Sexualmente Transmissíveis - MS / ANVISA",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "linfogranuloma-venereo",
+      "name": "Linfogranuloma Venéreo (Chlamydia trachomatis L1-L3)",
+      "area": "IST e Saúde da Mulher",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 18,
+        "max": 55
+      },
+      "symptoms": [
+        "Pápula ou erosão genital inicial efêmera e indolor que cicatriza espontaneamente",
+        "Linfadenomegalia inguinal e crural dolorosa dividida pelo ligamento inguinal ('sinal do sulco')",
+        "Fístulas múltiplas em 'bico de regador' drenando secreção purulenta"
+      ],
+      "suggestedExams": [
+        "Avaliação dos gânglios inguinais, pesquisa molecular de Chlamydia e exclusão de sífilis"
+      ],
+      "suggestedConduct": {
+        "id": "lgv-c1",
+        "text": "Doxiciclina 100mg oral a cada 12 horas por 21 dias consecutivos (esquema RENAME para LGV), compressas mornas, higiene local e convocação de todos os parceiros dos últimos 60 dias."
+      },
+      "distractorConducts": [
+        {
+          "id": "lgv-d1",
+          "text": "Prescrever apenas 1 comprimido de paracetamol e dispensar por se tratar de lesão ganglionar inocente.",
+          "whyWrong": "O LGV não tratado causa elefantíase genital irreversível e estenose retal fibrosante grave."
+        },
+        {
+          "id": "lgv-d2",
+          "text": "Fazer resseção cirúrgica ampla de toda a cadeia de gânglios inguinais infectados.",
+          "whyWrong": "Linfadenectomia no LGV agudo destrói a drenagem linfática da pelve e dos membros inferiores, perpetuando o linfedema crônico."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral",
+          "indication": "Cobertura antibacteriana para prevenção de infecções secundárias associadas"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Os sorovares invasivos L1-L3 de Chlamydia requerem tratamento antibiótico estendido por 21 dias para erradicação e prevenção de estenose linfática anorretal.",
+      "possibleComorbidities": [
+        "Proctite e proctocolite em práticas sexuais receptivas"
+      ],
+      "sources": [
+        {
+          "name": "PCDT IST - Linfogranuloma Venéreo - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "donovanose-granuloma-inguinal",
+      "name": "Donovanose - Granuloma Inguinal (Klebsiella granulomatis)",
+      "area": "IST e Saúde da Mulher",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 20,
+        "max": 60
+      },
+      "symptoms": [
+        "Úlceras genitais crônicas, indolores, com fundo granuloso vermelho-vivo exuberante e vegetante ('em carne crua')",
+        "Bordas planas ou hipertróficas bem demarcadas que sangram facilmente ao mínimo contato",
+        "Evolução insidiosa e destrutiva sem adenopatia verdadeira (pseudobubões subcutâneos)"
+      ],
+      "suggestedExams": [
+        "Biópsia ou raspado da borda da lesão com coloração de Giemsa demonstrando corpúsculos de Donovan"
+      ],
+      "suggestedConduct": {
+        "id": "donovanose-c1",
+        "text": "Azitromicina 1g no dia 1 seguida de 500mg/dia (ou Doxiciclina 100mg 12/12h) até a cicatrização clínica completa de todas as lesões, com reavaliação periódica na APS."
+      },
+      "distractorConducts": [
+        {
+          "id": "donovanose-d1",
+          "text": "Prescrever antibioticoterapia por apenas 3 dias e suspender mesmo com ferida aberta.",
+          "whyWrong": "Na donovanose, interromper o antibiótico antes da epitelização completa induz recidiva imediata e mutilação tecidual."
+        },
+        {
+          "id": "donovanose-d2",
+          "text": "Cauterizar as lesões com eletrocautério sem qualquer antibiótico oral.",
+          "whyWrong": "A bactéria é intracelular sistêmica nos macrófagos; queimar a superfície não esteriliza o foco bacteriano."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral",
+          "indication": "Suporte antimicrobiano de cobertura secundária da pele ulcerada"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A donovanose é uma infecção crônica e destrutiva; a regra de ouro no SUS é manter a medicação até que a úlcera esteja 100% cicatrizada.",
+      "possibleComorbidities": [
+        "Co-infecção por HIV e Sífilis"
+      ],
+      "sources": [
+        {
+          "name": "Diretrizes para o Manejo de Úlceras Genitais - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "dismenorreia-primaria-aguda",
+      "name": "Dismenorreia Primária Aguda",
+      "area": "Saúde da Mulher",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 14,
+        "max": 35
+      },
+      "symptoms": [
+        "Dor espasmódica em cólica no baixo ventre que se inicia horas antes ou com o fluxo menstrual",
+        "Irradiação da dor para região lombossacra e faces mediais das coxas",
+        "Náuseas, cefaleia e ausência de patologia pélvica estrutural identificável"
+      ],
+      "suggestedExams": [
+        "Exame físico pélvico cuidadoso confirmando útero móvel, indolor e anexos livres"
+      ],
+      "suggestedConduct": {
+        "id": "dismenorreia-c1",
+        "text": "Anti-inflamatório não esteroidal (Ibuprofeno oral) ou Dipirona como primeira linha para inibir as prostaglandinas endometriais, calor local no baixo ventre e orientação sobre o ciclo menstrual."
+      },
+      "distractorConducts": [
+        {
+          "id": "dismenorreia-d1",
+          "text": "Prescrever antibioticoterapia profilática com ciprofloxacino para cada ciclo menstrual.",
+          "whyWrong": "Dismenorreia primária decorre da hiperprodução de prostaglandinas (PGF2a) no endométrio; não tem etiologia infecciosa."
+        },
+        {
+          "id": "dismenorreia-d2",
+          "text": "Indicar videolaparoscopia cirúrgica de urgência no primeiro dia da menstruação.",
+          "whyWrong": "Procedimento invasivo sem justificativa em cólicas menstruais primárias normais responsivas a AINEs."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio rápido da dor pélvica e cefaleia associada ao período menstrual"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Os inibidores de síntese de prostaglandinas iniciados no início dos sintomas reduzem a contratilidade uterina excessiva e controlam os sintomas da dismenorreia primária.",
+      "possibleComorbidities": [
+        "Cefaleia catamenial"
+      ],
+      "sources": [
+        {
+          "name": "Saúde Sexual e Reprodutiva - Cadernos de Atenção Básica nº 26 - MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "sangramento-uterino-disfuncional",
+      "name": "Sangramento Uterino Disfuncional na APS",
+      "area": "Saúde da Mulher",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 18,
+        "max": 48
+      },
+      "symptoms": [
+        "Perda de sangue menstrual excessiva em volume ou duração (> 8 dias de fluxo intenso)",
+        "Eliminação frequente de coágulos sanguíneos e necessidade de trocas constantes de absorvente",
+        "Sinais incipientes de fadiga, palidez e tontura ortostática"
+      ],
+      "suggestedExams": [
+        "Exame especular ginecológico, teste de gravidez (Beta-hCG) para afastar abortamento e hemograma"
+      ],
+      "suggestedConduct": {
+        "id": "sud-c1",
+        "text": "Estabilização clínica com hidratação venosa se necessário, Ácido Tranexâmico oral/EV da RENAME ou progestagênio, reposição de ferro com sulfato ferroso e encaminhamento referenciado se refratário."
+      },
+      "distractorConducts": [
+        {
+          "id": "sud-d1",
+          "text": "Prescrever ácido acetilsalicílico (AAS) e mandar a paciente aguardar 30 dias em casa.",
+          "whyWrong": "O AAS tem efeito antiagregante plaquetário potente e pioraria gravemente o sangramento uterino ativo."
+        },
+        {
+          "id": "sud-d2",
+          "text": "Indicar histerectomia total de urgência sem qualquer tentativa de controle medicamentoso.",
+          "whyWrong": "A imensa maioria dos casos de SUD responde satisfatoriamente ao tratamento clínico farmacológico conservador."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Expansão volêmica inicial em perdas sanguíneas agudas moderadas"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio das cólicas uterinas secundárias à eliminação de coágulos"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O manejo inicial com antifibrinolíticos e suporte volêmico estanca o fluxo agudo e previne o agravamento da anemia na APS.",
+      "possibleComorbidities": [
+        "Anemia ferropriva secundária"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Ginecologia da Atenção Básica - FEBRASGO / Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "eclampsia-emergencia-obstetrica",
+      "name": "Eclâmpsia - Emergência Obstétrica Hospitalar",
+      "area": "Obstetrícia",
+      "typicalUnit": "Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 16,
+        "max": 40
+      },
+      "symptoms": [
+        "Convulsões tônico-clônicas generalizadas em gestante acima de 20 semanas de idade gestacional",
+        "Picos pressóricos elevados (PA >= 160/110 mmHg) precedidos por escotomas e cefaleia occipital",
+        "Perda súbita da consciência e cianose perioral transitória"
+      ],
+      "suggestedExams": [
+        "Monitorização contínua de sinais vitais, proteinúria de fita e cardiotocografia fetal de emergência"
+      ],
+      "suggestedConduct": {
+        "id": "eclampsia-c1",
+        "text": "Garantir vias aéreas e oxigenação, iniciar protocolo de Zuspan com Sulfato de Magnésio IV imediato (prevenção de novas crises), controle pressórico com Hidralazina EV e preparação para parto de urgência."
+      },
+      "distractorConducts": [
+        {
+          "id": "eclampsia-d1",
+          "text": "Administrar diazepam venoso em infusão contínua como droga única de escolha para a eclâmpsia.",
+          "whyWrong": "O sulfato de magnésio é a droga de escolha absoluta com evidência IA; benzodiazepínicos deprimem o feto e são inferiores."
+        },
+        {
+          "id": "eclampsia-d2",
+          "text": "Aguardar o término espontâneo da gravidez em casa sem internação hospitalar.",
+          "whyWrong": "A eclâmpsia é uma das maiores causas de morte materna no Brasil e requer intervenção hospitalar imediata."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Acesso venoso calibroso para infusão contínua das medicações de emergência"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Endovenoso",
+          "indication": "Alívio álgico pós-crise convulsiva"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O sulfato de magnésio é o anticonvulsivante de escolha insubstituível na pré-eclâmpsia grave e eclâmpsia para reduzir mortalidade materna.",
+      "possibleComorbidities": [
+        "Síndrome HELLP",
+        "Edema agudo de pulmão"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Hipertensão na Gestação - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "esporotricose-cutanea",
+      "name": "Esporotricose Cutânea (Sporothrix schenckii / brasiliensis)",
+      "area": "Dermatologia",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 10,
+        "max": 75
+      },
+      "symptoms": [
+        "Nódulo cutâneo que evolui para úlcera gomosa após arranhadura ou mordedura de gato doente",
+        "Disseminação de lesões nodulares ao longo dos trajetos linfáticos regionais (forma linfocutânea)",
+        "Evolução subaguda e indolente sem resposta a antibióticos convencionais"
+      ],
+      "suggestedExams": [
+        "Micológico direto e cultura de fungos a partir do exsudato da lesão ulcerada"
+      ],
+      "suggestedConduct": {
+        "id": "esporotricose-c1",
+        "text": "Antifúngico oral sistêmico da RENAME (Itraconazol 100 a 200mg/dia) mantido por 2 a 4 semanas após a cicatrização completa, higienização com soro fisiológico e notificação zoossanitária do felino."
+      },
+      "distractorConducts": [
+        {
+          "id": "esporotricose-d1",
+          "text": "Prescrever amoxicilina com clavulanato por 7 dias garantindo que se trata de infecção bacteriana simples.",
+          "whyWrong": "Sporothrix é um fungo dimórfico; antibióticos são completamente ineficazes e postergam a cura."
+        },
+        {
+          "id": "esporotricose-d2",
+          "text": "Realizar exérese cirúrgica radical de todo o cordão linfático do braço acometido.",
+          "whyWrong": "A cirurgia é contraindicada pois dissemina a infecção e deixa sequelas graves funcionais."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico",
+          "indication": "Higienização estéril das lesões ulceradas gomosas"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A esporotricose zoonótica felina é uma micose endêmica em expansão no Brasil; o itraconazol oral é a droga de escolha fornecida pelo SUS.",
+      "possibleComorbidities": [
+        "Convívio com animais domésticos doentes sem tratamento veterinário"
+      ],
+      "sources": [
+        {
+          "name": "Nota Técnica sobre Vigilância da Esporotricose - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "tungiase-bicho-de-pe",
+      "name": "Tungíase - Bicho-de-pé com Inflamação Local (Tunga penetrans)",
+      "area": "Dermatologia",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 4,
+        "max": 75
+      },
+      "symptoms": [
+        "Pápula esbranquiçada ou amarelada com ponto negro central nos pés (região periungueal ou plantar)",
+        "Prurido intenso que progride para dor local ao apoiar o peso e caminhar",
+        "Histórico de contato descalço com solo arenoso ou currais em áreas endêmicas"
+      ],
+      "suggestedExams": [
+        "Inspeção dermatológica direta com lupa evidenciando o parasita sob a epiderme"
+      ],
+      "suggestedConduct": {
+        "id": "tungiase-c1",
+        "text": "Extração estéril da pulga grávida sob antissepsia rigorosa no consultório da UBS, lavagem abundante com soro fisiológico 0,9%, curativo estéril e verificação da vacina antitetânica."
+      },
+      "distractorConducts": [
+        {
+          "id": "tungiase-d1",
+          "text": "Queimar o parasita na pele do paciente com ponta de agulha aquecida no fogo.",
+          "whyWrong": "Métodos caseiros de queimadura provocam queimaduras graves de 2º grau e introduzem bactérias nocivas."
+        },
+        {
+          "id": "tungiase-d2",
+          "text": "Prescrever antibiótico venoso em regime de internação de 14 dias para uma lesão isolada.",
+          "whyWrong": "A tungíase não complicada é resolvida ambulatorialmente em poucos minutos pela remoção mecânica estéril."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico",
+          "indication": "Lavagem e antissepsia local pós-remoção da Tunga penetrans"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A remoção íntegra do parasita com agulha estéril aliada à profilaxia do tétano resolve a tungíase e previne infecções bacterianas graves secundárias.",
+      "possibleComorbidities": [
+        "Imunização antitetânica desatualizada"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Doenças Infecciosas e Parasitárias - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "larva-migrans-cutanea",
+      "name": "Larva Migrans Cutânea - Bicho-geográfico (Ancylostoma braziliense)",
+      "area": "Dermatologia e Parasitária",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 2,
+        "max": 65
+      },
+      "symptoms": [
+        "Trajeto serpiginoso linear eritematoso e saliente na pele que avança milímetros ao dia",
+        "Prurido noturno intenso que interfere no sono e repouso",
+        "Histórico de lazer em caixas de areia de parques ou praias com presença de cães e gatos"
+      ],
+      "suggestedExams": [
+        "Exame dermatológico característico do trajeto serpiginoso intradérmico"
+      ],
+      "suggestedConduct": {
+        "id": "larva-migrans-c1",
+        "text": "Antiparasitário da RENAME (Albendazol 400mg/dia por 3 dias ou Tiabendazol pomada se lesão inicial única), compressas com soro fisiológico e orientação para evitar coçadura secundária."
+      },
+      "distractorConducts": [
+        {
+          "id": "larva-migrans-d1",
+          "text": "Tentar capturar e retirar a larva cortando a pele com bisturi na extremidade visível do trajeto.",
+          "whyWrong": "A larva microscópica encontra-se de 1 a 2 cm além do trajeto inflamatório visível; o corte apenas causa ferimentos inúteis."
+        },
+        {
+          "id": "larva-migrans-d2",
+          "text": "Prescrever penicilina benzatina injetável profunda para o verme na pele.",
+          "whyWrong": "Penicilinas têm espectro exclusivamente bacteriano e zero eficácia contra nematódeos."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico",
+          "indication": "Higiene da área escoriada pelo prurido"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A larva migrans é uma zoonose autolimitada no homem; o albendazol acelera a morte do parasita e alivia o prurido rapidamente.",
+      "possibleComorbidities": [
+        "Infecção bacteriana secundária por arranhadura"
+      ],
+      "sources": [
+        {
+          "name": "Doenças Dermatológicas na Atenção Básica - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "pediculose-couro-cabeludo",
+      "name": "Pediculose do Couro Cabeludo (Pediculus humanus capitis)",
+      "area": "Dermatologia e Parasitária",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 3,
+        "max": 14
+      },
+      "symptoms": [
+        "Prurido intenso no couro cabeludo, predominantemente nas regiões occipital e retroauricular",
+        "Visualização direta de lêndeas esbranquiçadas fortemente aderidas à haste dos fios de cabelo",
+        "Escoriações de coçadura na nuca que podem evoluir com impetiginização secundária"
+      ],
+      "suggestedExams": [
+        "Inspeção cuidadosa do couro cabeludo sob boa iluminação com auxílio de pente fino"
+      ],
+      "suggestedConduct": {
+        "id": "pediculose-c1",
+        "text": "Permetrina loção a 1% da RENAME aplicada nos cabelos limpos e secos por 10 minutos (com repetição após 7 dias), uso sistemático de pente fino e lavagem em água quente das roupas de cama."
+      },
+      "distractorConducts": [
+        {
+          "id": "pediculose-d1",
+          "text": "Passar querosene ou inseticida agrícola nos cabelos da criança para erradicação rápida.",
+          "whyWrong": "Produtos químicos industriais são altamente tóxicos, absorvidos pelo couro cabeludo e com risco de queimadura e intoxicação letal."
+        },
+        {
+          "id": "pediculose-d2",
+          "text": "Prescrever ceftriaxona intramuscular para piolhos nos cabelos.",
+          "whyWrong": "Antibióticos betalactâmicos não agem sobre artrópodes ectoparasitas."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico Capilar",
+          "indication": "Lavagem e remoção de crostas no couro cabeludo"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A permetrina 1% tópica é segura e eficaz no tratamento da pediculose; a reaplicação após 7 dias é necessária para atingir ninfas recém-eclodidas.",
+      "possibleComorbidities": [
+        "Impetigo secundário por Staphylococcus aureus"
+      ],
+      "sources": [
+        {
+          "name": "Saúde na Escola - Cadernos de Atenção Básica - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "tinea-corporis-dermatofitose",
+      "name": "Tinea Corporis / Dermatofitose Superficial",
+      "area": "Dermatologia",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 5,
+        "max": 70
+      },
+      "symptoms": [
+        "Placas eritemato-descamativas anulares com bordas ativas elevadas e centro mais claro",
+        "Prurido de intensidade leve a moderada na área da lesão",
+        "Contato prévio com cães, gatos ou ambientes úmidos compartilhados"
+      ],
+      "suggestedExams": [
+        "Exame micológico direto com hidróxido de potássio (KOH) demonstrando hifas hialinas septadas"
+      ],
+      "suggestedConduct": {
+        "id": "tinea-c1",
+        "text": "Antifúngico tópico da RENAME (Miconazol ou Cetoconazol creme 2x ao dia) por 2 a 3 semanas, manter a pele limpa e seca com soro fisiológico e orientar não compartilhar toalhas."
+      },
+      "distractorConducts": [
+        {
+          "id": "tinea-d1",
+          "text": "Prescrever pomada de corticoide puro para desinflamar rapidamente o anel da pele.",
+          "whyWrong": "Corticoides sozinhos causam 'Tinea incognito', mascarando a lesão e disseminando o fungo pela epiderme."
+        },
+        {
+          "id": "tinea-d2",
+          "text": "Prescrever amoxicilina oral por 14 dias para a placa da pele.",
+          "whyWrong": "Trata-se de infecção fúngica superficial; antibióticos bacterianos são completamente desprovidos de ação."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico",
+          "indication": "Higiene da área descamativa antes da aplicação do antifúngico"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A dermatofitose corpórea responde muito bem aos azólicos tópicos da RENAME, dispensando antifúngicos sistêmicos na maioria dos casos.",
+      "possibleComorbidities": [
+        "Tinea pedis (pé de atleta) concomitante"
+      ],
+      "sources": [
+        {
+          "name": "Caderno de Atenção Básica nº 19 - Dermatologia - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "pitiriase-versicolor",
+      "name": "Pitiríase Versicolor - Pano Branco (Malassezia spp.)",
+      "area": "Dermatologia",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 14,
+        "max": 55
+      },
+      "symptoms": [
+        "Máculas hipopigmentadas ou hipercrômicas descamativas finas no tronco superior, ombros e pescoço",
+        "Descamação ao estiramento da pele (sinal de Zileri positivo)",
+        "Piora visual após exposição solar em clima quente e úmido"
+      ],
+      "suggestedExams": [
+        "Pesquisa direta ao microscópio óptico com KOH ('aspecto em espaguete com almôndegas')"
+      ],
+      "suggestedConduct": {
+        "id": "pitiriase-c1",
+        "text": "Shampoo ou loção tópica de Cetoconazol a 2% (ou Sulfeto de Selênio) aplicado durante o banho por 10 a 14 dias, higiene com soro fisiológico e orientação de que a repigmentação cutânea é gradual e lenta."
+      },
+      "distractorConducts": [
+        {
+          "id": "pitiriase-d1",
+          "text": "Prescrever corticoide tópico de alta potência para repigmentar as manchas.",
+          "whyWrong": "Corticoides tópicos alimentam a proliferação lipofílica da Malassezia e agravam as lesões."
+        },
+        {
+          "id": "pitiriase-d2",
+          "text": "Internar o paciente em enfermaria de isolamento por doença contagiosa.",
+          "whyWrong": "A Malassezia faz parte da microbiota normal da pele e a pitiríase versicolor não é contagiosa."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico",
+          "indication": "Higienização da pele antes do antifúngico tópico"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A pitiríase versicolor é oportunista em climas tropicais; o cetoconazol tópico cura a infecção, embora as manchas hipocrômicas demorem semanas para repigmentar.",
+      "possibleComorbidities": [
+        "Dermatite seborreica associada"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Micoses Superficiais - Sociedade Brasileira de Dermatologia / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "furunculose-abscesso-cutaneo",
+      "name": "Furunculose / Abscesso Cutâneo Simples",
+      "area": "Dermatologia",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 10,
+        "max": 70
+      },
+      "symptoms": [
+        "Nódulo eritematoso, doloroso, quente e flutuante na pele com ponto necrótico purulento central",
+        "Dor latejante local que impede a compressão da área",
+        "Ausência de febre alta ou sinais sistêmicos de toxemia"
+      ],
+      "suggestedExams": [
+        "Palpação cuidadosa confirmando área de flutuação purulenta central"
+      ],
+      "suggestedConduct": {
+        "id": "furunculo-c1",
+        "text": "Incisão e drenagem cirúrgica estéril com esvaziamento purulento, lavagem copiosa da cavidade com soro fisiológico 0,9%, curativo compressivo e antibioticoterapia oral (Cefalexina/Amoxicilina) se houver celulite perilesional."
+      },
+      "distractorConducts": [
+        {
+          "id": "furunculo-d1",
+          "text": "Espremer com força o furúnculo com os dedos sem drenagem estéril, especialmente no triângulo perinasal.",
+          "whyWrong": "Espremer lesões na face dissemina bactérias para o seio cavernoso cerebral por refluxo venoso com risco de trombose fatal."
+        },
+        {
+          "id": "furunculo-d2",
+          "text": "Prescrever apenas analgésico sem realizar a drenagem do pus já acumulado.",
+          "whyWrong": "Pus sob tensão não é esterilizado por via oral; a drenagem cirúrgica do foco purulento é a cura definitiva."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral",
+          "indication": "Cobertura antibacteriana se celulite circundante associada"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Tópico / Irrigação",
+          "indication": "Lavagem copiosa de restos necróticos pós-drenagem"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O axioma clássico 'ubi pus, ibi evacua' (onde há pus, drene) é primordial: a drenagem estéril imediata alivia a dor e promove a rápida cicatrização do abscesso.",
+      "possibleComorbidities": [
+        "Diabetes mellitus descompensado"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Pequenas Cirurgias na Atenção Básica - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "febre-maculosa-brasileira",
+      "name": "Febre Maculosa Brasileira - Suspeita Inicial (Rickettsia rickettsii)",
+      "area": "Infectologia e Doenças Tropicais",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 10,
+        "max": 70
+      },
+      "symptoms": [
+        "Febre súbita elevada com cefaleia holocraniana intensa e mialgia incapacitante",
+        "Histórico recente de permanência em áreas de mata, beira de rios ou contato com carrapatos ('carrapato-estrela')",
+        "Surgimento a partir do 3º dia de exantema maculopapular em punhos e tornozelos que progride para palmas e plantas"
+      ],
+      "suggestedExams": [
+        "Notificação compulsória imediata para vigilância epidemiológica e coleta de sangue para sorologia pareada/PCR"
+      ],
+      "suggestedConduct": {
+        "id": "maculosa-c1",
+        "text": "Iniciar IMEDIATAMENTE antibioticoterapia empírica com Doxiciclina oral/venosa da RENAME (sem aguardar confirmação sorológica laboratorial), hidratação com soro fisiológico venoso e monitorização intensiva."
+      },
+      "distractorConducts": [
+        {
+          "id": "maculosa-d1",
+          "text": "Aguardar o laudo da sorologia do laboratório central (que demora 15 dias) antes de prescrever qualquer antibiótico.",
+          "whyWrong": "A febre maculosa tem letalidade > 50% no Brasil se o tratamento não for iniciado nos primeiros 5 dias de sintomas."
+        },
+        {
+          "id": "maculosa-d2",
+          "text": "Prescrever apenas paracetamol e liberar o paciente para repousar em domicílio.",
+          "whyWrong": "Sem doxiciclina precoce, a vasculite sistêmica da Rickettsia causa falência de múltiplos órgãos e óbito rápido."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Suporte hemodinâmico e hidratação na vasculite febril aguda"
+        },
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral",
+          "indication": "Cobertura antibiótica de emergência enquanto se estabelece o esquema"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "amoxicilina"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A febre maculosa é a doença transmitida por carrapatos mais letal do país; a regra do SUS é tratar imediatamente com doxiciclina na suspeita epidemiológica.",
+      "possibleComorbidities": [
+        "Áreas endêmicas de capivaras e cavalos"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Vigilância da Febre Maculosa Brasileira - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "toxoplasmose-aguda-adquirida",
+      "name": "Toxoplasmose Aguda Adquirida no Imunocompetente",
+      "area": "Infectologia e Parasitária",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 14,
+        "max": 60
+      },
+      "symptoms": [
+        "Poliadenomegalia cervical posterior e suboccipital dolorosa e persistente",
+        "Febre baixa ou moderada com astenia crônica e mialgia",
+        "Histórico de ingestão de carnes cruas/malcozidas ou manuseio de caixas de areia de felinos"
+      ],
+      "suggestedExams": [
+        "Sorologia específica anti-Toxoplasma gondii (IgM e IgG) e teste de avidez de IgG se gestante"
+      ],
+      "suggestedConduct": {
+        "id": "toxo-c1",
+        "text": "Suporte clínico sintomático com paracetamol ou dipirona, hidratação oral, orientação alimentar higiênica e reserva de tratamento com Sulfadiazina + Pirimetamina + Ácido Folínico se paciente gestante ou com imunodepressão."
+      },
+      "distractorConducts": [
+        {
+          "id": "toxo-d1",
+          "text": "Prescrever quimioterapia antineoplásica imediata suspeitando de linfoma sem antes testar sorologias infecciosas.",
+          "whyWrong": "A síndrome mono-like por toxoplasmose simula linfoma; realizar quimioterapia empírica sem biópsia é erro gravíssimo."
+        },
+        {
+          "id": "toxo-d2",
+          "text": "Prescrever oseltamivir oral por 10 dias consecutivos.",
+          "whyWrong": "Oseltamivir não tem atividade contra o protozoário intracelular Toxoplasma gondii."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Oral / Nasal",
+          "indication": "Hidratação de suporte durante o quadro febril"
+        },
+        {
+          "genericName": "Paracetamol 500mg",
+          "route": "Oral",
+          "indication": "Controle da cefaleia e mialgia decorrentes da adenite"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "No indivíduo imunocompetente, a toxoplasmose aguda adquirida costuma ser autolimitada; o rastreio rigoroso é imperativo em gestantes para evitar a transmissão congênita.",
+      "possibleComorbidities": [
+        "Gestação concomitante (alto risco congênito)"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Vigilância da Toxoplasmose Gestacional e Congênita - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "teniase-intestinal",
+      "name": "Teníase Intestinal (Taenia solium / saginata)",
+      "area": "Parasitária e Digestiva",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 6,
+        "max": 70
+      },
+      "symptoms": [
+        "Eliminação ativa de proglotes esbranquiçadas móveis do parasita nas fezes ou nas roupas íntimas",
+        "Desconforto epigástrico vago, plenitude pós-prandial e náuseas ocasionais",
+        "Histórico de consumo frequente de carne bovina ou suína malpassada"
+      ],
+      "suggestedExams": [
+        "Exame parasitológico de fezes com método de fita adesiva perineal (método de Graham) para visualização de ovos/proglotes"
+      ],
+      "suggestedConduct": {
+        "id": "teniase-c1",
+        "text": "Antiparasitário específico da RENAME em dose única (Praziquantel ou Albendazol 400mg/dia por 3 dias), orientação de saneamento e higiene das mãos, e reidratação oral."
+      },
+      "distractorConducts": [
+        {
+          "id": "teniase-d1",
+          "text": "Prescrever laxante purgativo drástico com óleo mineral e mandar evacuar sem vermífugo.",
+          "whyWrong": "O laxativo não elimina o escólex fixado na mucosa duodenal e pode quebrar proglotes liberando milhares de ovos no trato digestivo."
+        },
+        {
+          "id": "teniase-d2",
+          "text": "Realizar laparotomia exploradora de emergência para remover o helminto do intestino.",
+          "whyWrong": "Procedimento cirúrgico é completamente contraindicado para uma parasitose luminal tratável com um único comprimido oral."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Sais para Reidratação Oral (SRO)",
+          "route": "Oral",
+          "indication": "Reposição hidroeletrolítica se evacuações diarreicas associadas"
+        }
+      ],
+      "medicationIds": [
+        "sais-reidratacao"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O tratamento da teníase intestinal com antiparasitário em dose única elimina o parasita adulto e impede o ciclo fecal-oral de ovos que gera cisticercose humana.",
+      "possibleComorbidities": [
+        "Desnutrição crônica",
+        "Anemia ferropriva"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Vigilância em Saúde - Doenças Parasitárias - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "pericardite-viral-aguda",
+      "name": "Pericardite Viral Aguda",
+      "area": "Cardiovascular",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 18,
+        "max": 65
+      },
+      "symptoms": [
+        "Dor torácica pleurítica aguda retroesternal que piora em decúbito dorsal e melhora ao inclinar o tronco para frente",
+        "Atrito pericárdico audível à ausculta cardíaca e histórico recente de virose respiratória",
+        "Febre baixa, taquicardia e dispneia leve"
+      ],
+      "suggestedExams": [
+        "Eletrocardiograma (supradesnivelamento difuso do segmento ST com concavidade para cima e infradesnivelamento de PR) e ecocardiograma"
+      ],
+      "suggestedConduct": {
+        "id": "pericardite-c1",
+        "text": "Anti-inflamatório oral em dose plena (Ibuprofeno 600mg 8/8h) associado a Colchicina da RENAME por 3 meses (para evitar recidivas), dipirona para controle álgico agudo, hidratação e repouso físico."
+      },
+      "distractorConducts": [
+        {
+          "id": "pericardite-d1",
+          "text": "Administrar trombolítico venoso de emergência acreditando ser infarto com supra de ST.",
+          "whyWrong": "Na pericardite o trombolítico precipita hemopericárdio maciço com tamponamento cardíaco letal."
+        },
+        {
+          "id": "pericardite-d2",
+          "text": "Prescrever apenas ansiolítico em gotas e dispensar para casa.",
+          "whyWrong": "Ignorar o atrito e as alterações de ECG põe o paciente em risco de derrame pericárdico com colapso hemodinâmico."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Endovenoso / Oral",
+          "indication": "Alívio álgico da dor pleuropericárdica aguda"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Manutenção volêmica e acesso venoso de segurança"
+        }
+      ],
+      "medicationIds": [
+        "dipirona",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A associação de anti-inflamatório com colchicina reduz pela metade a taxa de recorrência da pericardite aguda viral.",
+      "possibleComorbidities": [
+        "Derrame pericárdico leve associado"
+      ],
+      "sources": [
+        {
+          "name": "Diretriz de Miocardites e Pericardites - Sociedade Brasileira de Cardiologia",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "bradicardia-sintomatica-instavel",
+      "name": "Bradicardia Sintomática Instável na UPA",
+      "area": "Cardiovascular",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 45,
+        "max": 88
+      },
+      "symptoms": [
+        "Frequência cardíaca < 45 bpm acompanhada de hipotensão arterial sistêmica e tontura importante",
+        "Rebaixamento do nível de consciência, confusão mental ou pré-síncope",
+        "Pele fria, pegajosa e tempo de enchimento capilar lentificado"
+      ],
+      "suggestedExams": [
+        "Monitorização eletrocardiográfica contínua, oximetria de pulso e ECG de 12 derivações"
+      ],
+      "suggestedConduct": {
+        "id": "bradicardia-c1",
+        "text": "Oxigênio sob máscara, acesso venoso calibroso, Atropina 1mg IV em bolus da RENAME (podendo repetir até 3mg) e preparação de marcapasso transcutâneo se refratária com hidratação cuidadosa."
+      },
+      "distractorConducts": [
+        {
+          "id": "bradicardia-d1",
+          "text": "Administrar betabloqueador venoso para desacelerar o coração.",
+          "whyWrong": "Betabloqueadores reduzem ainda mais a frequência cardíaca, provocando parada em assistolia imediata."
+        },
+        {
+          "id": "bradicardia-d2",
+          "text": "Dar café quente e aguardar melhora espontânea da pressão na sala de espera.",
+          "whyWrong": "A bradicardia com choque cardiogênico requer intervenção cronotrópica médica na sala vermelha da UPA."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Acesso venoso calibroso de infusão para drogas de reanimação cardiovascular"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na bradicardia instável com sinais de hipoperfusão, a atropina é a medicação inicial de escolha do ACLS para elevar o débito cardíaco.",
+      "possibleComorbidities": [
+        "Bloqueio atrioventricular total",
+        "Uso crônico de digitálicos ou betabloqueadores"
+      ],
+      "sources": [
+        {
+          "name": "Protocolos de Intervenção para o SAMU e UPAs - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "taquicardia-paroxistica-supraventricular",
+      "name": "Taquicardia Paroxística Supraventricular - TPSV",
+      "area": "Cardiovascular",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 18,
+        "max": 65
+      },
+      "symptoms": [
+        "Palpitações taquicárdicas súbitas e regulares com frequência cardíaca entre 160 e 220 bpm",
+        "Sensação de aperto torácico leve e tontura sem instabilidade hemodinâmica crítica",
+        "Ansiedade secundária e início paroxístico precipitado por esforço ou estresse"
+      ],
+      "suggestedExams": [
+        "ECG de 12 derivações com QRS estreito (< 120ms), regular e sem ondas P visíveis"
+      ],
+      "suggestedConduct": {
+        "id": "tpsv-c1",
+        "text": "Manobra vagal modificada de Valsalva na maca; se refratária, administração de Adenosina 6mg IV em bolus rápido seguido de flush com 20mL de Soro Fisiológico 0,9% e elevação do braço."
+      },
+      "distractorConducts": [
+        {
+          "id": "tpsv-d1",
+          "text": "Realizar massagem simultânea dos dois seios carotídeos com força máxima.",
+          "whyWrong": "A massagem carotídea bilateral é formalmente contraindicada pelo risco de parada cardíaca ou embolia cerebral de placa ateromatosa."
+        },
+        {
+          "id": "tpsv-d2",
+          "text": "Prescrever comprimido de amoxicilina e liberar para casa.",
+          "whyWrong": "Antibióticos não têm qualquer efeito antiarrítmico sobre circuitos de reentrada nodal no coração."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Flush venoso imediato de 20mL pós-injeção de adenosina para condução rápida ao miocárdio"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A adenosina tem meia-vida de poucos segundos; injetá-la em bolus rápido seguido de flush de soro fisiológico bloqueia momentaneamente o nó AV e reverte a TPSV com segurança.",
+      "possibleComorbidities": [
+        "Síndrome de Wolff-Parkinson-White"
+      ],
+      "sources": [
+        {
+          "name": "Diretriz Brasileira de Arritmias Cardíacas - Sociedade Brasileira de Cardiologia",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "derrame-pleural-parapneumonico",
+      "name": "Derrame Pleural Parapneumônico",
+      "area": "Respiratórios",
+      "typicalUnit": "Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 18,
+        "max": 80
+      },
+      "symptoms": [
+        "Dor torácica ventilatório-dependente com febre persistente e tosse produtiva",
+        "Abolição do frêmito toracovocal e macicez à percussão na base pulmonar afetada",
+        "Murmúrio vesicular diminuído ou ausente e taquipneia"
+      ],
+      "suggestedExams": [
+        "Radiografia de tórax em decúbito lateral (Laurel) ou ultrassonografia demonstrando líquido livre no espaço pleural"
+      ],
+      "suggestedConduct": {
+        "id": "derrame-c1",
+        "text": "Toracocentese diagnóstica imediata com análise bioquímica (Light) e citológica do líquido pleural, antibioticoterapia parenteral da RENAME (Amoxicilina com Clavulanato ou Ceftriaxona), hidratação com soro fisiológico e drenagem em selo d'água se empiema."
+      },
+      "distractorConducts": [
+        {
+          "id": "derrame-d1",
+          "text": "Prescrever xarope de guaco e orientar o paciente a deitar sobre o lado que não dói sem investigar o líquido.",
+          "whyWrong": "Ignorar o líquido pleural em quadro pneumônico favorece empiema loculado com necessidade de toracotomia mutiladora."
+        },
+        {
+          "id": "derrame-d2",
+          "text": "Injetar talco cáustico dentro do pulmão sem esvaziar o líquido purulento.",
+          "whyWrong": "Pleurodese química requer pulmão totalmente expandido; injetar talco em derrame infectado não drenado causa sepse pleural fatal."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Amoxicilina 500mg",
+          "route": "Oral / Endovenoso",
+          "indication": "Controle da pneumonia bacteriana de base causadora do exsudato pleural"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Restauração da hidratação e via venosa para antibioticoterapia hospitalar"
+        }
+      ],
+      "medicationIds": [
+        "amoxicilina",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A punção diagnóstica precoce classifica o derrame pleural e dita a necessidade de drenagem torácica imediata no SUS.",
+      "possibleComorbidities": [
+        "DPOC",
+        "Tabagismo pesado"
+      ],
+      "sources": [
+        {
+          "name": "Diretrizes Brasileiras de Pneumonia Adquirida na Comunidade - SBPT / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "encefalopatia-hepatica-aguda",
+      "name": "Encefalopatia Hepática Aguda",
+      "area": "Digestivos",
+      "typicalUnit": "Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 35,
+        "max": 75
+      },
+      "symptoms": [
+        "Flapping tremor (asterixe positivo ao estender os punhos) e lentificação psicomotora",
+        "Inversão do ciclo sono-vigília, confusão mental progressiva e desorientação temporal",
+        "Icterícia cutânea, ascite e hálito hepático característico"
+      ],
+      "suggestedExams": [
+        "Avaliação do estado neurológico pela escala de West Haven, dosagem de amônia sérica e pesquisa de fator precipitante (infecção/sangramento)"
+      ],
+      "suggestedConduct": {
+        "id": "encefalopatia-c1",
+        "text": "Lactulose oral ou por sonda nasogástrica da RENAME (titulada para 2 a 3 evacuações pastosas/dia), hidratação parenteral com soro fisiológico 0,9%, suspensão de sedativos e identificação do foco precipitante."
+      },
+      "distractorConducts": [
+        {
+          "id": "encefalopatia-d1",
+          "text": "Administrar altas doses de diazepam ou morfina para conter a agitação do paciente confuso.",
+          "whyWrong": "Sedativos e opioides precipitam coma hepático profundo e parada respiratória em pacientes cirróticos."
+        },
+        {
+          "id": "encefalopatia-d2",
+          "text": "Prescrever dieta hiperproteica com consumo massivo de carne vermelha.",
+          "whyWrong": "O excesso de proteínas animais no intestino sobrecarrega a produção bacteriana de amônia e agrava a toxicidade cerebral."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Correção de déficits volêmicos e prevenção de insuficiência renal hepatorrenal"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A lactulose acidifica o cólon, transformando a amônia difusível em íon amônio não absorvível que é eliminado nas fezes, clareando o sensório do cirrótico.",
+      "possibleComorbidities": [
+        "Cirrose hepática por álcool ou vírus C",
+        "Constipação intestinal"
+      ],
+      "sources": [
+        {
+          "name": "PCDT para Doença Hepática Crônica e Cirrose - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "hemorroida-trombosada-aguda",
+      "name": "Hemorroida Trombosada Aguda na APS",
+      "area": "Digestivos",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 20,
+        "max": 70
+      },
+      "symptoms": [
+        "Nódulo perianal violáceo, endurecido e extremamente doloroso de início súbito após esforço evacuatório",
+        "Dor constante que piora intensamente ao sentar e evacuar",
+        "Sensação de corpo estranho anal sem febre ou perda esfincteriana"
+      ],
+      "suggestedExams": [
+        "Inspeção anal e proctológica com boa iluminação evidenciando o trombo azulado subcutâneo"
+      ],
+      "suggestedConduct": {
+        "id": "hemorroida-c1",
+        "text": "Dipirona ou paracetamol para analgesia oral, banhos de assento com água morna por 15 minutos 3x ao dia, laxativo osmótico suave e orientação de dieta rica em fibras e líquidos."
+      },
+      "distractorConducts": [
+        {
+          "id": "hemorroida-d1",
+          "text": "Tentar empurrar o nódulo trombosado com força para dentro do reto com o dedo sem anestesia.",
+          "whyWrong": "A hemorroida externa trombosada é coberta por pele sensível e rica em terminações nervosas; a tentativa causa dor intolerável e laceração."
+        },
+        {
+          "id": "hemorroida-d2",
+          "text": "Prescrever amoxicilina com clavulanato oral por 14 dias para 'dissolver o trombo sanguíneo'.",
+          "whyWrong": "Trata-se de um evento vascular mecânico não infeccioso; antibióticos são inúteis contra trombose perianal."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio da dor perianal aguda intensa provocada pelo trombo vascular"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na maioria dos casos de trombose hemorroidária, o manejo clínico conservador com analgésicos e banhos de assento quentes resulta em reabsorção espontânea e alívio.",
+      "possibleComorbidities": [
+        "Constipação crônica com fezes ressecadas"
+      ],
+      "sources": [
+        {
+          "name": "Doenças Anorretais Comuns na Atenção Primária - Cadernos de Atenção Básica - MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "fissura-anal-aguda",
+      "name": "Fissura Anal Aguda",
+      "area": "Digestivos",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 3,
+      "ageRange": {
+        "min": 18,
+        "max": 65
+      },
+      "symptoms": [
+        "Dor anal aguda em pontada ou queimação intensa durante e por várias horas após a evacuação ('sensação de cacos de vidro')",
+        "Pequena quantidade de sangue vermelho vivo no papel higiênico após a passagem de fezes endurecidas",
+        "Espasmo do esfíncter anal interno decorrente da dor"
+      ],
+      "suggestedExams": [
+        "Inspeção anal suave afastando as nádegas para visualização de úlcera linear na linha média posterior"
+      ],
+      "suggestedConduct": {
+        "id": "fissura-c1",
+        "text": "Paracetamol ou dipirona para analgesia oral, banhos de assento mornos frequentes (para relaxar o esfíncter), laxativo osmótico para fezes pastosas e ingestão hídrica de 2 litros ao dia."
+      },
+      "distractorConducts": [
+        {
+          "id": "fissura-d1",
+          "text": "Realizar toque retal forçado repetitivo na consulta inicial apesar da dor intensa relatada.",
+          "whyWrong": "O toque retal é dispensável quando a fissura é visível à ectoscopia e a tentativa forçada perpetua o espasmo doloroso."
+        },
+        {
+          "id": "fissura-d2",
+          "text": "Indicar cirurgia de esfincterotomia imediata no primeiro dia de sintomas.",
+          "whyWrong": "A fissura aguda tem taxa de cicatrização superior a 80% apenas com medidas clínicas e amolecimento das fezes."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 500mg",
+          "route": "Oral",
+          "indication": "Alívio da dor esfincteriana perianal pós-evacuação"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Quebrar o ciclo 'dor-espasmo-isquemia-dor' mediante fezes amolecidas e banhos de assento permite a cicatrização da mucosa anal sem cirurgia.",
+      "possibleComorbidities": [
+        "Hábito evacuatório constipado"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Proctologia Ambulatorial - Sociedade Brasileira de Coloproctologia / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "sindrome-intestino-irritavel",
+      "name": "Síndrome do Intestino Irritável - Exacerbação na APS",
+      "area": "Digestivos",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 18,
+        "max": 55
+      },
+      "symptoms": [
+        "Dor abdominal recorrente associada a alterações na frequência ou consistência das fezes (diarreia ou constipação)",
+        "Alívio da dor abdominal após a defecação",
+        "Distensão abdominal e ausência de sinais de alarme como febre, sangramento ou perda ponderal"
+      ],
+      "suggestedExams": [
+        "Avaliação dos critérios de Roma IV, hemograma completo e pesquisa de sangue oculto nas fezes negativa"
+      ],
+      "suggestedConduct": {
+        "id": "sii-c1",
+        "text": "Antiespasmódico oral da RENAME (Escopolamina ou Dipirona) para as crises cólicas, orientação sobre dieta com baixo teor de FODMAPs, manejo de estresse na UBS e suporte clínico continuado."
+      },
+      "distractorConducts": [
+        {
+          "id": "sii-d1",
+          "text": "Prescrever antibioticoterapia repetitiva de largo espectro a cada crise de dor abdominal.",
+          "whyWrong": "Antibióticos destroem a microbiota intestinal saudável e agravam a disbiose e os sintomas da SII."
+        },
+        {
+          "id": "sii-d2",
+          "text": "Indicar cirurgia abdominal eletiva de colectomia profilática.",
+          "whyWrong": "A SII é um distúrbio funcional do eixo cérebro-intestino; cirurgias de resseção são terminantemente contraindicadas."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio sintomático das dores em cólica do cólon espástico"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na SII, o acolhimento na Atenção Primária aliado ao ajuste da dieta e uso criterioso de antiespasmódicos estabiliza as crises sem investigações invasivas dispensáveis.",
+      "possibleComorbidities": [
+        "Ansiedade generalizada",
+        "Intolerância alimentar"
+      ],
+      "sources": [
+        {
+          "name": "Cadernos de Atenção Básica - Gastroenterologia na APS - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "crise-addisoniana-adrenal",
+      "name": "Insuficiência Adrenal Aguda - Crise Addisoniana",
+      "area": "Endócrinos",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 20,
+        "max": 70
+      },
+      "symptoms": [
+        "Hipotensão arterial grave refratária com choque circulatório e dor abdominal difusa",
+        "Náuseas incoercíveis, vômitos, astenia extrema e confusão mental",
+        "Hiponatremia, hipercalemia e histórico de uso crônico ou interrupção abrupta de corticoides"
+      ],
+      "suggestedExams": [
+        "Glicemia capilar (frequente hipoglicemia), ionograma sérico e gasometria venosa"
+      ],
+      "suggestedConduct": {
+        "id": "addison-c1",
+        "text": "Hidrocortisona 100mg IV imediata em bolus (ou Dexametasona se teste do ACTH planejado), ressuscitação volêmica vigorosa com Soro Fisiológico 0,9% em infusão rápida e correção de hipoglicemia."
+      },
+      "distractorConducts": [
+        {
+          "id": "addison-d1",
+          "text": "Aguardar o retorno dos exames laboratoriais hormonais antes de repor glicocorticoide.",
+          "whyWrong": "A crise adrenal tem alta mortalidade por choque distributivo; a reposição de corticoide é empírica e imediata."
+        },
+        {
+          "id": "addison-d2",
+          "text": "Infundir água destilada pura por via intravenosa rápida.",
+          "whyWrong": "A água pura sem osmolaridade causa hemólise intravascular maciça e óbito imediato."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Expansão volêmica rápida e correção da hipovolemia por perda de sódio"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Na crise addisoniana, a hidrocortisona intravenosa associada à infusão rápida de cloreto de sódio 0,9% reverte o colapso vascular e salva a vida do paciente.",
+      "possibleComorbidities": [
+        "Doença de Addison primária",
+        "Hipotireoidismo autoimune associado"
+      ],
+      "sources": [
+        {
+          "name": "Protocolos de Emergências Endócrinas - Sociedade Brasileira de Endocrinologia / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "hipercalemia-aguda-moderada",
+      "name": "Hipercalemia Aguda Moderada na UPA",
+      "area": "Endócrinos e Emergência",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 35,
+        "max": 85
+      },
+      "symptoms": [
+        "Fraqueza muscular simétrica ascendente progressiva e parestesias em extremidades",
+        "Náuseas e alterações eletrocardiográficas como ondas T apiculadas e simétricas em tenda",
+        "Potássio sérico entre 6.0 e 7.0 mEq/L em paciente com doença renal crônica ou uso de inibidores de SRAA"
+      ],
+      "suggestedExams": [
+        "ECG imediato para avaliação de toxicidade cardíaca e gasometria com eletrólitos"
+      ],
+      "suggestedConduct": {
+        "id": "hipercalemia-c1",
+        "text": "Estabilização da membrana cardíaca com Gluconato de Cálcio 10% IV se alterações de ECG, 'solução polarizante' (Glicose 50% + Insulina Regular) para desvio intracelular, soro fisiológico e resina de troca se disponível."
+      },
+      "distractorConducts": [
+        {
+          "id": "hipercalemia-d1",
+          "text": "Prescrever suplemento oral de cloreto de potássio em xarope.",
+          "whyWrong": "Administrar mais potássio a quem já apresenta hipercalemia crítica induz fibrilação ventricular e morte."
+        },
+        {
+          "id": "hipercalemia-d2",
+          "text": "Prescrever espironolactona oral em alta dose.",
+          "whyWrong": "Espironolactona é um diurético poupador de potássio e aumentará ainda mais a concentração sérica perigosa."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Acesso de segurança e estímulo à diurese caliurética"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O cálcio estabiliza o miocárdio contra arritmias e a insulina promove a entrada do potássio nas células, ganhando tempo para a eliminação renal ou dialítica.",
+      "possibleComorbidities": [
+        "Doença renal crônica estágio 4/5"
+      ],
+      "sources": [
+        {
+          "name": "Diretriz de Distúrbios Eletrolíticos Graves em Terapia Intensiva e Urgência - AMIB / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "neuralgia-do-trigemeo",
+      "name": "Neuralgia do Trigêmeo",
+      "area": "Neurológicos",
+      "typicalUnit": "UBS e UPA",
+      "severity": "Moderada",
+      "weight": 3,
+      "ageRange": {
+        "min": 40,
+        "max": 80
+      },
+      "symptoms": [
+        "Dor facial paroxística súbita, lancinante e unilateral em 'choque elétrico' no trajeto das divisões V2/V3",
+        "Crises precipitadas por estímulos táteis inócuos (escovar dentes, mastigar, vento frio no rosto)",
+        "Duração de poucos segundos a minutos com período refratário entre as crises"
+      ],
+      "suggestedExams": [
+        "Exame neurológico detalhado dos pares cranianos e ressonância magnética de encéfalo para exclusão de lesão secundária"
+      ],
+      "suggestedConduct": {
+        "id": "trigemeo-c1",
+        "text": "Carbamazepina oral da RENAME como primeira escolha (iniciada em dose baixa e titulada gradualmente), dipirona para cefaleia tensional secundária e encaminhamento especializado se refratária."
+      },
+      "distractorConducts": [
+        {
+          "id": "trigemeo-d1",
+          "text": "Extrair todos os dentes do lado da dor acreditando ser problema odontológico sem cárie.",
+          "whyWrong": "Extrações dentárias desnecessárias não aliviam a neuralgia do trigêmeo e causam mutilação orofacial irreversível."
+        },
+        {
+          "id": "trigemeo-d2",
+          "text": "Prescrever amoxicilina por 21 dias para infecção do nervo.",
+          "whyWrong": "Trata-se de hiperexcitabilidade neural não infecciosa; antibióticos são inócuos."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio álgico associado ao espasmo muscular reflexo"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A carbamazepina bloqueia os canais de sódio voltagem-dependentes, suprimindo os disparos ectópicos do nervo trigêmeo com alta eficácia.",
+      "possibleComorbidities": [
+        "Esclerose múltipla em pacientes jovens"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Cefaleias e Dores Crâniofaciais - Academia Brasileira de Neurologia / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "cefaleia-em-salvas-crise",
+      "name": "Cefaleia em Salvas - Crise Aguda na UPA",
+      "area": "Neurológicos",
+      "typicalUnit": "UPA",
+      "severity": "Grave",
+      "weight": 2,
+      "ageRange": {
+        "min": 20,
+        "max": 60
+      },
+      "symptoms": [
+        "Dor periorbital unilateral excruciante estritamente unilateral ('a pior dor do mundo')",
+        "Sintomas autonômicos homolaterais: hiperemia conjuntival, lacrimejamento, congestão nasal e miose/ptose",
+        "Agitação psicomotora evidente com o paciente incapaz de ficar deitado parado"
+      ],
+      "suggestedExams": [
+        "Avaliação clínica do padrão autonômico trigeminal e exclusão de glaucoma agudo"
+      ],
+      "suggestedConduct": {
+        "id": "salvas-c1",
+        "text": "Oxigenoterapia a 100% sob máscara com reservatório não reinalante a 12-15 L/min por 15 minutos, Sumatriptano subcutâneo da RENAME, hidratação de suporte com soro fisiológico e profilaxia com verapamil na APS."
+      },
+      "distractorConducts": [
+        {
+          "id": "salvas-d1",
+          "text": "Administrar opioides (morfina) de forma contínua para 'acalmar' a crise.",
+          "whyWrong": "Opioides têm ação lenta na crise curta e intensa em salvas e provocam dependência e cefaleia de rebote."
+        },
+        {
+          "id": "salvas-d2",
+          "text": "Prescrever colírio descongestionante e dispensar para casa no auge da dor.",
+          "whyWrong": "A dor da cefaleia em salvas é incapacitante e o oxigênio a 100% em alto fluxo aborta a crise em minutos."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Endovenoso",
+          "indication": "Alívio álgico adjuvante no pós-crise"
+        },
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Hidratação venosa e via de suporte na sala vermelha da UPA"
+        }
+      ],
+      "medicationIds": [
+        "dipirona",
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A inalação de oxigênio a 100% em alto fluxo promove vasoconstrição cerebral e inibe o sistema trigeminovascular, interrompendo a crise de forma rápida.",
+      "possibleComorbidities": [
+        "Tabagismo ativo crônico"
+      ],
+      "sources": [
+        {
+          "name": "Protocolos Clínicos de Urgência em Neurologia - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "abstinencia-alcoolica-aguda",
+      "name": "Abstinência Alcoólica Aguda na UPA",
+      "area": "Saúde Mental e Emergência",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 3,
+      "ageRange": {
+        "min": 20,
+        "max": 70
+      },
+      "symptoms": [
+        "Tremores grosseiros de extremidades, sudorese profusa, taquicardia e náuseas após cessação do álcool",
+        "Agitação psicomotora, ansiedade intensa e insônia",
+        "Risco iminente de alucinações visuais e convulsões por abstinência (delirium tremens)"
+      ],
+      "suggestedExams": [
+        "Avaliação seriada pela escala CIWA-Ar, glicemia capilar e ionograma"
+      ],
+      "suggestedConduct": {
+        "id": "abstinencia-c1",
+        "text": "Diazepam oral ou EV titulado pela escala CIWA-Ar da RENAME, reposição prévia de Tiamina (Vitamina B1) parenteral antes de qualquer infusão glicosada, hidratação com soro fisiológico e ambiente calmo na UPA."
+      },
+      "distractorConducts": [
+        {
+          "id": "abstinencia-d1",
+          "text": "Infundir glicose hipertônica pura venosa de imediato sem administrar tiamina.",
+          "whyWrong": "Administrar glicose antes da tiamina em alcoólatras precipita encefalopatia de Wernicke e coma irreversível."
+        },
+        {
+          "id": "abstinencia-d2",
+          "text": "Oferecer mais bebidas alcoólicas para 'desmame caseiro' na UPA.",
+          "whyWrong": "A oferta de álcool em ambiente de saúde é vedada e perpetua a dependência química e a toxicidade hepática."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Endovenoso",
+          "indication": "Correção da desidratação e veículo para administração de tiamina"
+        },
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Endovenoso",
+          "indication": "Alívio da cefaleia e mialgia decorrentes da abstinência aguda"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico",
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "Os benzodiazepínicos como o diazepam substituem a ação gabaérgica do álcool prevenindo convulsões e delirium tremens, com tiamina obrigatória.",
+      "possibleComorbidities": [
+        "Hepatopatia alcoólica",
+        "Desnutrição com hipomagnesemia"
+      ],
+      "sources": [
+        {
+          "name": "Linha de Cuidado para a Atenção Integral à Saúde das Pessoas com Transtornos pelo Uso de Álcool - MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "transtorno-bipolar-episodio-maniaco",
+      "name": "Transtorno Bipolar - Episódio Maníaco Agudo",
+      "area": "Saúde Mental",
+      "typicalUnit": "UPA e Hospital",
+      "severity": "Grave",
+      "weight": 3,
+      "ageRange": {
+        "min": 18,
+        "max": 65
+      },
+      "symptoms": [
+        "Humor anormal e persistentemente elevado, eufórico ou irritável com taquipsiquismo e fuga de ideias",
+        "Redução acentuada da necessidade de sono (sente-se descansado após 2 horas de sono)",
+        "Grandiosidade, gastos impulsivos desmedidos e comportamento de risco"
+      ],
+      "suggestedExams": [
+        "Avaliação do estado mental, exclusão de uso de substâncias estimulantes e função renal/tireoide"
+      ],
+      "suggestedConduct": {
+        "id": "mania-c1",
+        "text": "Estabilizador do humor da RENAME (Carbonato de Lítio oral) associado a antipsicótico (Haloperidol ou Risperidona) para controle rápido da agitação, proteção contra riscos imediatos e encaminhamento ao CAPS."
+      },
+      "distractorConducts": [
+        {
+          "id": "mania-d1",
+          "text": "Prescrever antidepressivo tricíclico em dose alta como monoterapia para animar o paciente.",
+          "whyWrong": "Antidepressivos em episódio maníaco agravam a euforia e provocam virada maníaca perigosa e psicose."
+        },
+        {
+          "id": "mania-d2",
+          "text": "Prescrever antibiótico oral por 10 dias para acalmar o paciente.",
+          "whyWrong": "Antibióticos não têm qualquer efeito psiquiátrico modulador do humor."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio de queixas somáticas e cefaleia por exaustão física"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O lítio é a pedra angular no transtorno afetivo bipolar; o antipsicótico concomitante confere contenção rápida dos sintomas maníacos na fase aguda.",
+      "possibleComorbidities": [
+        "Comorbidade com dependência química"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Intervenções para Transtornos Mentais - mhGAP - OMS / Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "insonia-primaria-aps",
+      "name": "Insônia Primária na APS",
+      "area": "Saúde Mental",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 18,
+        "max": 80
+      },
+      "symptoms": [
+        "Dificuldade persistente para iniciar ou manter o sono, ou despertar precoce não restaurador",
+        "Fadiga diurna, prejuízo na concentração e irritabilidade no trabalho",
+        "Preocupação excessiva e ansiedade condicionada em relação ao ato de dormir"
+      ],
+      "suggestedExams": [
+        "Diário do sono por duas semanas e revisão de hábitos de consumo de cafeína e telas"
+      ],
+      "suggestedConduct": {
+        "id": "insonia-c1",
+        "text": "Intervenção não farmacológica como primeira linha (Terapia Cognitivo-Comportamental para Insônia e Higiene do Sono na UBS), suporte clínico humanizado e reavaliação periódica."
+      },
+      "distractorConducts": [
+        {
+          "id": "insonia-d1",
+          "text": "Prescrever benzodiazepínicos de uso contínuo por tempo indeterminado logo na primeira consulta.",
+          "whyWrong": "Benzodiazepínicos contínuos causam rápida tolerância, dependência química severa e risco de quedas e demência em idosos."
+        },
+        {
+          "id": "insonia-d2",
+          "text": "Recomendar tomar várias doses de destilados alcoólicos todas as noites antes de deitar.",
+          "whyWrong": "O álcool fragmenta o sono REM, agrava apneia do sono e induz alcoolismo crônico grave."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 500mg",
+          "route": "Oral",
+          "indication": "Manejo de cefaleias tensionais secundárias à privação do sono"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A higiene do sono e intervenções comportamentais são a abordagem mais duradoura e segura da APS para a insônia crônica, evitando o aprisionamento em tarja preta.",
+      "possibleComorbidities": [
+        "Transtorno de ansiedade leve"
+      ],
+      "sources": [
+        {
+          "name": "Caderno de Atenção Básica nº 34 - Saúde Mental - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "tendinite-manguito-rotador",
+      "name": "Tendinite do Manguito Rotador",
+      "area": "Trauma e Ortopedia",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 25,
+        "max": 70
+      },
+      "symptoms": [
+        "Dor no ombro ao realizar abdução e elevação do braço acima da cabeça (arco doloroso entre 60° e 120°)",
+        "Dor noturna que desperta o paciente ao deitar sobre o lado acometido",
+        "Perda sutil de força muscular na elevação do membro sem história de trauma agudo com fratura"
+      ],
+      "suggestedExams": [
+        "Manobras semiológicas ortopédicas de Neer e Hawkins-Kennedy positivas"
+      ],
+      "suggestedConduct": {
+        "id": "manguito-c1",
+        "text": "Analgésico e anti-inflamatório oral da RENAME (Paracetamol ou Ibuprofeno), repouso articular evitando elevações repetitivas do braço, aplicação de gelo local e encaminhamento para fisioterapia motora."
+      },
+      "distractorConducts": [
+        {
+          "id": "manguito-d1",
+          "text": "Imobilizar todo o tórax e braço com gesso rígido por 3 meses sem movimentação.",
+          "whyWrong": "Imobilização prolongada de ombro gera capsulite adesiva severa ('ombro congelado') e atrofia muscular."
+        },
+        {
+          "id": "manguito-d2",
+          "text": "Prescrever amoxicilina oral por 10 dias para desinflamar o tendão.",
+          "whyWrong": "Tendinite é um distúrbio mecânico por sobrecarga e microtraumas; antibióticos não têm ação."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Paracetamol 500mg",
+          "route": "Oral",
+          "indication": "Alívio da dor mecânica e noturna no ombro"
+        }
+      ],
+      "medicationIds": [
+        "paracetamol"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O tratamento conservador com analgesia, gelo e reabilitação cinesioterápica recupera mais de 90% dos casos de síndrome do impacto do manguito rotador.",
+      "possibleComorbidities": [
+        "Bursite subacromial associada"
+      ],
+      "sources": [
+        {
+          "name": "Atenção Primária à Saúde e Doenças do Aparelho Locomotor - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "epicondilite-lateral-aguda",
+      "name": "Epicondilite Lateral Aguda ('Cotovelo de Tenista')",
+      "area": "Trauma e Ortopedia",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 20,
+        "max": 65
+      },
+      "symptoms": [
+        "Dor pontual à palpação do epicôndilo lateral do cotovelo",
+        "Piora da dor à extensão resistida do punho e dos dedos (teste de Cozen positivo)",
+        "Histórico de movimentos manuais repetitivos com ferramentas ou teclado e redução da força de preensão"
+      ],
+      "suggestedExams": [
+        "Exame físico ortopédico com manobras de Cozen e Mill positivas"
+      ],
+      "suggestedConduct": {
+        "id": "epicondilite-c1",
+        "text": "Dipirona ou AINE para controle álgico da RENAME, repouso relativo das atividades repetitivas, crioterapia com gelo local por 20 minutos e exercícios de alongamento e fortalecimento dos extensores do punho."
+      },
+      "distractorConducts": [
+        {
+          "id": "epicondilite-d1",
+          "text": "Infiltração de corticoide diária direta no tendão por 30 dias consecutivos.",
+          "whyWrong": "Infiltrações frequentes causam necrose tecidual, atrofia cutânea e ruptura espontânea do tendão extensor."
+        },
+        {
+          "id": "epicondilite-d2",
+          "text": "Indicar cirurgia ortopédica aberta de imediato na primeira semana de dor.",
+          "whyWrong": "O manejo conservador é resolutivo na imensa maioria dos pacientes sem necessidade de atos cirúrgicos."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio álgico da entesopatia do cotovelo para possibilitar as atividades cotidianas"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A epicondilite lateral é uma tendinopatia por sobrecarga do extensor radial curto do carpo; a reabilitação funcional e a analgesia restauram a preensão manual.",
+      "possibleComorbidities": [
+        "LER/DORT em trabalhadores manuais"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Doenças Osteomusculares Relacionadas ao Trabalho - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "cerume-impactado-otologico",
+      "name": "Cerume Impactado no Conduto Auditivo",
+      "area": "Oftalmologia e ORL",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 5,
+        "max": 90
+      },
+      "symptoms": [
+        "Hipoacusia condutiva súbita ou progressiva (sensação de ouvido entupido/tampado)",
+        "Autofonia, zumbido e sensação de plenitude aural após banho ou natação",
+        "Histórico de uso rotineiro inadequado de hastes flexíveis de algodão no canal auditivo"
+      ],
+      "suggestedExams": [
+        "Otoscopia direta evidenciando rolha de cera castanha/amarelada ocluindo completamente a luz do meato acústico externo"
+      ],
+      "suggestedConduct": {
+        "id": "cerume-c1",
+        "text": "Lavagem otológica cuidadosa com Soro Fisiológico 0,9% morno (37°C) e seringa adequada na UBS (após amolecimento prévio com ceruminolítico se necessário e confirmação de tímpano íntegro)."
+      },
+      "distractorConducts": [
+        {
+          "id": "cerume-d1",
+          "text": "Introduzir hastes rígidas de metal ou alfinetes para tentar pescar a cera no fundo do canal.",
+          "whyWrong": "Objetos pontiagudos perfuram a membrana timpânica e causam laceração do conduto e perda auditiva permanente."
+        },
+        {
+          "id": "cerume-d2",
+          "text": "Prescrever antibiótico oral por 10 dias para rolha de cerume sem inflamação.",
+          "whyWrong": "Cerume é secreção fisiológica compactada e não infecção bacteriana; antibióticos são absolutamente inúteis."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Otológico",
+          "indication": "Irrigação sob temperatura corpórea para lavagem e remoção mecânica suave do cerume"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "A lavagem com soro fisiológico morno no ângulo correto do conduto é um procedimento resolutivo e seguro da Atenção Primária para restaurar a audição imediata.",
+      "possibleComorbidities": [
+        "Uso de próteses auditivas"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Condutas em Otorrinolaringologia na Atenção Primária - ABORL-CCF / MS",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "otite-externa-difusa-aguda",
+      "name": "Otite Externa Difusa Aguda ('Ouvido de Nadador')",
+      "area": "Oftalmologia e ORL",
+      "typicalUnit": "UBS",
+      "severity": "Moderada",
+      "weight": 4,
+      "ageRange": {
+        "min": 4,
+        "max": 75
+      },
+      "symptoms": [
+        "Otalgia intensa acompanhada de dor excruciante à tração do pavilhão auricular ou pressão no trago (sinal do trago positivo)",
+        "Edema e eritema do conduto auditivo externo com otorréia seropurulenta",
+        "Histórico de banho de piscina, mar ou uso de cotonetes"
+      ],
+      "suggestedExams": [
+        "Otoscopia delicada confirmando hiperemia e edema de conduto com membrana timpânica preservada"
+      ],
+      "suggestedConduct": {
+        "id": "otite-externa-c1",
+        "text": "Gotas otológicas tópicas com antibiótico e corticoide da RENAME (Ciprofloxacino gotas otológicas), Dipirona oral para analgesia vigorosa, limpeza suave com soro fisiológico e manter o ouvido estritamente seco."
+      },
+      "distractorConducts": [
+        {
+          "id": "otite-externa-d1",
+          "text": "Realizar lavagem do ouvido com jato d'água sob pressão na vigência de canal inflamado.",
+          "whyWrong": "Irrigação sob pressão em conduto inflamado é intoleravelmente dolorosa e pode romper o tímpano fragilizado."
+        },
+        {
+          "id": "otite-externa-d2",
+          "text": "Pingar azeite aquecido ou álcool puro dentro do canal auditivo.",
+          "whyWrong": "Líquidos caseiros queimam o epitélio lesado e amplificam a infecção por Pseudomonas aeruginosa."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Dipirona 500mg/mL",
+          "route": "Oral",
+          "indication": "Alívio da otalgia severa comum na otite externa aguda"
+        }
+      ],
+      "medicationIds": [
+        "dipirona"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O tratamento tópico com gotas antibióticas atinge concentrações locais milhares de vezes superiores às dos antibióticos orais, curando a otite externa com rapidez.",
+      "possibleComorbidities": [
+        "Otite externa fúngica em imunodeprimidos"
+      ],
+      "sources": [
+        {
+          "name": "Guia de Boas Práticas Clínicas em Otorrinolaringologia - Ministério da Saúde",
+          "url": "https://bvsms.saude.gov.br",
+          "accessedOn": "2026-10-24"
+        }
+      ],
+      "version": "1.0.0",
+      "reviewedOn": "2026-10-24",
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "hordeolo-agudo-tercol",
+      "name": "Hordéolo Agudo - Terçol",
+      "area": "Oftalmologia e ORL",
+      "typicalUnit": "UBS",
+      "severity": "Leve",
+      "weight": 4,
+      "ageRange": {
+        "min": 2,
+        "max": 75
+      },
+      "symptoms": [
+        "Nódulo inflamatório eritematoso, quente e muito doloroso na margem palpebral (glândulas de Zeis ou Meibomius)",
+        "Ponto amarelado purulento visível no centro da lesão palpebral",
+        "Sensação de corpo estranho ocular, hiperemia conjuntival reacional e lacrimejamento"
+      ],
+      "suggestedExams": [
+        "Inspeção minuciosa das pálpebras com eversão palpebral e lâmpada auxiliar"
+      ],
+      "suggestedConduct": {
+        "id": "hordeolo-c1",
+        "text": "Compressas mornas sobre as pálpebras fechadas por 10 a 15 minutos 3 a 4x ao dia, higiene palpebral delicada com soro fisiológico 0,9%, suspensão de maquiagem/lentes e orientação de drenagem espontânea."
+      },
+      "distractorConducts": [
+        {
+          "id": "hordeolo-d1",
+          "text": "Espremer o nódulo palpebral com os dedos ou furar com agulha sem assepsia.",
+          "whyWrong": "Espremer a pálpebra pode propagar o foco infeccioso para o espaço retro-orbitário causando celulite orbitária grave."
+        },
+        {
+          "id": "hordeolo-d2",
+          "text": "Prescrever antibioticoterapia venosa hospitalar de largo espectro para terçol simples.",
+          "whyWrong": "O hordéolo externo não complicado drena espontaneamente com compressas mornas, não exigindo antibiótico sistêmico."
+        }
+      ],
+      "medications": [
+        {
+          "genericName": "Cloreto de Sódio 0,9%",
+          "route": "Oftálmico",
+          "indication": "Lavagem e higiene dos resíduos na margem ciliar palpebral"
+        }
+      ],
+      "medicationIds": [
+        "soro-fisiologico"
+      ],
+      "requiresPharmacy": true,
+      "explanation": "O calor das compressas mornas fluidifica as secreções sebáceas e meibomianas obstruídas, facilitando a drenagem espontânea e curando o hordéolo com segurança.",
+      "possibleComorbidities": [
+        "Blefarite crônica",
+        "Rosácea ocular"
+      ],
+      "sources": [
+        {
+          "name": "Manual de Oftalmologia na Atenção Básica - CBO / Ministério da Saúde",
           "url": "https://bvsms.saude.gov.br",
           "accessedOn": "2026-10-24"
         }

@@ -66,8 +66,10 @@ export class HospitalRenderer {
       backgroundColor: 0x86c96b,
       antialias: true,
       autoDensity: true,
+      roundPixels: true,
       resolution: Math.min(window.devicePixelRatio || 1, THEME.maxResolution),
     });
+
 
     containerElement.appendChild(this.app.canvas);
     this.camera.resize(this.app.screen.width, this.app.screen.height);

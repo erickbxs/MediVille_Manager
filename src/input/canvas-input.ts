@@ -20,6 +20,9 @@ export class CanvasInputManager {
   private camera: Camera;
   private handlers: InputHandlers;
   private isDragging = false;
+  private isDragMoved = false;
+  private startX = 0;
+  private startY = 0;
   private lastX = 0;
   private lastY = 0;
   private touchDistance = 0;
@@ -42,6 +45,9 @@ export class CanvasInputManager {
 
   private onPointerDown(e: PointerEvent): void {
     this.isDragging = true;
+    this.isDragMoved = false;
+    this.startX = e.clientX;
+    this.startY = e.clientY;
     this.lastX = e.clientX;
     this.lastY = e.clientY;
   }
@@ -52,6 +58,11 @@ export class CanvasInputManager {
       const dy = e.clientY - this.lastY;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
+      const totalMoved = Math.hypot(e.clientX - this.startX, e.clientY - this.startY);
+      const dragThreshold = 8;
+      if (!this.isDragMoved && totalMoved > dragThreshold) {
+        this.isDragMoved = true;
+      }
       this.camera.pan(dx, dy);
     } else {
       const rect = this.element.getBoundingClientRect();
@@ -61,15 +72,18 @@ export class CanvasInputManager {
   }
 
   private onPointerUp(e: PointerEvent): void {
-    const wasDraggingLong = Math.hypot(e.clientX - this.lastX, e.clientY - this.lastY) > 8;
+    const dragThreshold = 8;
+    const wasPan = this.isDragMoved || Math.hypot(e.clientX - this.startX, e.clientY - this.startY) > dragThreshold;
     this.isDragging = false;
+    this.isDragMoved = false;
 
-    if (!wasDraggingLong) {
+    if (!wasPan) {
       const rect = this.element.getBoundingClientRect();
       const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top);
       this.handlers.onGridClick(grid.col, grid.row);
     }
   }
+
 
   private onWheel(e: WheelEvent): void {
     e.preventDefault();

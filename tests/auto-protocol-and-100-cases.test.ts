@@ -24,10 +24,11 @@ import { createPatient } from '../src/systems/case-system';
 import { updateConsultationSystem } from '../src/systems/consultation-system';
 import { TrafficSystem } from '../src/systems/traffic-system';
 
-describe('Prompt 11 — Catálogo de 100 Casos Clínicos do SUS e Integridade RENAME', () => {
-  it('deve conter exatamente 100 casos clínicos únicos e com todos os campos obrigatórios', () => {
+describe('Prompt 11 & 12 — Catálogo de Casos Clínicos do SUS e Integridade RENAME', () => {
+  it('deve conter catálogo de casos clínicos únicos e com todos os campos obrigatórios', () => {
     const cases = CASES_CATALOG.cases;
-    expect(cases.length).toBe(100);
+    expect(cases.length).toBe(150);
+
 
     const ids = new Set<string>();
     for (const c of cases) {
