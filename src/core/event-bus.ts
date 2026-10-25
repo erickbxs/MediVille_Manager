@@ -49,6 +49,9 @@ export interface GameEvents {
   'economy:negotiation_completed': { outcome: 'total' | 'partial' | 'denied'; bonus: number; message: string };
   'save:restored_from_backup': { reason: string; timestamp?: number };
   'helipad:landing': { patientId: string };
+  'defeat:warning': { type: 'cash' | 'reputation'; consecutiveDays: number; daysRemaining: number };
+  'game:over': { reason: string; stats: { days: number; patientsTreated: number; masteredCases: number; finalReputation: number; score: number } };
+  'milestone:unlocked': { id: string; title: string; description: string };
 }
 
 export type EventKey = keyof GameEvents;

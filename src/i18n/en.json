@@ -1,0 +1,141 @@
+{
+  "_meta": {
+    "description": "Translation keys and texts in English for HUD, rooms, roles, conducts, and contextual messages.",
+    "connectedFiles": [
+      "src/ui/hud.ts",
+      "src/ui/build-menu.ts",
+      "src/ui/decision-modal.ts",
+      "src/ui/room-sheet.ts",
+      "src/ui/advisor-view.ts",
+      "src/ui/game-over-modal.ts",
+      "src/ui/ranking-modal.ts",
+      "src/ui/settings-modal.ts",
+      "src/i18n/i18n.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "Community Hospital",
+    "subtitle": "Healthcare Management & Real Clinical Guidelines"
+  },
+  "hud": {
+    "cash": "Funds",
+    "reputation": "Reputation",
+    "satisfaction": "Satisfaction",
+    "queue": "Queue",
+    "waiting": "waiting",
+    "avgWait": "Avg. Wait",
+    "day": "Day",
+    "paused": "Paused",
+    "speed1x": "1x",
+    "speed2x": "2x",
+    "speed3x": "3x"
+  },
+  "menu": {
+    "newHospital": "New Hospital",
+    "continue": "Continue Game",
+    "options": "Settings",
+    "leaderboard": "Leaderboard",
+    "encyclopedia": "Medical Compendium",
+    "suspendAudio": "Mute / Audio"
+  },
+  "room": {
+    "reception": "Reception Desk",
+    "waiting": "Waiting Room",
+    "consultation": "Doctor's Office",
+    "pharmacy": "Pharmacy",
+    "triage": "Triage Room",
+    "observation": "Observation Ward",
+    "vaccination": "Immunization Room",
+    "laboratory": "Clinical Lab",
+    "xray": "X-Ray Suite",
+    "surgery": "Operating Theater",
+    "icu": "Intensive Care Unit",
+    "staff_room": "Staff Breakroom",
+    "cost": "Cost",
+    "upkeep": "Upkeep/day",
+    "capacity": "Capacity",
+    "remove": "Sell Room",
+    "refund": "Refund"
+  },
+  "roles": {
+    "doctor": "General Physician",
+    "nurse": "Registered Nurse",
+    "pharmacist": "Pharmacist",
+    "janitor": "Sanitation Worker",
+    "receptionist": "Receptionist",
+    "manager": "Hospital Admin",
+    "surgeon": "Chief Surgeon"
+  },
+  "actions": {
+    "build": "Build",
+    "cancel": "Cancel",
+    "removeMode": "Demolish",
+    "close": "Close",
+    "acceptConduct": "Adopt Guideline",
+    "rejectConduct": "Reject / Change",
+    "confirm": "Confirm",
+    "restart": "Restart",
+    "mainMenu": "Main Menu"
+  },
+  "intensity": {
+    "leve": "Mild",
+    "moderada": "Moderate"
+  },
+  "patient": {
+    "sheetTitle": "Patient Record",
+    "symptoms": "Reported symptoms",
+    "exams": "Recommended exams",
+    "suggestedConduct": "Recommended Guideline",
+    "medications": "Essential generic drugs",
+    "comorbidity": "Pre-existing condition",
+    "none": "None",
+    "source": "Official source",
+    "statusPending": "Medical review pending"
+  },
+  "advisor": {
+    "empty": "No clinical bottlenecks detected at this time.",
+    "queueDelay": "Queue is building up at reception. Consider opening more offices.",
+    "pharmacyMissing": "Patients leaving without a dispensary to fulfill prescriptions.",
+    "waitingFull": "Waiting room capacity is almost full.",
+    "cashLow": "Warning: Critical budget! Monitor daily facility upkeep."
+  },
+  "defeat": {
+    "imminentBankruptcy": "Imminent Bankruptcy Risk",
+    "imminentIntervention": "Imminent Health Authority Shutdown",
+    "rescueTransfer": "Request Emergency Relief Grant",
+    "rescueDemolish": "Sell Idle Room (+50% refund)",
+    "rescueStaff": "Adjust Payroll Budget",
+    "daysRemaining": "Only {days} day(s) remaining before total collapse!",
+    "gameOverTitle": "Game Over",
+    "survivedDays": "Days Survived",
+    "savedPatients": "Patients Saved",
+    "masteredProtocols": "Protocols Mastered",
+    "finalScore": "Final Score",
+    "restart": "New Hospital",
+    "mainMenu": "Main Menu"
+  },
+  "leaderboard": {
+    "title": "Hospital Management Leaderboard",
+    "subtitle": "Top Healthcare Directors & Public Health Administrators",
+    "position": "Rank",
+    "player": "Director",
+    "score": "Score",
+    "guestModeNote": "Guest Mode (< 13 years): Your score is saved strictly on this device.",
+    "localSaveNotice": "Score successfully recorded locally!"
+  },
+  "settings": {
+    "title": "Settings & Accessibility",
+    "fontSize": "Font Size",
+    "defaultFont": "Standard",
+    "largeFont": "Large",
+    "xlargeFont": "Extra Large",
+    "saveNow": "Save Hospital Now",
+    "exportBackup": "Export Backup (.json)",
+    "importBackup": "Import Backup (.json)",
+    "resetGame": "Restart New Hospital",
+    "lgpdExport": "Export My Data (JSON)",
+    "lgpdDelete": "Delete Account and Data",
+    "autoSaveTip": "The game also saves your progress automatically at the end of each day."
+  }
+}

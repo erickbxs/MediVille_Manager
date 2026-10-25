@@ -1,0 +1,141 @@
+{
+  "_meta": {
+    "description": "Textos y claves de traducción en Español para HUD, salas, cargos, conductas y mensajes contextuales.",
+    "connectedFiles": [
+      "src/ui/hud.ts",
+      "src/ui/build-menu.ts",
+      "src/ui/decision-modal.ts",
+      "src/ui/room-sheet.ts",
+      "src/ui/advisor-view.ts",
+      "src/ui/game-over-modal.ts",
+      "src/ui/ranking-modal.ts",
+      "src/ui/settings-modal.ts",
+      "src/i18n/i18n.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "Hospital Pequeño",
+    "subtitle": "Gestión Hospitalaria & Conductas Médicas Reales (APS)"
+  },
+  "hud": {
+    "cash": "Caja",
+    "reputation": "Reputación",
+    "satisfaction": "Satisfacción",
+    "queue": "Fila",
+    "waiting": "esperando",
+    "avgWait": "Espera media",
+    "day": "Día",
+    "paused": "Pausado",
+    "speed1x": "1x",
+    "speed2x": "2x",
+    "speed3x": "3x"
+  },
+  "menu": {
+    "newHospital": "Nuevo Hospital",
+    "continue": "Continuar Partida",
+    "options": "Ajustes",
+    "leaderboard": "Clasificación Global",
+    "encyclopedia": "Enciclopedia Médica",
+    "suspendAudio": "Silenciar / Audio"
+  },
+  "room": {
+    "reception": "Recepción",
+    "waiting": "Sala de Espera",
+    "consultation": "Consultorio",
+    "pharmacy": "Farmacia",
+    "triage": "Triaje",
+    "observation": "Camas de Observación",
+    "vaccination": "Sala de Vacunación",
+    "laboratory": "Laboratorio Clínico",
+    "xray": "Sala de Rayos X",
+    "surgery": "Quirófano",
+    "icu": "UCI - Cuidados Intensivos",
+    "staff_room": "Sala de Descanso",
+    "cost": "Costo",
+    "upkeep": "Mant./día",
+    "capacity": "Capacidad",
+    "remove": "Vender Sala",
+    "refund": "Reembolso"
+  },
+  "roles": {
+    "doctor": "Médico(a) Clínico",
+    "nurse": "Enfermero(a)",
+    "pharmacist": "Farmacéutico(a)",
+    "janitor": "Auxiliar de Limpieza",
+    "receptionist": "Recepcionista",
+    "manager": "Administrador(a)",
+    "surgeon": "Cirujano(a)"
+  },
+  "actions": {
+    "build": "Construir",
+    "cancel": "Cancelar",
+    "removeMode": "Demoler",
+    "close": "Cerrar",
+    "acceptConduct": "Adoptar Conducta",
+    "rejectConduct": "Rechazar / Cambiar",
+    "confirm": "Confirmar",
+    "restart": "Reiniciar",
+    "mainMenu": "Menú Principal"
+  },
+  "intensity": {
+    "leve": "Leve",
+    "moderada": "Moderada"
+  },
+  "patient": {
+    "sheetTitle": "Ficha del Paciente",
+    "symptoms": "Síntomas reportados",
+    "exams": "Exámenes sugeridos",
+    "suggestedConduct": "Conducta Sugerida",
+    "medications": "Medicamentos genéricos",
+    "comorbidity": "Condición previa",
+    "none": "Ninguna",
+    "source": "Fuente oficial",
+    "statusPending": "Revisión médica pendiente"
+  },
+  "advisor": {
+    "empty": "Ningún cuello de botella identificado en este momento.",
+    "queueDelay": "Fila acumulada en recepción. Considere abrir más consultorios.",
+    "pharmacyMissing": "Pacientes saliendo sin farmacia para dispensación de medicamentos.",
+    "waitingFull": "Capacidad de la sala de espera casi al límite.",
+    "cashLow": "Alerta: ¡Caja crítica! Monitoree los costos diarios."
+  },
+  "defeat": {
+    "imminentBankruptcy": "Riesgo Inminente de Quiebra",
+    "imminentIntervention": "Intervención Sanitaria Inminente",
+    "rescueTransfer": "Solicitar Subsidio de Emergencia",
+    "rescueDemolish": "Vender Sala Ociosa (+50% reembolso)",
+    "rescueStaff": "Ajustar Planilla Salarial",
+    "daysRemaining": "¡Quedan solo {days} días para el cierre!",
+    "gameOverTitle": "Fin de Partida",
+    "survivedDays": "Días Sobrevividos",
+    "savedPatients": "Pacientes Salvados",
+    "masteredProtocols": "Protocolos Dominados",
+    "finalScore": "Puntuación Final",
+    "restart": "Nuevo Hospital",
+    "mainMenu": "Menú Principal"
+  },
+  "leaderboard": {
+    "title": "Clasificación de Gestión Hospitalaria",
+    "subtitle": "Mejores gestores de Salud Pública",
+    "position": "Posición",
+    "player": "Gestor(a)",
+    "score": "Puntuación",
+    "guestModeNote": "Modo Invitado (< 13 años): Sus datos se guardan únicamente en el dispositivo.",
+    "localSaveNotice": "¡Puntuación guardada localmente con éxito!"
+  },
+  "settings": {
+    "title": "Ajustes & Accesibilidad",
+    "fontSize": "Tamaño de Fuente",
+    "defaultFont": "Estándar",
+    "largeFont": "Grande",
+    "xlargeFont": "Extra Grande",
+    "saveNow": "Guardar Hospital Ahora",
+    "exportBackup": "Exportar Copia (.json)",
+    "importBackup": "Importar Copia (.json)",
+    "resetGame": "Reiniciar Nuevo Hospital",
+    "lgpdExport": "Exportar Mis Datos (JSON)",
+    "lgpdDelete": "Eliminar Cuenta y Datos",
+    "autoSaveTip": "El juego también guarda su progreso automáticamente al final de cada día."
+  }
+}

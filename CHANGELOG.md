@@ -2,6 +2,46 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.3.0] - 2026-10-25
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.3.0 — Rolagem Horizontal Fluida no Navegador, Alerta Pré-Derrota & Game Over, Ranking Global (Cloudflare D1), i18n On-Demand (PT/ES/EN) e Páginas Estáticas de SEO
+- **PARTE 1: Ergonomia de Rolagem Horizontal no Navegador (`horizontal-scroll.ts`)**:
+  - Utilitário universal `enableHorizontalScroll` aplicado à gaveta `🏗️ Obras` e às abas de categoria da `Enciclopédia`.
+  - Conversão do giro vertical da rodinha do mouse (`wheel`) em rolagem horizontal suave (`scrollLeft += deltaY * 1.2`) com `preventDefault()` e `stopPropagation()`, impedindo zoom indesejado no mapa 3D PixiJS ao fundo.
+  - Navegação suave por teclado com `ArrowLeft` e `ArrowRight` (`scrollBy({ left: ±240, behavior: 'smooth' })`).
+  - Botões flutuantes laterais discretos `◀` e `▶` ($\ge 44\times 44\text{px}$) com auto-ocultação nas extremidades da lista.
+  - Arraste com ponteiro (`Grab & Drag`) via `pointerdown`/`pointermove` com estilos `cursor-grab` e `active:cursor-grabbing`, diferenciando arraste de clique para evitar seleções acidentais de salas.
+- **PARTE 2: Sistema de Alerta Pré-Derrota, Marcos e Tela de Fim de Jogo (`defeat-system.ts` & `game-over-modal.ts`)**:
+  - Monitoramento contínuo de caixa negativo e reputação crítica (&lt; 10) rumo a 7 dias consecutivos.
+  - Alerta crítico preventivo aos 5 e 6 dias com contagem regressiva e oferta das 3 saídas oficiais do GDD:
+    1. `🏛️ Solicitar Repasse de Emergência` (+R$ 15.000 do Ministério da Saúde com reset imediato do contador de falência).
+    2. `🏚️ Vender/Demolir Sala Ociosa (+50% reembolso imediato)`.
+    3. `👥 Ajustar Folha Salarial (Abrir modal de Equipe)`.
+  - Rastreamento de marcos históricos da partida (*Porte de hospital*, *100 / 500 / 1.000 pacientes atendidos*, *50 / 100 / 150 protocolos dominados*).
+  - Transição para máquina de estados `GAME_OVER` no 7º dia com `GameOverModal` exibindo resumo estatístico, pontuação calculada, submissão ao Leaderboard e reinício rápido.
+- **PARTE 3: Ranking Global Cloudflare D1 e Privacidade LGPD (`ranking-service.ts`, `nickname-filter.ts` & `server/`)**:
+  - Validador de apelidos públicos (3 a 16 caracteres, alfanumérico) bloqueando termos ofensivos, e-mails, CPFs e telefones.
+  - Proteção de menores de 13 anos e Modo Convidado: desativação automática de chamadas de rede no envio de pontuações, mantendo os dados salvos exclusivamente no aparelho.
+  - Esquema SQL Cloudflare D1 (`server/schema.sql`) e Worker Cloudflare (`server/worker.ts`) com endpoints `/api/leaderboard` e CORS configurado.
+  - Fallback gracioso offline com pontuações salvas e lidas do `localStorage` quando sem conexão com a internet.
+  - Opções de conformidade LGPD/GDPR no modal de Configurações: `📥 Exportar Meus Dados (JSON)` e `🗑️ Excluir Conta e Dados`.
+- **PARTE 4: Internacionalização Sob Demanda PT / ES / EN (`i18n.ts`, `pt.json`, `es.json`, `en.json`)**:
+  - Carregador dinâmico assíncrono sob demanda com divisão de código (code-splitting): apenas o JSON do idioma ativo é carregado na memória (&lt; 4 KB cada).
+  - Paridade rigorosa de 100% das chaves traduzidas entre os 3 idiomas com terminologia médica e institucional oficial.
+  - Seletor de idioma reativo na Tela Inicial (PT 🇧🇷 / ES 🇪🇸 / EN 🇺🇸) e nas Configurações.
+- **PARTE 5: Estrutura HTML Estática e SEO Técnico para Motores de Busca**:
+  - 12 páginas HTML estáticas multilíngues (`/pt/`, `/es/`, `/en/`) para `index.html`, `catalogo-de-salas.html`, `guia-de-doencas.html` e `como-jogar.html`.
+  - Checklist estrito de SEO: `<h1>` único, `<title>` $\le 60$ caracteres, `<meta description>` $\le 155$ caracteres, `canonical`, `hreflang` e Open Graph.
+  - Aviso médico visível em destaque nas páginas clínicas: *"Conteúdo meramente educativo, não substitui orientação médica"*.
+  - JSON-LD Schema.org estruturado (`VideoGame`, `WebApplication`, `MedicalWebPage`, `FAQPage`).
+  - Arquivos `robots.txt` e `sitemap.xml` canônicos na raiz pública.
+- **PARTE 6: Testes Automatizados (Vitest) e Orçamento de Peso**:
+  - Nova suíte `tests/scroll-i18n-seo-and-ranking.test.ts` com 16 testes unitários e de integração.
+  - **124 testes automatizados aprovados (100% de sucesso em 17 arquivos)**.
+  - Bundle final: **1.15 MB total** (&lt; 2.00 MB).
+
 ## [1.2.0] - 2026-10-25
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

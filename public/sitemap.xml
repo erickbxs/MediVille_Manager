@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Português (Brasil) -->
+  <url>
+    <loc>https://mediville-manager.pages.dev/pt/</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/pt/catalogo-de-salas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/pt/guia-de-doencas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/pt/como-jogar.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Español -->
+  <url>
+    <loc>https://mediville-manager.pages.dev/es/</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/es/catalogo-de-salas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/es/guia-de-doencas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/es/como-jogar.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- English -->
+  <url>
+    <loc>https://mediville-manager.pages.dev/en/</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/en/catalogo-de-salas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/catalogo-de-salas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/catalogo-de-salas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/en/guia-de-doencas.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/guia-de-doencas.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/guia-de-doencas.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mediville-manager.pages.dev/en/como-jogar.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mediville-manager.pages.dev/es/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mediville-manager.pages.dev/en/como-jogar.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mediville-manager.pages.dev/pt/como-jogar.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

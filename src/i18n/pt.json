@@ -1,12 +1,16 @@
 {
   "_meta": {
-    "description": "Textos e chaves de tradução em Português do Brasil para HUD, salas, condutas e mensagens contextuais.",
+    "description": "Textos e chaves de tradução em Português do Brasil para HUD, salas, cargos, condutas e mensagens contextuais.",
     "connectedFiles": [
       "src/ui/hud.ts",
       "src/ui/build-menu.ts",
       "src/ui/decision-modal.ts",
       "src/ui/room-sheet.ts",
-      "src/ui/advisor-view.ts"
+      "src/ui/advisor-view.ts",
+      "src/ui/game-over-modal.ts",
+      "src/ui/ranking-modal.ts",
+      "src/ui/settings-modal.ts",
+      "src/i18n/i18n.ts"
     ]
   },
   "game": {
@@ -27,6 +31,14 @@
     "speed2x": "2x",
     "speed3x": "3x"
   },
+  "menu": {
+    "newHospital": "Novo Hospital",
+    "continue": "Continuar Partida",
+    "options": "Configurações",
+    "leaderboard": "Ranking Global",
+    "encyclopedia": "Enciclopédia Médica",
+    "suspendAudio": "Silenciar / Áudio"
+  },
   "room": {
     "reception": "Recepção",
     "waiting": "Sala de Espera",
@@ -46,6 +58,15 @@
     "remove": "Vender Sala",
     "refund": "Reembolso"
   },
+  "roles": {
+    "doctor": "Médico(a) Clínico",
+    "nurse": "Enfermeiro(a)",
+    "pharmacist": "Farmacêutico(a)",
+    "janitor": "Auxiliar de Limpeza",
+    "receptionist": "Recepcionista",
+    "manager": "Administrador(a)",
+    "surgeon": "Cirurgião(ã)"
+  },
   "actions": {
     "build": "Construir",
     "cancel": "Cancelar",
@@ -53,7 +74,9 @@
     "close": "Fechar",
     "acceptConduct": "Adotar Conduta",
     "rejectConduct": "Recusar / Trocar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "restart": "Reiniciar",
+    "mainMenu": "Menu Principal"
   },
   "intensity": {
     "leve": "Leve",
@@ -76,5 +99,43 @@
     "pharmacyMissing": "Pacientes saindo sem farmácia para dispensação de medicamentos.",
     "waitingFull": "Capacidade da sala de espera quase no limite.",
     "cashLow": "Alerta: Caixa crítico! Monitore os custos diários."
+  },
+  "defeat": {
+    "imminentBankruptcy": "Risco Iminente de Falência",
+    "imminentIntervention": "Intervenção Sanitária Iminente",
+    "rescueTransfer": "Solicitar Repasse de Emergência",
+    "rescueDemolish": "Vender Sala Ociosa (+50% reembolso)",
+    "rescueStaff": "Ajustar Folha Salarial",
+    "daysRemaining": "Restam apenas {days} dias para o colapso!",
+    "gameOverTitle": "Fim de Jogo",
+    "survivedDays": "Dias Sobrevividos",
+    "savedPatients": "Pacientes Salvos",
+    "masteredProtocols": "Protocolos Dominados",
+    "finalScore": "Pontuação Final",
+    "restart": "Novo Hospital",
+    "mainMenu": "Menu Principal"
+  },
+  "leaderboard": {
+    "title": "Ranking de Gestão Hospitalar",
+    "subtitle": "Melhores gestores do Sistema Único de Saúde (SUS)",
+    "position": "Posição",
+    "player": "Gestor(a)",
+    "score": "Pontuação",
+    "guestModeNote": "Modo Convidado (< 13 anos): Seus dados ficam salvos apenas no dispositivo.",
+    "localSaveNotice": "Pontuação salva com sucesso localmente!"
+  },
+  "settings": {
+    "title": "Configurações & Acessibilidade",
+    "fontSize": "Tamanho da Fonte",
+    "defaultFont": "Padrão",
+    "largeFont": "Grande",
+    "xlargeFont": "Extra Grande",
+    "saveNow": "Salvar Hospital Agora",
+    "exportBackup": "Exportar Backup (.json)",
+    "importBackup": "Importar Backup (.json)",
+    "resetGame": "Reiniciar Novo Hospital",
+    "lgpdExport": "Exportar Meus Dados (JSON)",
+    "lgpdDelete": "Excluir Conta e Dados",
+    "autoSaveTip": "O jogo também salva seu progresso automaticamente ao final de cada dia."
   }
 }

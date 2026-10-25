@@ -1,15 +1,17 @@
 /**
  * Arquivo: src/ui/settings-modal.ts
- * O que faz: Exibe o modal de configurações do hospital com opções de salvamento manual, exportação e importação de arquivo JSON e reinício de partida.
- * Para que foi criado: Cumprir os requisitos da Fase 3 dando ao jogador autonomia para gerenciar e guardar seu progresso.
- * Como modificar/debugar: Conecte novas opções de jogo (como áudio ou tema) neste modal.
- * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts
+ * O que faz: Exibe o modal de configurações do hospital com opções de salvamento manual, exportação e importação de arquivo JSON,
+ * reinício de partida e direitos de privacidade LGPD/GDPR (exportar e excluir dados).
+ * Para que foi criado: Cumprir os requisitos da Fase 3 e Prompt 14 dando autonomia e privacidade total ao jogador.
+ * Como modificar/debugar: Conecte novas opções de jogo neste modal.
+ * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts, src/services/ranking-service.ts
  * Conecta-se com: src/ui/hud.ts, src/main.ts
  */
 
 import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
 import { getPlayerProfile } from '../systems/player-profile';
+import { RankingService } from '../services/ranking-service';
 
 export type FontScale = 'normal' | 'large' | 'xlarge';
 
@@ -108,6 +110,19 @@ export class SettingsModal {
               <span class="flex items-center gap-2">🔄 Reiniciar Novo Hospital</span>
               <span class="text-xs font-semibold opacity-75">Reset</span>
             </button>
+
+            <!-- Privacidade & LGPD / GDPR -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Privacidade & LGPD</span>
+              <button id="btn-export-lgpd" class="w-full min-h-[44px] p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-between hover:bg-slate-50 transition-all">
+                <span class="flex items-center gap-2">📥 Exportar Meus Dados (JSON)</span>
+                <span class="text-[10px] text-slate-400">Download</span>
+              </button>
+              <button id="btn-delete-lgpd" class="w-full min-h-[44px] p-3 rounded-2xl border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center justify-between hover:bg-rose-50 transition-all">
+                <span class="flex items-center gap-2">🗑️ Excluir Conta e Dados</span>
+                <span class="text-[10px] text-rose-400">Limpar Tudo</span>
+              </button>
+            </div>
           </div>
 
           <div class="text-[11px] text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
@@ -154,6 +169,26 @@ export class SettingsModal {
     document.getElementById('btn-reset-game')?.addEventListener('click', () => {
       if (confirm('Tem certeza que deseja reiniciar seu hospital? Todo o progresso não exportado será perdido.')) {
         clearSavedGame();
+        window.location.reload();
+      }
+    });
+
+    document.getElementById('btn-export-lgpd')?.addEventListener('click', () => {
+      const dataStr = RankingService.exportUserDataJson();
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mediville-lgpd-data-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.showStatus('📥 Seus dados pessoais e saves foram exportados com sucesso!', true);
+    });
+
+    document.getElementById('btn-delete-lgpd')?.addEventListener('click', () => {
+      if (confirm('Atenção (LGPD): Deseja excluir permanentemente todos os seus dados, pontuações e histórico deste dispositivo?')) {
+        RankingService.deleteUserAccountAndData();
+        alert('Todos os dados foram excluídos com sucesso. A página será reiniciada.');
         window.location.reload();
       }
     });

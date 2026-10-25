@@ -43,6 +43,11 @@ import { AgeGateModal } from './ui/age-gate-modal';
 import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
 import { isAgeVerificationRequired } from './systems/player-profile';
 import { globalErrorBoundary } from './core/error-boundary';
+import { GameOverModal } from './ui/game-over-modal';
+import { DefeatWarningModal } from './ui/defeat-warning-modal';
+import { RankingModal } from './ui/ranking-modal';
+import { executeEmergencyTransferRescue } from './systems/defeat-system';
+import { initI18n } from './i18n/i18n';
 import type { RoomDefinition } from './core/config';
 
 class MediVilleApp {
@@ -57,6 +62,9 @@ class MediVilleApp {
   private settingsModal!: SettingsModal;
   private advisorView!: AdvisorView;
   private defeatModal!: DefeatModal;
+  private gameOverModal!: GameOverModal;
+  private defeatWarningModal!: DefeatWarningModal;
+  private rankingModal!: RankingModal;
   private staffModal!: StaffModal;
   private pharmacyModal!: PharmacyModal;
   private financesModal!: FinancesModal;
@@ -107,6 +115,7 @@ class MediVilleApp {
       onOpenEncyclopedia: () => this.encyclopediaModal.open(),
       onOpenGoals: () => this.goalsModal.open(),
       onOpenSettings: () => this.settingsModal.open(),
+      onOpenRanking: () => this.rankingModal.open(),
     });
   }
 
@@ -134,11 +143,29 @@ class MediVilleApp {
     });
   }
 
+  private setupDefeatRescueModals(modalContainer: HTMLElement): void {
+    this.rankingModal = new RankingModal(modalContainer);
+    this.defeatWarningModal = new DefeatWarningModal(modalContainer, {
+      onRequestEmergencyGrant: () => executeEmergencyTransferRescue(this.simulation.state),
+      onOpenDemolishRoom: () => this.buildMenu.openDrawerForRoom(),
+      onOpenStaffAdjustment: () => this.staffModal.open(),
+    });
+    this.gameOverModal = new GameOverModal(modalContainer, {
+      onRestart: () => {
+        clearSavedGame();
+        window.location.reload();
+      },
+      onMainMenu: () => window.location.reload(),
+      onViewRanking: () => this.rankingModal.open(),
+    });
+  }
+
   private setupModalsAndHud(modalContainer: HTMLElement): void {
     this.staffModal = new StaffModal(modalContainer, this.simulation);
     this.pharmacyModal = new PharmacyModal(modalContainer, this.simulation);
     this.financesModal = new FinancesModal(modalContainer, this.simulation);
     this.settingsModal = new SettingsModal(modalContainer, this.simulation);
+    this.setupDefeatRescueModals(modalContainer);
     this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
     new TutorialView(document.getElementById('tutorial-container') || document.body);
     this.hud = new HospitalHUD(
@@ -369,6 +396,15 @@ class MediVilleApp {
     globalBus.on('game:defeat', ({ reason }) => {
       this.defeatModal.show(reason, () => window.location.reload());
     });
+
+    globalBus.on('defeat:warning', (warning) => {
+      this.defeatWarningModal.open(warning);
+    });
+
+    globalBus.on('game:over', ({ reason, stats }) => {
+      this.simulation.setSpeed(0);
+      this.gameOverModal.open(reason, stats);
+    });
   }
 }
 
@@ -379,8 +415,10 @@ if ('serviceWorker' in navigator) {
 }
 
 applySavedFontScale();
-const app = new MediVilleApp();
-app.start().catch((err: unknown) => {
-  console.error('[MediVille] Falha ao iniciar aplicação:', err);
+initI18n().then(() => {
+  const app = new MediVilleApp();
+  app.start().catch((err: unknown) => {
+    console.error('[MediVille] Falha ao iniciar aplicação:', err);
+  });
 });
 

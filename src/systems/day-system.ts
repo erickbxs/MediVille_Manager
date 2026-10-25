@@ -3,7 +3,7 @@
  * O que faz: Gerencia a virada do dia, desconto da manutenção das salas, atualização da reputação e verificação das regras de derrota.
  * Para que foi criado: Simular a rotina contínua do hospital e aplicar as consequências de gestão financeira e clínica.
  * Como modificar/debugar: Limites de derrota (7 dias) e duração do dia (60s) vêm de balance.json.
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/reputation-system.ts
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/reputation-system.ts, src/systems/defeat-system.ts
  * Conecta-se com: src/core/simulation.ts
  */
 
@@ -13,6 +13,7 @@ import type { GameState } from '../state/game-state';
 import { calculateNewReputation } from './reputation-system';
 import { calculateTotalDailyStaffSalaries } from './staff-system';
 import { processMinistryDailyTransfer } from './economy-system';
+import { checkDefeatAndWarnings } from './defeat-system';
 
 const MAX_REPUTATION = 100;
 const PERCENT_SCALE = 100;
@@ -51,31 +52,6 @@ function deductDailyUpkeep(state: GameState): number {
   return totalDailyCost;
 }
 
-function checkDefeatConditions(state: GameState): void {
-  const { graceDays, minCash, minReputation } = BALANCE.defeat;
-
-  if (state.cash < minCash) {
-    state.consecutiveNegativeCashDays += 1;
-  } else {
-    state.consecutiveNegativeCashDays = 0;
-  }
-
-  if (state.reputation < minReputation) {
-    state.consecutiveLowReputationDays += 1;
-  } else {
-    state.consecutiveLowReputationDays = 0;
-  }
-
-  if (state.consecutiveNegativeCashDays >= graceDays) {
-    state.isDefeated = true;
-    state.defeatReason = 'Falência: Caixa negativo por 7 dias consecutivos.';
-    globalBus.emit('game:defeat', { reason: state.defeatReason });
-  } else if (state.consecutiveLowReputationDays >= graceDays) {
-    state.isDefeated = true;
-    state.defeatReason = 'Reputação crítica abaixo de 10 por 7 dias consecutivos.';
-    globalBus.emit('game:defeat', { reason: state.defeatReason });
-  }
-}
 
 function applyVaccinationDailyBonus(state: GameState): void {
   const hasVax = Array.from(state.rooms.values()).some((r) => r.typeId === 'vaccination');
@@ -124,7 +100,7 @@ export function updateDaySystem(state: GameState, deltaSec: number): void {
     state.reputation = newRep;
     globalBus.emit('reputation:changed', { reputation: state.reputation, delta: repDelta });
 
-    checkDefeatConditions(state);
+    checkDefeatAndWarnings(state);
     state.day += 1;
 
     globalBus.emit('day:end', {

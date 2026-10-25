@@ -20,6 +20,7 @@ import { hasSavedGame, loadGameState } from '../systems/save-system';
 import { goalsSystem } from '../systems/goals-system';
 import { soundSystem } from '../core/sound-system';
 import { CASES_CATALOG } from '../core/config';
+import { getLocale, setLocale, type SupportedLocale } from '../i18n/i18n';
 
 export type HospitalTypeChoice = 'ubs' | 'upa' | 'clinica' | 'hospital';
 
@@ -29,6 +30,7 @@ export interface TitleScreenCallbacks {
   onOpenEncyclopedia: () => void;
   onOpenGoals: () => void;
   onOpenSettings: () => void;
+  onOpenRanking?: () => void;
 }
 
 export class TitleScreen {
@@ -70,11 +72,11 @@ export class TitleScreen {
           
           <!-- Seletor de Idioma -->
           <div class="flex items-center justify-between text-xs font-bold text-slate-500 pb-2 border-b border-slate-100 dark:border-slate-800">
-            <span class="tracking-wider uppercase text-[10px]">Versão 1.1.0</span>
+            <span class="tracking-wider uppercase text-[10px]">Versão 1.3.0</span>
             <div class="flex items-center gap-1.5">
-              <button class="px-2 py-1 rounded-lg bg-blue-500 text-white font-extrabold text-[11px] shadow-xs">🇧🇷 PT</button>
-              <button class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] text-slate-400">🇪🇸 ES</button>
-              <button class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] text-slate-400">🇺🇸 EN</button>
+              <button data-lang="pt" class="btn-lang-choice px-2 py-1 rounded-lg ${getLocale() === 'pt' ? 'bg-blue-500 text-white font-extrabold shadow-xs' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400'} text-[11px]">🇧🇷 PT</button>
+              <button data-lang="es" class="btn-lang-choice px-2 py-1 rounded-lg ${getLocale() === 'es' ? 'bg-blue-500 text-white font-extrabold shadow-xs' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400'} text-[11px]">🇪🇸 ES</button>
+              <button data-lang="en" class="btn-lang-choice px-2 py-1 rounded-lg ${getLocale() === 'en' ? 'bg-blue-500 text-white font-extrabold shadow-xs' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400'} text-[11px]">🇺🇸 EN</button>
             </div>
           </div>
 
@@ -109,9 +111,14 @@ export class TitleScreen {
               <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 font-extrabold text-[11px]">${unlockedCount}/${totalCases} Casos</span>
             </button>
 
+            <button id="btn-menu-ranking" class="w-full min-h-[44px] px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-between border border-slate-200/60 dark:border-slate-700/60 transition-all">
+              <span class="flex items-center gap-2">🏆 Ranking Global</span>
+              <span class="text-xs text-amber-500 font-bold">Top 50</span>
+            </button>
+
             <div class="grid grid-cols-2 gap-2 pt-1">
               <button id="btn-menu-goals" class="min-h-[44px] px-3 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 transition-all">
-                🏆 Metas SUS
+                🎯 Metas SUS
               </button>
               <button id="btn-menu-settings" class="min-h-[44px] px-3 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 transition-all">
                 ⚙️ Ajustes & Backup
@@ -200,6 +207,11 @@ export class TitleScreen {
       this.callbacks.onOpenEncyclopedia();
     });
 
+    document.getElementById('btn-menu-ranking')?.addEventListener('click', () => {
+      soundSystem.playClick();
+      this.callbacks.onOpenRanking?.();
+    });
+
     document.getElementById('btn-menu-goals')?.addEventListener('click', () => {
       soundSystem.playClick();
       this.callbacks.onOpenGoals();
@@ -208,6 +220,17 @@ export class TitleScreen {
     document.getElementById('btn-menu-settings')?.addEventListener('click', () => {
       soundSystem.playClick();
       this.callbacks.onOpenSettings();
+    });
+
+    this.container.querySelectorAll('.btn-lang-choice').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        soundSystem.playClick();
+        const lang = (e.currentTarget as HTMLElement).getAttribute('data-lang') as SupportedLocale;
+        if (lang) {
+          await setLocale(lang);
+          this.render();
+        }
+      });
     });
   }
 }

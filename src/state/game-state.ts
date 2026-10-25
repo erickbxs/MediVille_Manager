@@ -40,7 +40,9 @@ export interface GameState {
   consecutiveNegativeCashDays: number;
   consecutiveLowReputationDays: number;
   isDefeated: boolean;
+  isGameOver?: boolean;
   defeatReason: string | null;
+  milestones?: string[];
   rooms: Map<string, RoomInstance>;
   patients: Map<string, PatientInstance>;
   queueIds: string[];

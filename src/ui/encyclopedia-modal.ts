@@ -3,20 +3,21 @@
  *
  * 1. O que este arquivo faz?
  * Renderiza o compêndio interativo da Enciclopédia Médica do SUS com os 150 casos clínicos da APS,
- * exibindo diagnósticos, condutas oficiais do Ministério da Saúde, busca reativa e medicamentos RENAME.
+ * com busca reativa, medicamentos RENAME e rolagem horizontal ergonômica nas abas de especialidade.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 2 do Prompt 12, garantindo layout sem cortes de subtipos, filtros categorizados e retenção pedagógica.
+ * Garantir layout responsivo, filtros categorizados e retenção pedagógica com rolagem suave por roda, setas e botões.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * O catálogo provém de src/data/cases.json e os protocolos dominados provêm do GoalsSystem (masteredCaseIds).
+ * O catálogo provém de src/data/cases.json e a rolagem horizontal utiliza enableHorizontalScroll de horizontal-scroll.ts.
  *
- * Importa: src/core/config.ts, src/systems/goals-system.ts
+ * Importa: src/core/config.ts, src/systems/goals-system.ts, src/ui/horizontal-scroll.ts
  * Conecta-se com: src/ui/title-screen.ts, src/main.ts, src/ui/hud.ts
  */
 
 import { CASES_CATALOG, type ClinicalCaseDefinition } from '../core/config';
 import { goalsSystem } from '../systems/goals-system';
+import { enableHorizontalScroll } from './horizontal-scroll';
 
 interface CategoryOption {
   id: string;
@@ -69,6 +70,7 @@ export class EncyclopediaModal {
   private activeCategory = 'all';
   private searchQuery = '';
   private onPracticeCallback?: (caseId: string) => void;
+  private scrollCleanup?: () => void;
 
   constructor(container: HTMLElement, onPractice?: (caseId: string) => void) {
     this.container = container;
@@ -80,6 +82,7 @@ export class EncyclopediaModal {
   }
 
   public close(): void {
+    this.scrollCleanup?.();
     this.container.innerHTML = '';
   }
 
@@ -171,9 +174,13 @@ export class EncyclopediaModal {
         <div class="hidden sm:flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2">
           ${pillsHtml}
         </div>
-        <!-- Mobile: Rolagem Horizontal Fluida com Snap -->
-        <div class="flex sm:hidden flex-nowrap overflow-x-auto snap-x touch-pan-x py-2 px-2 gap-1.5 no-scrollbar">
-          ${pillsHtml}
+        <!-- Mobile: Rolagem Horizontal Fluida com Snap e Botões -->
+        <div class="relative sm:hidden flex items-center">
+          <button id="btn-ency-scroll-prev" aria-label="Rolar esquerda" class="opacity-0 pointer-events-none transition-opacity absolute left-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">◀</button>
+          <div id="ency-categories-carousel" class="flex flex-nowrap overflow-x-auto snap-x touch-pan-x py-2 px-2 gap-1.5 no-scrollbar w-full">
+            ${pillsHtml}
+          </div>
+          <button id="btn-ency-scroll-next" aria-label="Rolar direita" class="transition-opacity absolute right-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">▶</button>
         </div>
       </div>
     `;
@@ -275,6 +282,18 @@ export class EncyclopediaModal {
       this.searchQuery = (e.target as HTMLInputElement).value;
       this.render();
     });
+
+    const carousel = document.getElementById('ency-categories-carousel');
+    const prevBtn = document.getElementById('btn-ency-scroll-prev');
+    const nextBtn = document.getElementById('btn-ency-scroll-next');
+    if (carousel) {
+      this.scrollCleanup?.();
+      this.scrollCleanup = enableHorizontalScroll(carousel, {
+        prevButton: prevBtn,
+        nextButton: nextBtn,
+        step: 180,
+      });
+    }
 
     this.container.querySelectorAll('.btn-encyclopedia-cat').forEach((btn) => {
       btn.addEventListener('click', (e) => {
