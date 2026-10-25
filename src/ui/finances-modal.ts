@@ -20,6 +20,8 @@ import {
   requestEmergencyGrant,
   calculateNegotiationChances,
   executeGovernmentNegotiation,
+  setPrivateConsultationFee,
+  toggleContract,
   type NegotiationResult,
 } from '../systems/economy-system';
 
@@ -35,30 +37,41 @@ export class FinancesModal {
 
   public open(): void {
     this.simulation.pauseForModal();
-    const { finances, cash } = this.simulation.state;
+    const state = this.simulation.state;
+    const { finances, cash } = state;
     const procedures = SIGTAP_CATALOG.procedures;
-    const chances = calculateNegotiationChances(this.simulation.state);
-    const cooldown = this.simulation.state.governmentNegotiationCooldownDays;
-    const bonusMultiplier = this.simulation.state.governmentGrantBonusMultiplier;
+    const chances = calculateNegotiationChances(state);
+    const cooldown = state.governmentNegotiationCooldownDays;
+    const bonusMultiplier = state.governmentGrantBonusMultiplier;
+    const isCommercial = state.unitType === 'private_clinic' || state.unitType === 'hospital';
+    const isSusUnit = state.unitType === 'ubs' || state.unitType === 'upa' || state.unitType === 'hospital';
 
     this.container.innerHTML = `
       <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-        <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[85dvh]">
+        <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[88dvh]">
           
           <div class="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-800/95 backdrop-blur-md">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center text-xl">🏛️</div>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center text-xl">
+                ${state.unitType === 'private_clinic' ? '💼' : '🏛️'}
+              </div>
               <div>
-                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">Finanças SUS & Repasses</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Negociação Governamental, SIGTAP e balanço orçamentário</p>
+                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">
+                  ${state.unitType === 'private_clinic' ? 'Gestão Financeira & Convênios' : 'Finanças & Economia Hospitalar'}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  ${state.unitType === 'private_clinic' ? 'Planos privados, tabela de consultas e balanço' : 'SUS, convênios, repasses e balanço'}
+                </p>
               </div>
             </div>
             <button id="btn-close-finances" class="min-w-[44px] min-h-[44px] px-3 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 text-lg font-bold">✕</button>
           </div>
 
           <div class="p-5 overflow-y-auto space-y-6 text-sm flex-1">
-            ${this.renderNegotiationCard(chances, cooldown, bonusMultiplier)}
+            ${isCommercial ? this.renderCommercialSection() : ''}
+            ${isSusUnit ? this.renderNegotiationCard(chances, cooldown, bonusMultiplier) : ''}
 
+            ${isSusUnit ? `
             <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span class="text-[10px] uppercase tracking-wider font-extrabold text-amber-600 dark:text-amber-400">Socorro Orçamentário</span>
@@ -69,6 +82,7 @@ export class FinancesModal {
                 🏛️ Solicitar (+R$ ${BALANCE.emergencyGrant.amount.toLocaleString('pt-BR')})
               </button>
             </div>
+            ` : ''}
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
@@ -76,16 +90,16 @@ export class FinancesModal {
                 <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">R$ ${cash.toLocaleString('pt-BR')}</span>
               </div>
               <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                <span class="text-[11px] text-slate-400 font-semibold block">Faturado BPA/AIH</span>
+                <span class="text-[11px] text-slate-400 font-semibold block">Faturado SUS</span>
                 <span class="text-sm font-extrabold text-sky-600 dark:text-sky-400">R$ ${(finances.bpaRevenue + (finances.aihRevenue ?? 0)).toLocaleString('pt-BR')}</span>
               </div>
               <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                <span class="text-[11px] text-slate-400 font-semibold block">Repasses do Ministério</span>
-                <span class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">R$ ${finances.ministryTransfers.toLocaleString('pt-BR')}</span>
+                <span class="text-[11px] text-slate-400 font-semibold block">Particulares</span>
+                <span class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">R$ ${(finances.privateRevenue ?? 0).toLocaleString('pt-BR')}</span>
               </div>
               <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                <span class="text-[11px] text-slate-400 font-semibold block">Bônus Negociado</span>
-                <span class="text-sm font-extrabold text-amber-600 dark:text-amber-400">+${Math.round(bonusMultiplier * 100)}%</span>
+                <span class="text-[11px] text-slate-400 font-semibold block">Convênios</span>
+                <span class="text-sm font-extrabold text-violet-600 dark:text-violet-400">R$ ${(finances.contractsRevenue ?? 0).toLocaleString('pt-BR')}</span>
               </div>
             </div>
 
@@ -120,6 +134,71 @@ export class FinancesModal {
     `;
 
     this.bindEvents();
+  }
+
+  private renderCommercialSection(): string {
+    const state = this.simulation.state;
+    const fee = state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+    const contracts = state.activeContracts ?? [];
+    const plans = BALANCE.mixedEconomy.plans;
+
+    const isCheap = fee <= BALANCE.mixedEconomy.lowPriceThreshold;
+    const isExpensive = fee > BALANCE.mixedEconomy.highPriceThreshold;
+    const demandFeedback = isCheap
+      ? '🟢 Preço acessível: +25% na taxa de chegada de clientes!'
+      : isExpensive
+        ? state.reputation >= BALANCE.mixedEconomy.requiredReputationForHighPrice
+          ? '🌟 Preço premium validado pela excelente reputação (>75)!'
+          : '⚠️ Preço alto com reputação insuficiente reduz o fluxo de clientes!'
+        : '⚪ Preço equilibrado com demanda média de mercado.';
+
+    return `
+      <div class="p-4 rounded-3xl bg-linear-to-br from-emerald-500/10 via-teal-500/10 to-transparent border border-emerald-500/25 space-y-4">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider font-extrabold text-emerald-600 dark:text-emerald-400">Gestão Comercial</span>
+          <h4 class="font-extrabold text-base text-slate-900 dark:text-slate-100">Preço da Consulta & Convênios Médicos</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+            Defina o valor da consulta particular e assine contratos com operadoras de saúde para garantir fluxo diário fixo.
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-emerald-500/20 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Preço da Consulta Particular</span>
+            <span class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">R$ ${fee.toLocaleString('pt-BR')}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btn-fee-minus" class="min-w-[40px] min-h-[40px] rounded-xl bg-slate-200 dark:bg-slate-700 font-extrabold text-base active:scale-95 transition-all">-</button>
+            <input id="slider-fee" type="range" min="${BALANCE.mixedEconomy.minConsultationFee}" max="${BALANCE.mixedEconomy.maxConsultationFee}" step="200" value="${fee}" class="w-full accent-emerald-500 cursor-pointer" />
+            <button id="btn-fee-plus" class="min-w-[40px] min-h-[40px] rounded-xl bg-slate-200 dark:bg-slate-700 font-extrabold text-base active:scale-95 transition-all">+</button>
+          </div>
+          <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${demandFeedback}</p>
+        </div>
+
+        <div class="space-y-2">
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+            Planos de Convênio (Ativos: ${contracts.length}/3)
+          </span>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            ${plans.map((plan) => {
+              const active = contracts.includes(plan.id);
+              return `
+                <div class="p-3 rounded-2xl border transition-all ${active ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-950 dark:text-emerald-100' : 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-700/80'} flex flex-col justify-between gap-2">
+                  <div>
+                    <strong class="text-xs font-bold block">${plan.name}</strong>
+                    <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-extrabold block">R$ ${plan.feePerPatient.toLocaleString('pt-BR')} / consulta</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">+${plan.dailyBonusArrival} pacientes/dia</span>
+                  </div>
+                  <button data-plan-id="${plan.id}" class="btn-toggle-contract min-h-[34px] px-2 py-1 rounded-xl text-xs font-extrabold transition-all active:scale-95 ${active ? 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 dark:text-rose-300' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}">
+                    ${active ? '✕ Rescindir' : '✓ Contratar'}
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   private renderNegotiationCard(
@@ -201,6 +280,34 @@ export class FinancesModal {
       const result = executeGovernmentNegotiation(this.simulation.state);
       this.lastNegotiationFeedback = result;
       this.open();
+    });
+
+    const fee = this.simulation.state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+    document.getElementById('btn-fee-minus')?.addEventListener('click', () => {
+      setPrivateConsultationFee(this.simulation.state, fee - 200);
+      this.open();
+    });
+
+    document.getElementById('btn-fee-plus')?.addEventListener('click', () => {
+      setPrivateConsultationFee(this.simulation.state, fee + 200);
+      this.open();
+    });
+
+    const slider = document.getElementById('slider-fee') as HTMLInputElement | null;
+    slider?.addEventListener('change', () => {
+      setPrivateConsultationFee(this.simulation.state, Number(slider.value));
+      this.open();
+    });
+
+    const contractBtns = this.container.querySelectorAll('.btn-toggle-contract');
+    contractBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const planId = (btn as HTMLElement).dataset.planId;
+        if (planId) {
+          toggleContract(this.simulation.state, planId);
+          this.open();
+        }
+      });
     });
   }
 }

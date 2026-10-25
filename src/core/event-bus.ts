@@ -47,6 +47,8 @@ export interface GameEvents {
   'protocol:mastered': { caseId: string; diseaseName: string; totalMastered: number };
   'patient:auto_treatment_started': { patientId: string; roomId: string; caseId: string; durationSec: number };
   'economy:negotiation_completed': { outcome: 'total' | 'partial' | 'denied'; bonus: number; message: string };
+  'save:restored_from_backup': { reason: string; timestamp?: number };
+  'helipad:landing': { patientId: string };
 }
 
 export type EventKey = keyof GameEvents;

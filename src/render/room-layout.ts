@@ -46,7 +46,13 @@ export type FurnitureKind =
   | 'xrayMachine' | 'leadScreen' | 'negatoscope'
   | 'surgeryTable' | 'surgicalLight' | 'surgeryMonitor'
   | 'icuBed' | 'ventilator' | 'icuMonitor'
-  | 'staffSofa' | 'coffeeMachine' | 'staffLockers';
+  | 'staffSofa' | 'coffeeMachine' | 'staffLockers'
+  | 'woundBed' | 'dressingCart' | 'clinicSpotlight'
+  | 'dentalChair' | 'dentalLamp' | 'dentalSink'
+  | 'ivChair' | 'medCart'
+  | 'traumaBed' | 'crashCart'
+  | 'maternityBed' | 'incubator' | 'fetalMonitor'
+  | 'bloodFridge' | 'helipadMarking' | 'helipadLights';
 
 export interface FurnitureSlot {
   kind: FurnitureKind;
@@ -124,6 +130,45 @@ export const FURNITURE_LAYOUTS: Record<string, FurnitureSlot[]> = {
     { kind: 'staffLockers', u: 0.25, v: 0.28 },
     { kind: 'coffeeMachine', u: 0.75, v: 0.28 },
     { kind: 'staffSofa', u: 0.5, v: 0.68 },
+  ],
+  wound_care: [
+    { kind: 'dressingCart', u: 0.25, v: 0.35 },
+    { kind: 'clinicSpotlight', u: 0.5, v: 0.3 },
+    { kind: 'woundBed', u: 0.65, v: 0.55 },
+  ],
+  dental: [
+    { kind: 'dentalLamp', u: 0.5, v: 0.28 },
+    { kind: 'dentalChair', u: 0.45, v: 0.55 },
+    { kind: 'dentalSink', u: 0.8, v: 0.55 },
+  ],
+  medication_room: [
+    { kind: 'ivChair', u: 0.3, v: 0.45 },
+    { kind: 'ivChair', u: 0.7, v: 0.45 },
+    { kind: 'medCart', u: 0.5, v: 0.75 },
+  ],
+  emergency_room: [
+    { kind: 'crashCart', u: 0.25, v: 0.35 },
+    { kind: 'traumaBed', u: 0.6, v: 0.55 },
+    { kind: 'icuMonitor', u: 0.75, v: 0.25 },
+  ],
+  maternity: [
+    { kind: 'maternityBed', u: 0.35, v: 0.55 },
+    { kind: 'incubator', u: 0.75, v: 0.35 },
+    { kind: 'fetalMonitor', u: 0.75, v: 0.65 },
+  ],
+  trauma_center: [
+    { kind: 'surgicalLight', u: 0.45, v: 0.25 },
+    { kind: 'traumaBed', u: 0.45, v: 0.55 },
+    { kind: 'crashCart', u: 0.8, v: 0.45 },
+  ],
+  blood_bank: [
+    { kind: 'bloodFridge', u: 0.3, v: 0.3 },
+    { kind: 'centrifuge', u: 0.7, v: 0.3 },
+    { kind: 'ivChair', u: 0.5, v: 0.65 },
+  ],
+  helipad: [
+    { kind: 'helipadMarking', u: 0.5, v: 0.5 },
+    { kind: 'helipadLights', u: 0.5, v: 0.5 },
   ],
 };
 

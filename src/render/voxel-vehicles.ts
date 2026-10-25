@@ -19,7 +19,7 @@
 import { Container, Graphics } from 'pixi.js';
 import { drawBlockCentered, drawShadow } from './voxel';
 
-export type VehicleType = 'car' | 'bus' | 'ambulance';
+export type VehicleType = 'car' | 'bus' | 'ambulance' | 'helicopter';
 export type VehicleDirection = 'east' | 'west';
 
 export interface VehicleRenderConfig {
@@ -62,8 +62,10 @@ export class VoxelVehicle {
       this.drawCar(mult);
     } else if (this.config.type === 'bus') {
       this.drawBus(mult);
-    } else {
+    } else if (this.config.type === 'ambulance') {
       this.drawAmbulance(mult, timeSec);
+    } else {
+      this.drawHelicopter(mult, timeSec);
     }
   }
 
@@ -147,6 +149,45 @@ export class VoxelVehicle {
 
     if (this.config.isSirenActive) {
       this.g.circle(2 * mult, -18, 14).fill({ color: sirenColor, alpha: 0.25 });
+    }
+  }
+
+  private drawHelicopter(mult: number, timeSec: number): void {
+    drawShadow(this.g, -26, -14, 52, 28);
+
+    // Esquis de pouso metálicos
+    this.g.rect(-22, -12, 44, 2).fill({ color: 0x94a3b8 });
+    this.g.rect(-22, 10, 44, 2).fill({ color: 0x94a3b8 });
+    this.g.rect(-10, -12, 2, 24).fill({ color: 0x64748b });
+    this.g.rect(10, -12, 2, 24).fill({ color: 0x64748b });
+
+    // Fuselagem da cabine
+    drawBlockCentered(this.g, 0, 0, 40, 22, 16, 0xffffff);
+    this.g.rect(-18, 0, 36, 4).fill({ color: 0xf97316 });
+    this.g.rect(-18, 4, 36, 2).fill({ color: 0xdc2626 });
+
+    // Cauda aeromédica
+    drawBlockCentered(this.g, -28 * mult, 0, 20, 6, 8, 0xffffff);
+    drawBlockCentered(this.g, -38 * mult, 0, 6, 3, 14, 0xdc2626);
+
+    // Cabine envidraçada
+    this.g.rect(14 * mult - (mult > 0 ? 4 : 0), -8, 6, 16).fill({ color: GLASS });
+
+    // Mastro e Rotor Principal animado
+    drawBlockCentered(this.g, 2 * mult, 0, 4, 4, 18, 0x334155);
+    const bladeAngle = timeSec * 25;
+    const bladeLen = 32;
+    const bx = 2 * mult;
+    const by = -18;
+    this.g.ellipse(bx, by, bladeLen, 3).stroke({ width: 1.5, color: 0x94a3b8, alpha: 0.7 });
+    const cosA = Math.cos(bladeAngle) * bladeLen;
+    const sinA = Math.sin(bladeAngle) * (bladeLen * 0.35);
+    this.g.poly([bx - cosA, by - sinA, bx + cosA, by + sinA]).stroke({ width: 2.5, color: 0x0f172a });
+
+    // Luz estroboscópica anticolisão
+    const strobe = Math.floor(timeSec * 6) % 2 === 0;
+    if (strobe) {
+      this.g.circle(bx, by - 4, 2.5).fill({ color: 0xef4444 });
     }
   }
 

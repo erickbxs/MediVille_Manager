@@ -42,6 +42,7 @@ import { SettingsModal, applySavedFontScale } from './ui/settings-modal';
 import { AgeGateModal } from './ui/age-gate-modal';
 import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
 import { isAgeVerificationRequired } from './systems/player-profile';
+import { globalErrorBoundary } from './core/error-boundary';
 import type { RoomDefinition } from './core/config';
 
 class MediVilleApp {
@@ -79,6 +80,8 @@ class MediVilleApp {
     this.setupBuildMenu();
     this.setupInput(canvasContainer);
     this.setupEventSubscriptions();
+
+    globalErrorBoundary.attach(this.simulation);
 
     this.simulation.setSpeed(0);
     this.gameLoop = new GameLoop(this.simulation, () => {
@@ -353,6 +356,10 @@ class MediVilleApp {
     });
     globalBus.on('encyclopedia:case_unlocked', () => {
       this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!');
+    });
+
+    globalBus.on('save:restored_from_backup', () => {
+      this.showToast('🛡️ Save principal restaurado com sucesso a partir do backup!');
     });
 
     globalBus.on('day:end', () => saveGameState(this.simulation.state));

@@ -33,7 +33,9 @@ export interface PatientInstance {
   currentRoomId: string | null;
   satisfaction: number;
   errorsCount: number;
+  isHelipadEmergency?: boolean;
 }
+
 
 export function isPatientPatienceCritical(
   patient: PatientInstance,

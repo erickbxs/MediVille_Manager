@@ -65,6 +65,11 @@ const DENIED_CHANCE_MIN = 0.05;
 const PERCENT_TOTAL_ACCEPT = 40;
 const PERCENT_PARTIAL_ACCEPT = 20;
 const PERCENT_SCALE = 100;
+const DEFAULT_MANAGER_NEGOTIATION_BONUS = 0.15;
+const MAX_EXPENSIVE_FEE_PENALTY = 0.4;
+const CONTRACT_BONUS_DEMAND_RATIO = 0.05;
+const MIN_DEMAND_FLOOR = 0.2;
+const HOSPITAL_CONTRACT_CHANCE = 0.3;
 
 export interface NegotiationChances {
   totalAcceptChance: number;
@@ -82,15 +87,23 @@ export interface NegotiationResult {
   error?: string;
 }
 
+export function getManagerNegotiationBonus(state: GameState): number {
+  const manager = Array.from(state.staff.values()).find((s) => s.roleId === 'manager');
+  if (!manager) return 0;
+  const bonusPerSkill = BALANCE.staffPerks?.managerNegotiationBonusPerSkill ?? DEFAULT_MANAGER_NEGOTIATION_BONUS;
+  return manager.skill * bonusPerSkill;
+}
+
 export function calculateNegotiationChances(state: GameState): NegotiationChances {
   const rep = state.reputation;
   const mastered = state.masteredCaseIds ? state.masteredCaseIds.length : 0;
   const treated = state.stats.treatedCount;
+  const managerBonus = getManagerNegotiationBonus(state);
 
-  const rawTotal = TOTAL_CHANCE_BASE + rep * TOTAL_REP_FACTOR + mastered * TOTAL_MASTERED_FACTOR + treated * TOTAL_TREATED_FACTOR;
+  const rawTotal = TOTAL_CHANCE_BASE + rep * TOTAL_REP_FACTOR + mastered * TOTAL_MASTERED_FACTOR + treated * TOTAL_TREATED_FACTOR + managerBonus;
   const totalAcceptChance = Math.min(TOTAL_CHANCE_MAX, Math.max(TOTAL_CHANCE_BASE, Math.round(rawTotal * PERCENT_SCALE) / PERCENT_SCALE));
 
-  const rawPartial = PARTIAL_CHANCE_BASE + rep * PARTIAL_REP_FACTOR;
+  const rawPartial = PARTIAL_CHANCE_BASE + rep * PARTIAL_REP_FACTOR + managerBonus * 0.5;
   const partialAcceptChance = Math.min(PARTIAL_CHANCE_MAX, Math.max(PARTIAL_CHANCE_BASE, Math.round(rawPartial * PERCENT_SCALE) / PERCENT_SCALE));
 
   const remaining = 1 - (totalAcceptChance + partialAcceptChance);
@@ -136,6 +149,10 @@ export function executeGovernmentNegotiation(state: GameState, forcedRoll?: numb
 }
 
 export function processMinistryDailyTransfer(state: GameState): { fixedPab: number; bonus: number; total: number } {
+  if (state.unitType === 'private_clinic') {
+    return { fixedPab: 0, bonus: 0, total: 0 };
+  }
+
   const { dailyFixedPab, performanceBonusThreshold, performanceBonusPerPoint } = BALANCE.ministryOfHealth;
   let bonus = 0;
   if (state.satisfactionAverage >= performanceBonusThreshold) {
@@ -157,6 +174,93 @@ export function processMinistryDailyTransfer(state: GameState): { fixedPab: numb
 
   return { fixedPab: dailyFixedPab, bonus, total };
 }
+
+export function setPrivateConsultationFee(state: GameState, fee: number): boolean {
+  const minFee = BALANCE.mixedEconomy.minConsultationFee;
+  const maxFee = BALANCE.mixedEconomy.maxConsultationFee;
+  if (fee < minFee || fee > maxFee) return false;
+  state.privateConsultationFee = fee;
+  globalBus.emit('cash:changed', { cash: state.cash, delta: 0, reason: `Preço da consulta particular ajustado para R$ ${fee.toLocaleString('pt-BR')}` });
+  return true;
+}
+
+export function toggleContract(state: GameState, planId: string): boolean {
+  const plans = BALANCE.mixedEconomy.plans;
+  const exists = plans.some((p) => p.id === planId);
+  if (!exists) return false;
+
+  const current = state.activeContracts ?? [];
+  const idx = current.indexOf(planId);
+  if (idx >= 0) {
+    current.splice(idx, 1);
+  } else {
+    current.push(planId);
+  }
+  state.activeContracts = current;
+  return true;
+}
+
+export function calculateDemandMultiplier(state: GameState): number {
+  let mult = 1.0;
+  if (state.unitType === 'private_clinic' || state.unitType === 'hospital') {
+    const fee = state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+    if (fee <= BALANCE.mixedEconomy.lowPriceThreshold) {
+      mult += BALANCE.mixedEconomy.lowPriceDemandBonus;
+    } else if (fee > BALANCE.mixedEconomy.highPriceThreshold && state.reputation < BALANCE.mixedEconomy.requiredReputationForHighPrice) {
+      const penalty = Math.min(
+        MAX_EXPENSIVE_FEE_PENALTY,
+        ((fee - BALANCE.mixedEconomy.highPriceThreshold) / (BALANCE.mixedEconomy.maxConsultationFee - BALANCE.mixedEconomy.highPriceThreshold)) *
+          MAX_EXPENSIVE_FEE_PENALTY
+      );
+      mult -= penalty;
+    }
+  }
+
+  const contracts = state.activeContracts ?? [];
+  for (const cId of contracts) {
+    const plan = BALANCE.mixedEconomy.plans.find((p) => p.id === cId);
+    if (plan) mult += plan.dailyBonusArrival * CONTRACT_BONUS_DEMAND_RATIO;
+  }
+  return Math.max(MIN_DEMAND_FLOOR, mult);
+}
+
+export function calculatePatientConsultationRevenue(
+  state: GameState,
+  baseRevenue: number
+): { amount: number; source: 'bpa' | 'private' | 'contract' } {
+  if (state.unitType === 'private_clinic') {
+    if (state.activeContracts && state.activeContracts.length > 0 && Math.random() < 0.5) {
+      const randomPlanId = state.activeContracts[Math.floor(Math.random() * state.activeContracts.length)]!;
+      const plan = BALANCE.mixedEconomy.plans.find((p) => p.id === randomPlanId);
+      const fee = plan ? plan.feePerPatient : state.privateConsultationFee;
+      state.finances.contractsRevenue = (state.finances.contractsRevenue ?? 0) + fee;
+      return { amount: fee, source: 'contract' };
+    }
+    const fee = state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+    state.finances.privateRevenue = (state.finances.privateRevenue ?? 0) + fee;
+    return { amount: fee, source: 'private' };
+  }
+
+  if (state.unitType === 'hospital') {
+    const roll = Math.random();
+    if (roll < HOSPITAL_CONTRACT_CHANCE && state.activeContracts && state.activeContracts.length > 0) {
+      const randomPlanId = state.activeContracts[Math.floor(Math.random() * state.activeContracts.length)]!;
+      const plan = BALANCE.mixedEconomy.plans.find((p) => p.id === randomPlanId);
+      const fee = plan ? plan.feePerPatient : baseRevenue;
+      state.finances.contractsRevenue = (state.finances.contractsRevenue ?? 0) + fee;
+      return { amount: fee, source: 'contract' };
+    }
+    if (roll < 0.5) {
+      const fee = state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+      state.finances.privateRevenue = (state.finances.privateRevenue ?? 0) + fee;
+      return { amount: fee, source: 'private' };
+    }
+  }
+
+  state.finances.bpaRevenue += baseRevenue;
+  return { amount: baseRevenue, source: 'bpa' };
+}
+
 
 const DEFAULT_CASE_MEDS: Record<string, string[]> = {
   'resfriado-comum': ['soro-fisiologico', 'paracetamol'],

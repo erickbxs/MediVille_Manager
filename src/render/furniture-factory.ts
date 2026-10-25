@@ -283,6 +283,123 @@ function drawStaffLockers(g: Graphics, x: number, y: number): void {
   g.rect(x + 7, y - 14, 1.5, 3).fill({ color: WHITE });
 }
 
+function drawWoundBed(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 20, 36, 8, STEEL);
+  g.rect(x - 9, y - 24, 18, 30).fill({ color: 0x38bdf8 });
+  g.roundRect(x - 7, y - 23, 14, 7, 2).fill({ color: WHITE });
+}
+
+function drawDressingCart(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 12, 10, 14, STEEL);
+  g.rect(x - 5, y - 16, 10, 3).fill({ color: WHITE });
+  g.rect(x - 4, y - 19, 4, 3).fill({ color: 0xef4444 });
+  g.circle(x + 2, y - 18, 2).fill({ color: STEEL });
+}
+
+function drawClinicSpotlight(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 6, 6, 22, STEEL);
+  g.circle(x, y - 24, 5).fill({ color: 0xfef08a });
+  g.circle(x, y - 24, 3).fill({ color: WHITE });
+}
+
+function drawDentalChair(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 16, 32, 9, 0x0284c7);
+  g.roundRect(x - 7, y - 22, 14, 26, 3).fill({ color: 0x38bdf8 });
+  g.roundRect(x - 5, y - 21, 10, 6, 2).fill({ color: 0x0369a1 });
+}
+
+function drawDentalLamp(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 4, 4, 24, STEEL);
+  g.rect(x - 4, y - 24, 8, 4).fill({ color: WHITE });
+  g.circle(x, y - 22, 2.5).fill({ color: 0xfef08a });
+}
+
+function drawDentalSink(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 12, 12, 12, WHITE);
+  g.circle(x, y - 14, 4).fill({ color: 0x0ea5e9 });
+  g.rect(x - 1, y - 20, 2, 6).fill({ color: STEEL });
+}
+
+function drawIvChair(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 18, 18, 9, 0x0284c7);
+  g.roundRect(x - 8, y - 14, 16, 12, 2).fill({ color: 0x38bdf8 });
+  g.rect(x + 9, y - 28, 2, 28).fill({ color: STEEL });
+  g.roundRect(x + 6, y - 26, 8, 8, 2).fill({ color: 0xe0f2fe });
+}
+
+function drawMedCart(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 16, 12, 12, WHITE);
+  g.rect(x - 6, y - 14, 12, 2).fill({ color: STEEL });
+  g.rect(x - 4, y - 17, 3, 3).fill({ color: 0x3b82f6 });
+  g.rect(x + 1, y - 17, 3, 3).fill({ color: 0x10b981 });
+}
+
+function drawTraumaBed(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 22, 40, 10, 0x334155);
+  g.rect(x - 10, y - 28, 20, 34).fill({ color: 0xe2e8f0 });
+  g.rect(x - 9, y - 12, 18, 3).fill({ color: 0xef4444 });
+  g.roundRect(x - 8, y - 27, 16, 8, 2).fill({ color: WHITE });
+}
+
+function drawCrashCart(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 14, 12, 16, 0xdc2626);
+  g.rect(x - 6, y - 18, 12, 3).fill({ color: 0xfacc15 });
+  g.rect(x - 6, y - 14, 12, 3).fill({ color: 0x3b82f6 });
+  g.rect(x - 4, y - 22, 8, 4).fill({ color: 0x0f172a });
+  g.rect(x - 2, y - 21, 4, 2).fill({ color: 0x22c55e });
+}
+
+function drawMaternityBed(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 22, 36, 10, 0xf472b6);
+  g.rect(x - 10, y - 25, 20, 30).fill({ color: 0xfdf2f8 });
+  g.roundRect(x - 8, y - 24, 16, 8, 3).fill({ color: 0xfbcfe8 });
+}
+
+function drawIncubator(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 14, 18, 12, WHITE);
+  g.roundRect(x - 6, y - 22, 12, 10, 4).fill({ color: 0xbae6fd, alpha: 0.8 });
+  g.circle(x, y - 17, 3).fill({ color: 0xfbcfe8 });
+}
+
+function drawFetalMonitor(g: Graphics, x: number, y: number, ctx: FurnitureContext): void {
+  drawBlockCentered(g, x, y, 8, 6, 16, STEEL);
+  drawBlockCentered(g, x, y - 14, 12, 4, 8, 0x0f172a, false);
+  const pulse = Math.floor(ctx.timeSeed / 400) % 2 === 0;
+  g.rect(x - 4, y - 18, 8, 4).fill({ color: 0x1e1b4b });
+  g.rect(x - 3, y - 17, pulse ? 6 : 4, 1).fill({ color: 0xf472b6 });
+}
+
+function drawBloodFridge(g: Graphics, x: number, y: number): void {
+  drawBlockCentered(g, x, y, 16, 12, 22, STEEL);
+  g.rect(x - 6, y - 22, 12, 18).fill({ color: 0x93c5fd, alpha: 0.7 });
+  g.rect(x - 4, y - 20, 4, 6).fill({ color: 0xb91c1c });
+  g.rect(x + 1, y - 20, 4, 6).fill({ color: 0xb91c1c });
+  g.rect(x - 4, y - 12, 4, 6).fill({ color: 0xb91c1c });
+  g.rect(x + 1, y - 12, 4, 6).fill({ color: 0xb91c1c });
+}
+
+function drawHelipadMarking(g: Graphics, x: number, y: number): void {
+  g.circle(x, y, 32).fill({ color: 0x1e293b });
+  g.circle(x, y, 30).stroke({ width: 3, color: 0xfacc15 });
+  g.rect(x - 12, y - 14, 6, 28).fill({ color: 0xef4444 });
+  g.rect(x + 6, y - 14, 6, 28).fill({ color: 0xef4444 });
+  g.rect(x - 12, y - 3, 24, 6).fill({ color: 0xef4444 });
+}
+
+function drawHelipadLights(g: Graphics, x: number, y: number, ctx: FurnitureContext): void {
+  const blink = Math.floor(ctx.timeSeed / 500) % 2 === 0;
+  const lightColor = blink ? 0x22c55e : 0xeab308;
+  const offsets: Array<[number, number]> = [
+    [-34, -34],
+    [34, -34],
+    [-34, 34],
+    [34, 34],
+  ];
+  for (const [ox, oy] of offsets) {
+    g.circle(x + ox, y + oy, 3).fill({ color: lightColor });
+  }
+}
+
 const FURNITURE_DRAWERS: Record<FurnitureKind, Drawer> = {
   counterL: drawCounterL,
   totem: drawTotem,
@@ -318,6 +435,22 @@ const FURNITURE_DRAWERS: Record<FurnitureKind, Drawer> = {
   staffSofa: drawStaffSofa,
   coffeeMachine: drawCoffeeMachine,
   staffLockers: drawStaffLockers,
+  woundBed: drawWoundBed,
+  dressingCart: drawDressingCart,
+  clinicSpotlight: drawClinicSpotlight,
+  dentalChair: drawDentalChair,
+  dentalLamp: drawDentalLamp,
+  dentalSink: drawDentalSink,
+  ivChair: drawIvChair,
+  medCart: drawMedCart,
+  traumaBed: drawTraumaBed,
+  crashCart: drawCrashCart,
+  maternityBed: drawMaternityBed,
+  incubator: drawIncubator,
+  fetalMonitor: drawFetalMonitor,
+  bloodFridge: drawBloodFridge,
+  helipadMarking: drawHelipadMarking,
+  helipadLights: drawHelipadLights,
 };
 
 /** Desenha os móveis em ordem de Y (de trás para frente) para profundidade correta. */

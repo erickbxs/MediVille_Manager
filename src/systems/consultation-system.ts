@@ -14,11 +14,17 @@ import type { PatientInstance } from '../entities/patient';
 import type { GameState } from '../state/game-state';
 import { calculatePatientSatisfaction } from './satisfaction-system';
 import { getBestDoctorSkill } from './staff-system';
-import { consumeMedicationsForCase } from './economy-system';
+import { consumeMedicationsForCase, calculatePatientConsultationRevenue } from './economy-system';
 import { checkHospitalProgression } from './progression-system';
 
 const AUTO_TREATMENT_BASE_SEC = 3.5;
 const AUTO_TREATMENT_MIN_SEC = 1.5;
+const DEFAULT_TECH_SPEED_REDUCTION = 0.2;
+const CLEANLINESS_BENCHMARK = 80;
+const MAX_CLEANLINESS_RATING = 100;
+const MAX_SATISFACTION = 100;
+const DEFAULT_HELIPAD_REWARD = 7200;
+const DEFAULT_JANITOR_BONUS = 10;
 
 export function findAvailableConsultationRoom(state: GameState): RoomInstance | null {
   for (const room of state.rooms.values()) {
@@ -43,10 +49,21 @@ export function hasDoctorAvailable(state: GameState): boolean {
   return false;
 }
 
+export function hasTechAvailable(state: GameState): boolean {
+  for (const member of state.staff.values()) {
+    if (member.roleId === 'tech') return true;
+  }
+  return false;
+}
+
 function calculateAutoTreatmentDuration(state: GameState, patient: PatientInstance): number {
   const doctorSkill = getBestDoctorSkill(state);
   const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
   let duration = Math.max(AUTO_TREATMENT_MIN_SEC, AUTO_TREATMENT_BASE_SEC * skillFactor);
+
+  if (hasTechAvailable(state)) {
+    duration *= 1 - (BALANCE.staffPerks?.techSpeedReduction ?? DEFAULT_TECH_SPEED_REDUCTION);
+  }
 
   const hasLab = Array.from(state.rooms.values()).some((r) => r.typeId === 'laboratory');
   const area = patient.clinicalCase.definition.area;
@@ -211,7 +228,7 @@ function calculateSpecializedSectorBonus(state: GameState, patient: PatientInsta
   return bonus;
 }
 
-function processDischargeRevenue(state: GameState, patient: PatientInstance): number {
+function processDischargeRevenue(state: GameState, patient: PatientInstance): { amount: number; source: 'bpa' | 'private' | 'contract' } {
   const pharmacyOk = hasPharmacy(state);
   let medStockOk = true;
   if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk) {
@@ -219,20 +236,28 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): nu
     medStockOk = res.success;
   }
 
-  patient.satisfaction = calculatePatientSatisfaction(patient, pharmacyOk, medStockOk);
+  let sat = calculatePatientSatisfaction(patient, pharmacyOk, medStockOk);
+  if ((state.cleanlinessRating ?? MAX_CLEANLINESS_RATING) >= CLEANLINESS_BENCHMARK) {
+    sat = Math.min(MAX_SATISFACTION, sat + (BALANCE.staffPerks?.janitorCleanlinessBonus ?? DEFAULT_JANITOR_BONUS));
+  }
+  patient.satisfaction = sat;
   patient.state = 'treated';
 
-  let revenue = BALANCE.economy.revenuePerPatient;
+  let baseRevenue = BALANCE.economy.revenuePerPatient;
   if (patient.clinicalCase.definition.requiresPharmacy && pharmacyOk && medStockOk) {
-    revenue += BALANCE.economy.pharmacyRevenue;
+    baseRevenue += BALANCE.economy.pharmacyRevenue;
   }
-  revenue += calculateSpecializedSectorBonus(state, patient);
+  baseRevenue += calculateSpecializedSectorBonus(state, patient);
 
-  state.cash += revenue;
-  state.finances.bpaRevenue += revenue;
+  if (patient.isHelipadEmergency) {
+    baseRevenue += BALANCE.sectors.helipadReward ?? DEFAULT_HELIPAD_REWARD;
+  }
+
+  const result = calculatePatientConsultationRevenue(state, baseRevenue);
+  state.cash += result.amount;
   state.stats.treatedCount += 1;
   checkHospitalProgression(state);
-  return revenue;
+  return result;
 }
 
 export function dischargePatient(state: GameState, patientId: string, isAuto = false): void {
@@ -241,14 +266,27 @@ export function dischargePatient(state: GameState, patientId: string, isAuto = f
 
   finishPatientDecision(state, patient.id);
   const { col, row } = releasePatientRoom(state, patient);
-  const revenue = processDischargeRevenue(state, patient);
+  const revenueInfo = processDischargeRevenue(state, patient);
+  const revenue = revenueInfo.amount;
+
+  const reasonLabel =
+    revenueInfo.source === 'private'
+      ? 'Consulta Particular faturada'
+      : revenueInfo.source === 'contract'
+        ? 'Atendimento Convênio Médico faturado'
+        : 'Procedimento BPA faturado (SUS)';
 
   globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue });
   globalBus.emit('patient:consultation_completed', { patientId: patient.id });
-  globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: 'Procedimento BPA faturado (SUS)' });
+  globalBus.emit('cash:changed', { cash: state.cash, delta: revenue, reason: reasonLabel });
 
   const floatPrefix = isAuto ? '⚡ Auto ' : '';
-  globalBus.emit('feedback:gain_float', { text: `${floatPrefix}+R$ ${revenue.toLocaleString('pt-BR')}`, col, row });
+  const heliPrefix = patient.isHelipadEmergency ? '🚁 SAMU ' : '';
+  globalBus.emit('feedback:gain_float', {
+    text: `${floatPrefix}${heliPrefix}+R$ ${revenue.toLocaleString('pt-BR')}`,
+    col,
+    row,
+  });
 }
 
 export function updateConsultationSystem(state: GameState, deltaSec: number): void {

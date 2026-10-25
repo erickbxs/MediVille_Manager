@@ -42,19 +42,15 @@ function buildStarterPharmacyStock(): Record<string, number> {
   return stock;
 }
 
-function buildInitialFinances(): {
-  bpaRevenue: number;
-  aihRevenue: number;
-  ministryTransfers: number;
-  emergencyGrants: number;
-  medicationPurchases: number;
-} {
+function buildInitialFinances() {
   return {
     bpaRevenue: 0,
     aihRevenue: 0,
     ministryTransfers: 0,
     emergencyGrants: 0,
     medicationPurchases: 0,
+    privateRevenue: 0,
+    contractsRevenue: 0,
   };
 }
 
@@ -64,6 +60,12 @@ const UNIT_CASH = {
   clinica: 60000,
   hospital: 100000,
 } as const;
+
+function resolveUnitType(choice?: 'ubs' | 'upa' | 'clinica' | 'hospital'): 'private_clinic' | 'ubs' | 'upa' | 'hospital' {
+  if (choice === 'clinica') return 'private_clinic';
+  if (choice === 'upa' || choice === 'hospital') return choice;
+  return 'ubs';
+}
 
 function getInitialUnlockedRooms(level: 'ubs' | 'upa' | 'hospital'): string[] {
   const found = BALANCE.progression.levels.find((l) => l.id === level);
@@ -76,6 +78,16 @@ function buildInitialNegotiationState() {
     governmentNegotiationCooldownDays: 0,
     governmentGrantBonusMultiplier: 0,
     dismissedAdvisorAlertIds: [],
+  };
+}
+
+function buildInitialEconomyState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hospital') {
+  return {
+    unitType: resolveUnitType(unitChoice),
+    privateConsultationFee: BALANCE.mixedEconomy.defaultConsultationFee,
+    activeContracts: [] as string[],
+    cleanlinessRating: 100,
+    helipadTimerSec: 0,
   };
 }
 
@@ -111,7 +123,9 @@ export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 
     eventTimerSec: BALANCE.events.firstEventDelaySec,
     pharmacyStock: buildStarterPharmacyStock(),
     finances: buildInitialFinances(),
+    ...buildInitialEconomyState(unitChoice),
     ...buildInitialNegotiationState(),
   };
 }
+
 

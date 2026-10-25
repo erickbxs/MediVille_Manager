@@ -19,7 +19,15 @@
 import { Container, Graphics } from 'pixi.js';
 import { shadeColor } from './voxel';
 
-export type CharacterRole = 'doctor' | 'nurse' | 'pharmacist' | 'receptionist' | 'patient';
+export type CharacterRole =
+  | 'doctor'
+  | 'nurse'
+  | 'pharmacist'
+  | 'receptionist'
+  | 'tech'
+  | 'janitor'
+  | 'manager'
+  | 'patient';
 export type AnimationState = 'IDLE' | 'WALKING' | 'WORKING';
 
 export interface VoxelCharacterConfig {
@@ -107,32 +115,46 @@ export class VoxelCharacter {
     this.g.rect(x + w, y - depth * 0.5, depth, h).fill({ color: shadeColor(baseColor, 0.75) });
   }
 
+  private drawAdminUniform(x: number, y: number, w: number, h: number): void {
+    const role = this.config.role;
+    if (role === 'tech') {
+      this.drawBox(x, y, w, h, 0x38bdf8);
+      this.g.rect(x + 2, y + 2, 5, 1.5).fill({ color: 0xffffff });
+      this.g.rect(x + 3.75, y + 1, 1.5, 3.5).fill({ color: 0xffffff });
+    } else if (role === 'janitor') {
+      this.drawBox(x, y, w, h, 0x475569);
+      this.g.rect(x + 3, y + 1, 3, h - 2).fill({ color: 0x15803d });
+      this.g.rect(x - 5, y - 6, 1.5, 18).fill({ color: 0xb45309 });
+      this.g.rect(x - 6.5, y + 10, 4.5, 3.5).fill({ color: 0xfacc15 });
+    } else if (role === 'manager') {
+      this.drawBox(x, y, w, h, 0x0f172a);
+      this.g.rect(x + 3, y + 1, 3, 3).fill({ color: 0xffffff });
+      this.g.rect(x + 3.75, y + 2.5, 1.5, 4.5).fill({ color: 0xdc2626 });
+    }
+  }
+
   private drawTorso(x: number, y: number, w: number, h: number): void {
     const role = this.config.role;
-    if (role === 'doctor') {
-      // Jaleco branco com camisa celeste no centro e estetoscópio pixelado
+    if (role === 'tech' || role === 'janitor' || role === 'manager') {
+      this.drawAdminUniform(x, y, w, h);
+    } else if (role === 'doctor') {
       this.drawBox(x, y, w, h, 0xffffff);
       this.g.rect(x + 3, y + 1, 3, h - 2).fill({ color: 0x38bdf8 });
-      // Estetoscópio
       this.g.rect(x + 2, y + 1, 1, 4).fill({ color: 0x0284c7 });
       this.g.rect(x + 6, y + 1, 1, 4).fill({ color: 0x0284c7 });
       this.g.rect(x + 3, y + 4, 3, 1).fill({ color: 0x0284c7 });
     } else if (role === 'nurse') {
-      // Uniforme Verde Água / Teal com cruz branca no peito
       this.drawBox(x, y, w, h, 0x0d9488);
       this.g.rect(x + 3.5, y + 2, 2, 4).fill({ color: 0xffffff });
       this.g.rect(x + 2.5, y + 3, 4, 2).fill({ color: 0xffffff });
     } else if (role === 'pharmacist') {
-      // Jaleco branco sobre camisa azul royal
       this.drawBox(x, y, w, h, 0xffffff);
       this.g.rect(x + 3, y + 1, 3, h - 2).fill({ color: 0x2563eb });
     } else if (role === 'receptionist') {
-      // Camisa âmbar com crachá
       this.drawBox(x, y, w, h, 0xd97706);
       this.g.rect(x + 2, y + 2, 2.5, 3).fill({ color: 0xffffff });
       this.g.rect(x + 2.5, y + 2.5, 1.5, 1).fill({ color: 0x0284c7 });
     } else {
-      // Paciente com roupas casuais
       const shirt = CASUAL_SHIRTS[(this.config.skinToneIndex ?? 0) % CASUAL_SHIRTS.length]!;
       this.drawBox(x, y, w, h, shirt);
     }
@@ -143,34 +165,26 @@ export class VoxelCharacter {
     const x = cx - size / 2;
     const y = cy;
 
-    // Cabeça base (bloco de pele)
     this.drawBox(x, y, size, size, skinColor);
 
-    // Cabelo blocky estilizado
     this.g.rect(x - 0.5, y - 3, size + 1, 3).fill({ color: hairColor });
     if (this.config.gender === 'female') {
-      // Mechas laterais / franja
       this.g.rect(x - 1, y, 1.5, size * 0.7).fill({ color: hairColor });
       this.g.rect(x + size - 0.5, y, 1.5, size * 0.7).fill({ color: hairColor });
     }
 
-    // Olhos pixelados
     const eyeOffsetX = this.facing === 'left' ? -0.5 : 0.5;
     this.g.rect(x + 2 + eyeOffsetX, y + 2.5, 1.2, 1.5).fill({ color: 0x0f172a });
     this.g.rect(x + 4.5 + eyeOffsetX, y + 2.5, 1.2, 1.5).fill({ color: 0x0f172a });
 
-    // Expressão facial e indicador de paciência para paciente
     if (this.config.role === 'patient') {
       const ratio = this.config.patienceRatio ?? 1.0;
       if (ratio >= 0.7) {
-        // Boca calma / sorriso
         this.g.rect(x + 2.5, y + 5, 2.5, 0.8).fill({ color: 0x334155 });
       } else if (ratio >= 0.3) {
-        // Boca tensa + gota de suor
         this.g.rect(x + 2.5, y + 5, 2.5, 0.8).fill({ color: 0x334155 });
         this.g.circle(x + size + 1, y + 2, 1.2).fill({ color: 0x38bdf8 });
       } else {
-        // Alerta: rosto corado e boca zangada
         this.g.rect(x + 1, y + 3.5, 1.5, 1).fill({ color: 0xef4444, alpha: 0.6 });
         this.g.rect(x + 5, y + 3.5, 1.5, 1).fill({ color: 0xef4444, alpha: 0.6 });
         this.g.rect(x + 2.5, y + 5.5, 2.5, 1).fill({ color: 0xb91c1c });
@@ -181,12 +195,18 @@ export class VoxelCharacter {
   private getPantsColor(): number {
     if (this.config.role === 'nurse') return 0x0f766e;
     if (this.config.role === 'doctor') return 0x0284c7;
+    if (this.config.role === 'tech') return 0x1e3a8a;
+    if (this.config.role === 'janitor') return 0x334155;
+    if (this.config.role === 'manager') return 0x020617;
     return 0x1e293b;
   }
 
   private getSleeveColor(): number {
     if (this.config.role === 'doctor') return 0xffffff;
     if (this.config.role === 'nurse') return 0x0d9488;
+    if (this.config.role === 'tech') return 0x38bdf8;
+    if (this.config.role === 'janitor') return 0x475569;
+    if (this.config.role === 'manager') return 0x0f172a;
     if (this.config.role === 'pharmacist') return 0xffffff;
     if (this.config.role === 'receptionist') return 0xd97706;
     return CASUAL_SHIRTS[(this.config.skinToneIndex ?? 0) % CASUAL_SHIRTS.length]!;

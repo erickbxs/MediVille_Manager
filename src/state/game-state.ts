@@ -25,6 +25,8 @@ export interface FinancialStats {
   ministryTransfers: number;
   emergencyGrants: number;
   medicationPurchases: number;
+  privateRevenue: number;
+  contractsRevenue: number;
 }
 
 export interface GameState {
@@ -45,6 +47,11 @@ export interface GameState {
   activeDecisionPatientId: string | null;
   pendingDecisionPatientIds: string[];
   hospitalLevel: 'ubs' | 'upa' | 'hospital';
+  unitType: 'private_clinic' | 'ubs' | 'upa' | 'hospital';
+  privateConsultationFee: number;
+  activeContracts: string[];
+  cleanlinessRating: number;
+  helipadTimerSec: number;
   unlockedRoomIds: string[];
   seenTutorialTips: string[];
   movingRoomId: string | null;
@@ -60,3 +67,4 @@ export interface GameState {
   governmentGrantBonusMultiplier: number;
   dismissedAdvisorAlertIds: string[];
 }
+

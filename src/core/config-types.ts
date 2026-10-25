@@ -124,13 +124,44 @@ export interface GameBalanceConfig {
     xraySigtapBonus: number;
     surgeryIcuRevenue: number;
     staffRoomSpeedMultiplier: number;
+    helipadReward?: number;
+    helipadArrivalIntervalSec?: number;
+    bloodBankTransfusionBonus?: number;
+    woundCareSpeedMultiplier?: number;
+    dentalRevenue?: number;
   };
   governmentNegotiation: {
     cooldownDays: number;
     totalAcceptBonus: number;
     partialAcceptBonus: number;
   };
+  mixedEconomy: {
+    minConsultationFee: number;
+    maxConsultationFee: number;
+    defaultConsultationFee: number;
+    lowPriceThreshold: number;
+    lowPriceDemandBonus: number;
+    highPriceThreshold: number;
+    requiredReputationForHighPrice: number;
+    plans: MixedEconomyPlan[];
+  };
+  staffPerks: {
+    techSpeedReduction: number;
+    janitorCleanlinessBonus: number;
+    managerUpkeepReductionPerSkill: number;
+    managerNegotiationBonusPerSkill: number;
+  };
 }
+
+export interface MixedEconomyPlan {
+  id: string;
+  name: string;
+  monthlyCost: number;
+  feePerPatient: number;
+  dailyBonusArrival: number;
+}
+
+export type StaffRoleType = 'doctor' | 'nurse' | 'pharmacist' | 'receptionist' | 'tech' | 'janitor' | 'manager';
 
 export interface HospitalProgressionLevel {
   id: 'ubs' | 'upa' | 'hospital';
@@ -139,6 +170,7 @@ export interface HospitalProgressionLevel {
   minReputation: number;
   unlockedRooms: string[];
 }
+
 
 export interface TutorialTip {
   id: string;

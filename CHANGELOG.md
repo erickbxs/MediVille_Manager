@@ -2,11 +2,41 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
-## [1.2.0] - 2026-10-24
+## [1.2.0] - 2026-10-25
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
 
-### Versão 1.2.0 — Tipografia Oficial Fredoka, Correção Definitiva da Enciclopédia SUS, UX Mobile Avançada e Expansão para 150 Casos Clínicos
+### Versão 1.2.0 — Economia Mista Diferenciada, 7 Cargos de Equipa, Setores de Alta Complexidade (Heliponto SAMU) e Persistência Dupla em IndexedDB
+- **Economia Mista Diferenciada por Tipo de Unidade (`economy-system.ts` & `finances-modal.ts`)**:
+  - **Clínica Particular (`private_clinic`)**: Sem repasse público fixo PAB. Receita gerada exclusivamente via pacientes particulares e convênios médicos. Controle de precificação de consulta (R$ 1.800 a R$ 6.000) no modal de Finanças, com variação dinâmica da demanda (+25% de chegada com preços baixos ou penalidade de chegada se o preço for alto e a reputação < 75). Contratação de até 3 planos de convênio (*Convênio Popular*, *Convênio Empresarial*, *Convênio Premium*) com volume diário fixo garantido.
+  - **UBS e UPA (`ubs` / `upa`)**: Financiamento 100% público com repasse diário fixo do PAB/MAC (R$ 3.500/dia), procedimentos BPA/SIGTAP e negociação tripartite governamental a cada 30 dias.
+  - **Hospital Geral (`hospital`)**: Economia mista tripartite combinando faturamentos SUS (BPA/AIH), pacientes particulares e contratos de convênios médicos.
+- **Expansão para 7 Categorias Oficiais de Equipa (`staff.json`, `staff-system.ts` & `voxel-character.ts`)**:
+  - 1. **Médico (`doctor`)**: Consultórios, emergência, centro cirúrgico e UTI.
+  - 2. **Enfermeiro (`nurse`)**: Triagem de Manchester, supervisão de observação e encaminhamentos.
+  - 3. **Técnico de Enfermagem (`tech`) — NOVO**: Uniforme azul-celeste claro em voxel; atua em setores de apoio (Vacina, Curativo, Medicação e Observação), acelerando em 20% a vazão de atendimento.
+  - 4. **Farmacêutico (`pharmacist`)**: Dispensação RENAME e controle de estoque de lotes.
+  - 5. **Recepcionista (`receptionist`)**: Acolhimento inicial e organização de senhas.
+  - 6. **Zeladoria / Limpeza (`janitor`) — NOVO**: Uniforme cinza/verde com vassoura/mop procedural; mantém o índice de Biossegurança e Higiene Hospitalar (0 a 100%), garantindo bônus de +10 na satisfação de todos os pacientes quando o índice está acima de 80%.
+  - 7. **Gestor Hospitalar (`manager`) — NOVO**: Traje executivo com gravata vermelha; reduz em 10% por estrela de habilidade o custo de manutenção predial diária e concede +15% de chance de sucesso nas negociações governamentais de repasse.
+- **Setores Finais da Progressão Hospitalar & Heliponto SAMU (`rooms.json`, `room-layout.ts` & `furniture-factory.ts`)**:
+  - **Sala de Curativo (`wound_care`) — Nível UBS**: Maca de procedimentos, carrinho de curativos em inox e foco clínico.
+  - **Consultório Odontológico (`dental`) — Nível UBS**: Cadeira odontológica reclinável turquesa, refletor de teto articulado e cuspideira com pia em louça.
+  - **Sala de Medicação / Reidratação (`medication_room`) — Nível UPA**: Poltronas de hidratação reclináveis com suporte suspenso de soro fisiológico e bancada de preparo.
+  - **Sala de Emergência / Sala Vermelha (`emergency_room`) — Nível UPA**: Maca de trauma, carro de parada com desfibrilador e monitores cardíacos.
+  - **Maternidade (`maternity`) — Nível Hospital**: Leito obstétrico acolchoado, berço aquecido neonatal em acrílico translúcido e monitor fetal com cardiotocografia.
+  - **Centro de Trauma (`trauma_center`) — Nível Hospital**: Maca pesada de trauma com cintas, foco duplo cirúrgico e carrinho de anestesia.
+  - **Banco de Sangue (`blood_bank`) — Nível Hospital**: Geladeiras de hemocomponentes com temperatura controlada, centrífuga de bolsas e poltrona de transfusão.
+  - **Heliponto SAMU 192 (`helipad`) — Nível Hospital**: Plataforma 4x4 demarcada com "H" hospitalar e luzes de balizamento noturno piscantes. Durante emergências ou periodicamente, um **Helicóptero Aeromédico Voxel 3D com rotor animado** pousa trazendo pacientes críticos com recompensa dobrada (+R$ 7.200).
+- **Salvamento Duplo em IndexedDB e Recuperação Automática de Falhas (`indexeddb-save.ts` & `error-boundary.ts`)**:
+  - Persistência nativa assíncrona em IndexedDB (banco `MediVilleDB`, store `game_saves`) com fallback gracioso para `localStorage`.
+  - Dois slots rotativos de segurança: `slot_current` (ativo) e `slot_backup` (anterior), com verificação de integridade via checksum FNV-1a.
+  - Restauração automática silenciosa do `slot_backup` caso o `slot_current` apresente falha de checksum ou parsing, sem travar o jogo.
+  - Error Boundary global (`window.onerror` e `window.onunhandledrejection`) salvando imediatamente o estado válido no backup e exibindo modal limpo de *"Recuperar Turno"*.
+- **Testes Automatizados (Vitest) e Orçamento de Peso**:
+  - Nova suíte `tests/mixed-economy-and-indexeddb.test.ts` com 13 testes cobrindo todas as novas mecânicas.
+  - Total de **108 testes automatizados aprovados (100% de sucesso)**.
+  - Bundle final: **1.05 MB**, cumprindo com folga o limite orçamentário do GDD (< 2.00 MB).
 - **Tipografia Oficial `Fredoka` e Escala de Acessibilidade (`index.html`, `styles.css` e `settings-modal.ts`)**:
   - Integração da família tipográfica **Fredoka** (pesos 400, 500, 600 e 700) no CSS e nos textos do PixiJS v8 (`'Fredoka', system-ui, sans-serif`).
   - Ativação de números tabulares (`font-variant-numeric: tabular-nums` / `font-feature-settings: "tnum"`) no relógio, caixa hospitalar, estoque da farmácia e estatísticas financeiras, eliminando saltos visuais na atualização numérica.

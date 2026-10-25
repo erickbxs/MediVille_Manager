@@ -132,21 +132,21 @@
         "name": "Unidade Básica de Saúde (UBS)",
         "minTreatedCount": 0,
         "minReputation": 0,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "vaccination", "staff_room"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "vaccination", "staff_room", "wound_care", "dental"]
       },
       {
         "id": "upa",
         "name": "Unidade de Pronto Atendimento (UPA 24h)",
         "minTreatedCount": 10,
         "minReputation": 55,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray", "wound_care", "dental", "medication_room", "emergency_room"]
       },
       {
         "id": "hospital",
         "name": "Hospital Geral Municipal",
         "minTreatedCount": 30,
         "minReputation": 70,
-        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray", "surgery", "icu"]
+        "unlockedRooms": ["reception", "waiting", "consultation", "pharmacy", "triage", "observation", "vaccination", "staff_room", "laboratory", "xray", "surgery", "icu", "wound_care", "dental", "medication_room", "emergency_room", "maternity", "trauma_center", "blood_bank", "helipad"]
       }
     ]
   },
@@ -156,11 +156,55 @@
     "laboratorySpeedMultiplier": 0.75,
     "xraySigtapBonus": 1200,
     "surgeryIcuRevenue": 7200,
-    "staffRoomSpeedMultiplier": 0.85
+    "staffRoomSpeedMultiplier": 0.85,
+    "helipadReward": 7200,
+    "helipadArrivalIntervalSec": 60,
+    "bloodBankTransfusionBonus": 1500,
+    "woundCareSpeedMultiplier": 0.8,
+    "dentalRevenue": 4200
   },
   "governmentNegotiation": {
     "cooldownDays": 30,
     "totalAcceptBonus": 0.4,
     "partialAcceptBonus": 0.2
+  },
+  "mixedEconomy": {
+    "minConsultationFee": 1800,
+    "maxConsultationFee": 6000,
+    "defaultConsultationFee": 2500,
+    "lowPriceThreshold": 2500,
+    "lowPriceDemandBonus": 0.25,
+    "highPriceThreshold": 3500,
+    "requiredReputationForHighPrice": 75,
+    "plans": [
+      {
+        "id": "convenio_popular",
+        "name": "Convênio Popular",
+        "monthlyCost": 1200,
+        "feePerPatient": 2200,
+        "dailyBonusArrival": 2
+      },
+      {
+        "id": "convenio_empresarial",
+        "name": "Convênio Empresarial",
+        "monthlyCost": 2500,
+        "feePerPatient": 3200,
+        "dailyBonusArrival": 3
+      },
+      {
+        "id": "convenio_premium",
+        "name": "Convênio Premium",
+        "monthlyCost": 4500,
+        "feePerPatient": 4800,
+        "dailyBonusArrival": 4
+      }
+    ]
+  },
+  "staffPerks": {
+    "techSpeedReduction": 0.2,
+    "janitorCleanlinessBonus": 10,
+    "managerUpkeepReductionPerSkill": 0.1,
+    "managerNegotiationBonusPerSkill": 0.15
   }
 }
+

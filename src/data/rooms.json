@@ -171,6 +171,111 @@
       "capacity": 4,
       "hasStaff": false,
       "color": "#f59e0b"
+    },
+    {
+      "id": "wound_care",
+      "role": "treatment",
+      "nameKey": "room.wound_care",
+      "icon": "🩹",
+      "width": 2,
+      "height": 2,
+      "cost": 8000,
+      "dailyUpkeep": 500,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#14b8a6"
+    },
+    {
+      "id": "dental",
+      "role": "treatment",
+      "nameKey": "room.dental",
+      "icon": "🦷",
+      "width": 2,
+      "height": 2,
+      "cost": 14000,
+      "dailyUpkeep": 1100,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#0ea5e9"
+    },
+    {
+      "id": "medication_room",
+      "role": "treatment",
+      "nameKey": "room.medication_room",
+      "icon": "💧",
+      "width": 3,
+      "height": 2,
+      "cost": 15000,
+      "dailyUpkeep": 1000,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#3b82f6"
+    },
+    {
+      "id": "emergency_room",
+      "role": "treatment",
+      "nameKey": "room.emergency_room",
+      "icon": "🚨",
+      "width": 3,
+      "height": 2,
+      "cost": 28000,
+      "dailyUpkeep": 1800,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#ef4444"
+    },
+    {
+      "id": "maternity",
+      "role": "treatment",
+      "nameKey": "room.maternity",
+      "icon": "👶",
+      "width": 3,
+      "height": 3,
+      "cost": 35000,
+      "dailyUpkeep": 2200,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#f43f5e"
+    },
+    {
+      "id": "trauma_center",
+      "role": "treatment",
+      "nameKey": "room.trauma_center",
+      "icon": "🩸",
+      "width": 3,
+      "height": 3,
+      "cost": 45000,
+      "dailyUpkeep": 2800,
+      "capacity": 2,
+      "hasStaff": true,
+      "color": "#b91c1c"
+    },
+    {
+      "id": "blood_bank",
+      "role": "treatment",
+      "nameKey": "room.blood_bank",
+      "icon": "🧪",
+      "width": 2,
+      "height": 2,
+      "cost": 20000,
+      "dailyUpkeep": 1200,
+      "capacity": 1,
+      "hasStaff": true,
+      "color": "#991b1b"
+    },
+    {
+      "id": "helipad",
+      "role": "treatment",
+      "nameKey": "room.helipad",
+      "icon": "🚁",
+      "width": 4,
+      "height": 4,
+      "cost": 60000,
+      "dailyUpkeep": 3000,
+      "capacity": 1,
+      "hasStaff": false,
+      "color": "#475569"
     }
   ]
 }
+

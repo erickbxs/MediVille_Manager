@@ -12,9 +12,12 @@ import type { GameState, HospitalStats, FinancialStats } from '../state/game-sta
 import type { RoomInstance } from '../entities/room';
 import type { StaffMember } from '../entities/staff';
 import type { PatientInstance } from '../entities/patient';
+import { saveGameDualSlots } from '../services/indexeddb-save';
 
 const SAVE_KEY = 'mediville_manager_save_v1';
 const JSON_INDENT_SPACES = 2;
+const DEFAULT_CLEANLINESS_RATING = 100;
+const DEFAULT_PRIVATE_FEE = 2800;
 
 export interface SerializedRoom {
   id: string;
@@ -67,6 +70,10 @@ export interface SerializedGameState {
   governmentNegotiationCooldownDays?: number;
   governmentGrantBonusMultiplier?: number;
   dismissedAdvisorAlertIds?: string[];
+  unitType?: 'ubs' | 'upa' | 'hospital' | 'private_clinic';
+  privateConsultationFee?: number;
+  activeContracts?: string[];
+  cleanlinessRating?: number;
 }
 
 function serializeRooms(rooms: Map<string, RoomInstance>): SerializedRoom[] {
@@ -130,6 +137,10 @@ export function serializeGameState(state: GameState): SerializedGameState {
     eventTimerSec: state.eventTimerSec,
     pharmacyStock: { ...state.pharmacyStock },
     finances: { ...state.finances },
+    unitType: state.unitType,
+    privateConsultationFee: state.privateConsultationFee,
+    activeContracts: state.activeContracts ? [...state.activeContracts] : [],
+    cleanlinessRating: state.cleanlinessRating ?? DEFAULT_CLEANLINESS_RATING,
     ...serializeProgressState(state),
   };
 }
@@ -180,6 +191,25 @@ function restorePatients(list: PatientInstance[]): Map<string, PatientInstance> 
   return map;
 }
 
+function restoreCommercialState(data: SerializedGameState) {
+  return {
+    unitType: data.unitType ?? 'ubs',
+    privateConsultationFee: data.privateConsultationFee ?? DEFAULT_PRIVATE_FEE,
+    activeContracts: data.activeContracts ? [...data.activeContracts] : [],
+    cleanlinessRating: data.cleanlinessRating ?? DEFAULT_CLEANLINESS_RATING,
+    helipadTimerSec: 0,
+  };
+}
+
+function restoreNegotiationState(data: SerializedGameState) {
+  return {
+    masteredCaseIds: data.masteredCaseIds ? [...data.masteredCaseIds] : [],
+    governmentNegotiationCooldownDays: data.governmentNegotiationCooldownDays ?? 0,
+    governmentGrantBonusMultiplier: data.governmentGrantBonusMultiplier ?? 0,
+    dismissedAdvisorAlertIds: data.dismissedAdvisorAlertIds ? [...data.dismissedAdvisorAlertIds] : [],
+  };
+}
+
 export function deserializeGameState(data: SerializedGameState): GameState {
   return {
     day: data.day,
@@ -209,10 +239,8 @@ export function deserializeGameState(data: SerializedGameState): GameState {
     eventTimerSec: data.eventTimerSec,
     pharmacyStock: data.pharmacyStock,
     finances: data.finances,
-    masteredCaseIds: data.masteredCaseIds ? [...data.masteredCaseIds] : [],
-    governmentNegotiationCooldownDays: data.governmentNegotiationCooldownDays ?? 0,
-    governmentGrantBonusMultiplier: data.governmentGrantBonusMultiplier ?? 0,
-    dismissedAdvisorAlertIds: data.dismissedAdvisorAlertIds ? [...data.dismissedAdvisorAlertIds] : [],
+    ...restoreNegotiationState(data),
+    ...restoreCommercialState(data),
   };
 }
 
@@ -223,10 +251,12 @@ function getStorage(): Storage | null {
 
 export function saveGameState(state: GameState): boolean {
   try {
-    const storage = getStorage();
-    if (!storage) return false;
     const serialized = serializeGameState(state);
-    storage.setItem(SAVE_KEY, JSON.stringify(serialized));
+    void saveGameDualSlots(serialized);
+    const storage = getStorage();
+    if (storage) {
+      storage.setItem(SAVE_KEY, JSON.stringify(serialized));
+    }
     return true;
   } catch (err: unknown) {
     console.error('[SaveSystem] Erro ao salvar estado:', err);

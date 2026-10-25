@@ -15,20 +15,38 @@ import { calculateTotalDailyStaffSalaries } from './staff-system';
 import { processMinistryDailyTransfer } from './economy-system';
 
 const MAX_REPUTATION = 100;
+const PERCENT_SCALE = 100;
+const DEFAULT_MANAGER_UPKEEP_DISCOUNT_PER_SKILL = 0.1;
+const MAX_CLEANLINESS_RATING = 100;
+const JANITOR_CLEANLINESS_DAILY_BOOST = 20;
+const UNATTENDED_CLEANLINESS_DAILY_PENALTY = 15;
 
 function deductDailyUpkeep(state: GameState): number {
   let totalUpkeep = 0;
   for (const room of state.rooms.values()) {
     totalUpkeep += room.definition.dailyUpkeep;
   }
+
+  let managerStars = 0;
+  for (const member of state.staff.values()) {
+    if (member.roleId === 'manager') {
+      managerStars += member.skill;
+    }
+  }
+  const discountPerSkill = BALANCE.staffPerks?.managerUpkeepReductionPerSkill ?? DEFAULT_MANAGER_UPKEEP_DISCOUNT_PER_SKILL;
+  const discountRatio = Math.min(0.5, managerStars * discountPerSkill);
+  const discountedUpkeep = Math.round(totalUpkeep * (1 - discountRatio));
+
   const staffSalaries = calculateTotalDailyStaffSalaries(state);
-  const totalDailyCost = totalUpkeep + staffSalaries;
+  const totalDailyCost = discountedUpkeep + staffSalaries;
 
   state.cash -= totalDailyCost;
   globalBus.emit('cash:changed', {
     cash: state.cash,
     delta: -totalDailyCost,
-    reason: 'Manutenção predial e folha salarial da equipe',
+    reason: discountRatio > 0
+      ? `Manutenção predial (desconto gestor -${Math.round(discountRatio * PERCENT_SCALE)}%) e folha salarial`
+      : 'Manutenção predial e folha salarial da equipe',
   });
   return totalDailyCost;
 }
@@ -76,6 +94,16 @@ function applyVaccinationDailyBonus(state: GameState): void {
   });
 }
 
+function updateCleanlinessRating(state: GameState): void {
+  const hasJanitor = Array.from(state.staff.values()).some((s) => s.roleId === 'janitor');
+  const current = state.cleanlinessRating ?? MAX_CLEANLINESS_RATING;
+  if (hasJanitor) {
+    state.cleanlinessRating = Math.min(MAX_CLEANLINESS_RATING, current + JANITOR_CLEANLINESS_DAILY_BOOST);
+  } else {
+    state.cleanlinessRating = Math.max(0, current - UNATTENDED_CLEANLINESS_DAILY_PENALTY);
+  }
+}
+
 export function updateDaySystem(state: GameState, deltaSec: number): void {
   const { dayDurationSec } = BALANCE.time;
   state.dayTimeSec += deltaSec;
@@ -85,6 +113,7 @@ export function updateDaySystem(state: GameState, deltaSec: number): void {
     deductDailyUpkeep(state);
     processMinistryDailyTransfer(state);
     applyVaccinationDailyBonus(state);
+    updateCleanlinessRating(state);
 
     if (state.governmentNegotiationCooldownDays > 0) {
       state.governmentNegotiationCooldownDays -= 1;

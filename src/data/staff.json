@@ -45,6 +45,34 @@
       "skillSalaryBonus": 50,
       "requiredRoomRole": "entry",
       "description": "Atende a chegada e organiza o acolhimento da unidade."
+    },
+    {
+      "id": "tech",
+      "name": "Técnico(a) de Enfermagem",
+      "icon": "🩺",
+      "baseSalaryDaily": 320,
+      "skillSalaryBonus": 60,
+      "requiredRoomRole": "treatment",
+      "description": "Apoia vacinação, curativo, medicação e enfermaria, acelerando procedimentos em 20%."
+    },
+    {
+      "id": "janitor",
+      "name": "Equipe de Limpeza / Zeladoria",
+      "icon": "🧹",
+      "baseSalaryDaily": 220,
+      "skillSalaryBonus": 40,
+      "requiredRoomRole": "queue",
+      "description": "Higieniza as salas, elevando a biossegurança hospitalar e concedendo +10 de satisfação."
+    },
+    {
+      "id": "manager",
+      "name": "Gestor(a) Hospitalar",
+      "icon": "💼",
+      "baseSalaryDaily": 600,
+      "skillSalaryBonus": 120,
+      "requiredRoomRole": "entry",
+      "description": "Otimiza a administração, reduzindo custos de manutenção e ampliando repasses e convênios."
     }
   ]
 }
+
