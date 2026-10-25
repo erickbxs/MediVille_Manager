@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "description": "Traductions en français pour le HUD, les salles et la gestion hospitalière.",
+    "connectedFiles": [
+      "src/ui/*",
+      "src/i18n/i18n.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "Hôpital Local",
+    "subtitle": "Gestion Hospitalière & Protocoles Médicaux Réels"
+  },
+  "hud": {
+    "cash": "Trésorerie",
+    "reputation": "Réputation",
+    "satisfaction": "Satisfaction",
+    "queue": "File",
+    "waiting": "en attente",
+    "avgWait": "Attente moy.",
+    "day": "Jour",
+    "paused": "Pause",
+    "speed1x": "1x",
+    "speed2x": "2x",
+    "speed3x": "3x"
+  },
+  "menu": {
+    "newHospital": "Nouvel Hôpital",
+    "continue": "Continuer",
+    "options": "Paramètres",
+    "leaderboard": "Classement Mondial",
+    "encyclopedia": "Compendium Médical",
+    "suspendAudio": "Son"
+  },
+  "room": {
+    "reception": "Accueil Central",
+    "reception_short": "Accueil",
+    "waiting": "Salle d'Attente",
+    "waiting_short": "Attente",
+    "consultation": "Cabinet Médical",
+    "consultation_short": "Consultation",
+    "pharmacy": "Pharmacie Hospitalière",
+    "pharmacy_short": "Pharmacie",
+    "triage": "Triage Médical",
+    "triage_short": "Triage",
+    "observation": "Lits d'Observation",
+    "observation_short": "Lits",
+    "vaccination": "Salle de Vaccination",
+    "vaccination_short": "Vaccin",
+    "laboratory": "Laboratoire Médical",
+    "laboratory_short": "Labo",
+    "xray": "Salle de Radiologie",
+    "xray_short": "Rayons X",
+    "surgery": "Bloc Opératoire",
+    "surgery_short": "Chirurgie",
+    "icu": "Soins Intensifs",
+    "icu_short": "Réanimation",
+    "staff_room": "Salle de Pause",
+    "staff_room_short": "Repos",
+    "wound_care": "Salle de Soins",
+    "wound_care_short": "Pansement",
+    "dental": "Cabinet Dentaire",
+    "dental_short": "Dentaire",
+    "medication_room": "Salle d'Injections",
+    "medication_room_short": "Médication",
+    "emergency_room": "Service des Urgences",
+    "emergency_room_short": "Urgences",
+    "maternity": "Maternité",
+    "maternity_short": "Maternité",
+    "trauma_center": "Traumatologie",
+    "trauma_center_short": "Trauma",
+    "blood_bank": "Banque de Sang",
+    "blood_bank_short": "Sang",
+    "helipad": "Héliport Médical",
+    "helipad_short": "Héliport",
+    "cost": "Coût",
+    "upkeep": "Entretien/j",
+    "capacity": "Capacité",
+    "remove": "Vendre",
+    "refund": "Remboursement"
+  },
+  "roles": {
+    "doctor": "Médecin Généraliste",
+    "nurse": "Infirmier(ère)",
+    "pharmacist": "Pharmacien(ne)",
+    "janitor": "Agent d'Entretien",
+    "receptionist": "Réceptionniste",
+    "manager": "Gestionnaire",
+    "surgeon": "Chirurgien"
+  },
+  "actions": {
+    "build": "Construire",
+    "cancel": "Annuler",
+    "removeMode": "Démolir",
+    "close": "Fermer",
+    "acceptConduct": "Valider",
+    "rejectConduct": "Refuser",
+    "confirm": "Confirmer",
+    "restart": "Recommencer",
+    "mainMenu": "Menu Principal"
+  },
+  "intensity": {
+    "leve": "Légère",
+    "moderada": "Modérée"
+  },
+  "patient": {
+    "sheetTitle": "Dossier Patient",
+    "symptoms": "Symptômes",
+    "exams": "Examens",
+    "suggestedConduct": "Conduite Proposée",
+    "medications": "Médicaments",
+    "comorbidity": "Antécédent",
+    "none": "Aucun",
+    "source": "Source Officielle",
+    "statusPending": "Avis médical requis"
+  },
+  "advisor": {
+    "empty": "Aucun goulot d'étranglement.",
+    "queueDelay": "File d'attente saturée.",
+    "pharmacyMissing": "Manque de pharmacie.",
+    "waitingFull": "Salle d'attente comble.",
+    "cashLow": "Trésorerie critique !"
+  },
+  "defeat": {
+    "imminentBankruptcy": "Faillite Imminente",
+    "imminentIntervention": "Intervention Sanitaire Imminente",
+    "rescueTransfer": "Aide d'Urgence",
+    "rescueDemolish": "Vendre Salle",
+    "rescueStaff": "Ajuster Salaires",
+    "daysRemaining": "{days} jours restants !",
+    "gameOverTitle": "Fin de Partie",
+    "survivedDays": "Jours",
+    "savedPatients": "Patients",
+    "masteredProtocols": "Protocoles",
+    "finalScore": "Score",
+    "restart": "Nouvel Hôpital",
+    "mainMenu": "Menu Principal"
+  },
+  "leaderboard": {
+    "title": "Classement Hospitalier",
+    "subtitle": "Meilleurs gestionnaires de santé",
+    "position": "Rang",
+    "player": "Gestionnaire",
+    "score": "Score",
+    "guestModeNote": "Mode invité",
+    "localSaveNotice": "Score enregistré localement !"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "fontSize": "Taille de Police",
+    "defaultFont": "Normale",
+    "largeFont": "Grande",
+    "xlargeFont": "Très Grande",
+    "saveNow": "Sauvegarder",
+    "exportBackup": "Exporter (.json)",
+    "importBackup": "Importer (.json)",
+    "resetGame": "Réinitialiser",
+    "lgpdExport": "Exporter Données",
+    "lgpdDelete": "Supprimer Compte",
+    "autoSaveTip": "Sauvegarde auto quotidienne."
+  },
+  "dock": {
+    "build": "Travaux",
+    "treat": "Soigner",
+    "staff": "Équipe",
+    "pharmacy": "Pharmacie",
+    "finances": "Finances",
+    "recenter": "Centrer"
+  },
+  "music": {
+    "on": "Musique Activée",
+    "off": "Musique Coupée",
+    "volume": "Volume de Musique"
+  },
+  "legal": {
+    "title": "Mentions Légales & Confidentialité RGPD",
+    "susNotice": "Avis éducatif : simulation hospitalière pédagogique."
+  }
+}

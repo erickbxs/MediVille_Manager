@@ -19,6 +19,8 @@ import type { HospitalSimulation } from '../core/simulation';
 import type { GameState } from '../state/game-state';
 import { globalBus } from '../core/event-bus';
 import { soundSystem } from '../core/sound-system';
+import { musicSystem } from '../core/music-system';
+import { t } from '../i18n/i18n';
 
 export interface HudCallbacks {
   onOpenStaff?: () => void;
@@ -54,6 +56,10 @@ export class HospitalHUD {
     this.callbacks = typeof callbacks === 'function' ? { onOpenStaff: callbacks } : callbacks;
     this.renderInitial();
     globalBus.on('simulation:speed_changed', ({ speed }) => this.updateSpeedButtons(speed));
+    globalBus.on('i18n:changed', () => {
+      this.renderInitial();
+      this.update(this.simulation.state);
+    });
   }
 
   private renderInitial(): void {
@@ -75,7 +81,10 @@ export class HospitalHUD {
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
-            <button id="btn-toggle-sound" title="Ligar / Desligar Som" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
+            <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
+              ${musicSystem.isMuted() ? '🔇' : '🎵'}
+            </button>
+            <button id="btn-toggle-sound" title="Ligar / Desligar Efeitos Sonoros" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
               ${soundSystem.isMuted() ? '🔇' : '🔊'}
             </button>
             <button id="btn-toggle-details" title="Ver detalhes financeiros e controles" class="min-h-[36px] px-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-1 text-[11px] font-bold active:scale-95">
@@ -147,6 +156,13 @@ export class HospitalHUD {
     bind('btn-1x', 1);
     bind('btn-2x', 2);
     bind('btn-3x', 3);
+
+    document.getElementById('btn-toggle-music')?.addEventListener('click', () => {
+      musicSystem.start();
+      const isMuted = musicSystem.toggleMute();
+      const btn = document.getElementById('btn-toggle-music');
+      if (btn) btn.textContent = isMuted ? '🔇' : '🎵';
+    });
 
     document.getElementById('btn-toggle-sound')?.addEventListener('click', () => {
       const isMuted = soundSystem.toggleMute();

@@ -1,10 +1,19 @@
 /**
  * Arquivo: src/ui/settings-modal.ts
- * O que faz: Exibe o modal de configurações do hospital com opções de salvamento manual, exportação e importação de arquivo JSON,
- * reinício de partida e direitos de privacidade LGPD/GDPR (exportar e excluir dados).
- * Para que foi criado: Cumprir os requisitos da Fase 3 e Prompt 14 dando autonomia e privacidade total ao jogador.
- * Como modificar/debugar: Conecte novas opções de jogo neste modal.
- * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts, src/services/ranking-service.ts
+ *
+ * 1. O que este arquivo faz?
+ * Renderiza o modal de Configurações & Acessibilidade: ajuste do volume de música suave de hospital (0% a 100%),
+ * troca instantânea de idiomas (PT, ES, EN, FR, DE, ZH), escala de fontes, salvamento/exportação/importação de partidas,
+ * acesso aos Termos de Uso e Privacidade LGPD/GDPR e exclusão de dados locais.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir a Parte 2, 4 e 5 do Prompt 15, unificando preferências sonoras, linguísticas e garantias legais da plataforma.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * O volume é transmitido para musicSystem.setVolume(). Os termos legais abrem via LegalModal.
+ *
+ * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts,
+ *          src/services/ranking-service.ts, src/core/music-system.ts, src/i18n/i18n.ts, src/ui/legal-modal.ts
  * Conecta-se com: src/ui/hud.ts, src/main.ts
  */
 
@@ -12,6 +21,9 @@ import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
 import { getPlayerProfile } from '../systems/player-profile';
 import { RankingService } from '../services/ranking-service';
+import { musicSystem } from '../core/music-system';
+import { getLocale, setLanguage, t, type SupportedLocale } from '../i18n/i18n';
+import { LegalModal } from './legal-modal';
 
 export type FontScale = 'normal' | 'large' | 'xlarge';
 
@@ -35,10 +47,13 @@ export function applySavedFontScale(scale?: FontScale): void {
 export class SettingsModal {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
+  private legalModalContainer: HTMLElement;
 
   constructor(container: HTMLElement, simulation: HospitalSimulation) {
     this.container = container;
     this.simulation = simulation;
+    this.legalModalContainer = document.createElement('div');
+    document.body.appendChild(this.legalModalContainer);
   }
 
   public open(): void {
@@ -46,6 +61,8 @@ export class SettingsModal {
     const profile = getPlayerProfile();
     const modeLabel = profile?.guestMode ? 'Convidado (Estritamente Local)' : 'Padrão (Salvo no Navegador)';
     const currentScale = getSavedFontScale();
+    const currentLang = getLocale();
+    const currentVol = Math.round(musicSystem.getVolume() * 100);
 
     this.container.innerHTML = `
       <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -53,80 +70,66 @@ export class SettingsModal {
           
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl">
-                ⚙️
-              </div>
+              <div class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl">⚙️</div>
               <div>
-                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">Configurações & Acessibilidade</h3>
+                <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">${t('settings.title') || 'Configurações'}</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${modeLabel}</p>
               </div>
             </div>
-            <button id="btn-close-settings" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 font-bold">
-              ✕
-            </button>
+            <button id="btn-close-settings" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 font-bold">✕</button>
           </div>
 
           <div id="save-status-msg" class="hidden p-3 rounded-2xl text-xs font-bold text-center"></div>
 
-          <!-- Acessibilidade e Tamanho da Fonte -->
+          <!-- Controle de Música Relaxante -->
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                🔤 Tamanho da Fonte
-              </span>
-              <span class="text-[11px] text-slate-400">Escala da interface</span>
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">🎵 ${t('music.volume') || 'Volume da Música'}</span>
+              <span id="music-vol-label" class="text-xs font-extrabold text-sky-600 dark:text-sky-400 tabular-nums">${currentVol}%</span>
             </div>
+            <input type="range" id="input-music-volume" min="0" max="100" value="${currentVol}" class="w-full accent-sky-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+          </div>
+
+          <!-- Seleção de Idioma Reativa -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200 block">🌐 Idioma / Language</span>
             <div class="grid grid-cols-3 gap-1.5 text-xs font-bold">
-              <button data-scale="normal" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'normal' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
-                Padrão
-              </button>
-              <button data-scale="large" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'large' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
-                Grande
-              </button>
-              <button data-scale="xlarge" class="btn-font-scale p-2 rounded-xl border transition-all ${currentScale === 'xlarge' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'}">
-                Extra Grande
-              </button>
+              ${this.renderLangButtons(currentLang)}
             </div>
           </div>
 
-          <div class="space-y-2.5">
-            <button id="btn-manual-save" class="w-full min-h-[48px] p-3.5 rounded-2xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-bold text-sm flex items-center justify-between hover:bg-sky-100/60 transition-all active:scale-[0.99]">
-              <span class="flex items-center gap-2">💾 Salvar Hospital Agora</span>
-              <span class="text-xs font-semibold opacity-75">Navegador</span>
-            </button>
+          <!-- Acessibilidade e Tamanho da Fonte -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200 block">🔤 ${t('settings.fontSize') || 'Tamanho da Fonte'}</span>
+            <div class="grid grid-cols-3 gap-1.5 text-xs font-bold">
+              <button data-scale="normal" class="btn-font-scale p-2 rounded-xl border ${currentScale === 'normal' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}">Padrão</button>
+              <button data-scale="large" class="btn-font-scale p-2 rounded-xl border ${currentScale === 'large' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}">Grande</button>
+              <button data-scale="xlarge" class="btn-font-scale p-2 rounded-xl border ${currentScale === 'xlarge' ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}">Extra Grande</button>
+            </div>
+          </div>
 
-            <button id="btn-export-save" class="w-full min-h-[48px] p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-sm flex items-center justify-between hover:bg-slate-100 transition-all active:scale-[0.99]">
-              <span class="flex items-center gap-2">📥 Exportar Backup (.json)</span>
-              <span class="text-xs font-semibold opacity-75">Baixar</span>
+          <div class="space-y-2">
+            <button id="btn-manual-save" class="w-full min-h-[44px] p-3 rounded-2xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-bold text-xs flex items-center justify-between">
+              <span>💾 ${t('settings.saveNow') || 'Salvar Hospital Agora'}</span>
+              <span class="text-[10px] opacity-75">Navegador</span>
             </button>
-
-            <label class="w-full min-h-[48px] p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-sm flex items-center justify-between hover:bg-slate-100 transition-all cursor-pointer active:scale-[0.99]">
-              <span class="flex items-center gap-2">📤 Importar Backup (.json)</span>
-              <span class="text-xs font-semibold opacity-75">Arquivo</span>
+            <button id="btn-export-save" class="w-full min-h-[44px] p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-between">
+              <span>📥 ${t('settings.exportBackup') || 'Exportar Backup (.json)'}</span>
+              <span class="text-[10px] opacity-75">Baixar</span>
+            </button>
+            <label class="w-full min-h-[44px] p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-between cursor-pointer">
+              <span>📤 ${t('settings.importBackup') || 'Importar Backup (.json)'}</span>
+              <span class="text-[10px] opacity-75">Arquivo</span>
               <input type="file" id="input-import-save" accept=".json" class="hidden" />
             </label>
-
-            <button id="btn-reset-game" class="w-full min-h-[48px] p-3.5 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 font-bold text-sm flex items-center justify-between hover:bg-rose-100/60 transition-all active:scale-[0.99]">
-              <span class="flex items-center gap-2">🔄 Reiniciar Novo Hospital</span>
-              <span class="text-xs font-semibold opacity-75">Reset</span>
+            <button id="btn-open-legal-terms" class="w-full min-h-[44px] p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-between">
+              <span>⚖️ Termos de Uso & Privacidade LGPD</span>
+              <span class="text-[10px] opacity-75">Visualizar</span>
             </button>
-
-            <!-- Privacidade & LGPD / GDPR -->
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Privacidade & LGPD</span>
-              <button id="btn-export-lgpd" class="w-full min-h-[44px] p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-between hover:bg-slate-50 transition-all">
-                <span class="flex items-center gap-2">📥 Exportar Meus Dados (JSON)</span>
-                <span class="text-[10px] text-slate-400">Download</span>
-              </button>
-              <button id="btn-delete-lgpd" class="w-full min-h-[44px] p-3 rounded-2xl border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center justify-between hover:bg-rose-50 transition-all">
-                <span class="flex items-center gap-2">🗑️ Excluir Conta e Dados</span>
-                <span class="text-[10px] text-rose-400">Limpar Tudo</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="text-[11px] text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
-            💡 O jogo também salva seu progresso automaticamente ao final de cada dia.
+            <button id="btn-reset-game" class="w-full min-h-[44px] p-3 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 font-bold text-xs flex items-center justify-between">
+              <span>🔄 ${t('settings.resetGame') || 'Reiniciar Novo Hospital'}</span>
+              <span class="text-[10px] opacity-75">Reset</span>
+            </button>
           </div>
         </div>
       </div>
@@ -135,12 +138,50 @@ export class SettingsModal {
     this.bindEvents();
   }
 
+  private renderLangButtons(current: SupportedLocale): string {
+    const list: Array<{ code: SupportedLocale; label: string }> = [
+      { code: 'pt', label: '🇧🇷 PT' },
+      { code: 'en', label: '🇺🇸 EN' },
+      { code: 'es', label: '🇪🇸 ES' },
+      { code: 'fr', label: '🇫🇷 FR' },
+      { code: 'de', label: '🇩🇪 DE' },
+      { code: 'zh', label: '🇨🇳 ZH' },
+    ];
+    return list.map((item) => `
+      <button data-lang="${item.code}" class="btn-lang-choice p-2 rounded-xl border transition-all ${item.code === current ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+        ${item.label}
+      </button>
+    `).join('');
+  }
+
   private bindEvents(): void {
     document.getElementById('btn-close-settings')?.addEventListener('click', () => {
       this.container.innerHTML = '';
       this.simulation.resumeFromModal();
     });
 
+    const volSlider = document.getElementById('input-music-volume') as HTMLInputElement | null;
+    volSlider?.addEventListener('input', (e) => {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      musicSystem.setVolume(val / 100);
+      const label = document.getElementById('music-vol-label');
+      if (label) label.textContent = `${val}%`;
+    });
+
+    this.container.querySelectorAll('.btn-lang-choice').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const lang = (e.currentTarget as HTMLElement).getAttribute('data-lang') as SupportedLocale;
+        if (lang) {
+          await setLanguage(lang);
+          this.open();
+        }
+      });
+    });
+
+    this.bindFontAndDataEvents();
+  }
+
+  private bindFontAndDataEvents(): void {
     this.container.querySelectorAll('.btn-font-scale').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const scale = (e.currentTarget as HTMLElement).getAttribute('data-scale') as FontScale;
@@ -152,87 +193,61 @@ export class SettingsModal {
       });
     });
 
+    document.getElementById('btn-open-legal-terms')?.addEventListener('click', () => {
+      const legalModal = new LegalModal(this.legalModalContainer);
+      legalModal.open();
+    });
+
     document.getElementById('btn-manual-save')?.addEventListener('click', () => {
       const ok = saveGameState(this.simulation.state);
-      this.showStatus(ok ? '✅ Jogo salvo com sucesso no navegador!' : '⚠️ Falha ao salvar jogo.', ok);
+      this.showStatus(ok ? '✅ Jogo salvo com sucesso!' : '⚠️ Falha ao salvar jogo.', ok);
     });
 
     document.getElementById('btn-export-save')?.addEventListener('click', () => {
-      this.triggerDownload();
-    });
-
-    const fileInput = document.getElementById('input-import-save') as HTMLInputElement;
-    fileInput?.addEventListener('change', () => {
-      this.handleFileImport(fileInput);
-    });
-
-    document.getElementById('btn-reset-game')?.addEventListener('click', () => {
-      if (confirm('Tem certeza que deseja reiniciar seu hospital? Todo o progresso não exportado será perdido.')) {
-        clearSavedGame();
-        window.location.reload();
-      }
-    });
-
-    document.getElementById('btn-export-lgpd')?.addEventListener('click', () => {
-      const dataStr = RankingService.exportUserDataJson();
-      const blob = new Blob([dataStr], { type: 'application/json' });
+      const json = exportSaveJson(this.simulation.state);
+      const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `mediville-lgpd-data-${Date.now()}.json`;
+      a.download = `mediville-backup-day-${this.simulation.state.day}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      this.showStatus('📥 Seus dados pessoais e saves foram exportados com sucesso!', true);
+      this.showStatus('📥 Backup exportado com sucesso!', true);
     });
 
-    document.getElementById('btn-delete-lgpd')?.addEventListener('click', () => {
-      if (confirm('Atenção (LGPD): Deseja excluir permanentemente todos os seus dados, pontuações e histórico deste dispositivo?')) {
+    document.getElementById('input-import-save')?.addEventListener('change', (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target?.result as string;
+          const loaded = importSaveJson(content);
+          if (loaded) {
+            saveGameState(loaded);
+            window.location.reload();
+          } else {
+            this.showStatus('❌ Arquivo de backup inválido.', false);
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    document.getElementById('btn-reset-game')?.addEventListener('click', () => {
+      if (confirm('Tem certeza de que deseja apagar o progresso deste hospital?')) {
+        clearSavedGame();
         RankingService.deleteUserAccountAndData();
-        alert('Todos os dados foram excluídos com sucesso. A página será reiniciada.');
         window.location.reload();
       }
     });
   }
 
   private showStatus(msg: string, success: boolean): void {
-    const box = document.getElementById('save-status-msg');
-    if (!box) return;
-    box.className = success
-      ? 'p-3 rounded-2xl text-xs font-bold text-center bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-      : 'p-3 rounded-2xl text-xs font-bold text-center bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
-    box.textContent = msg;
-    box.classList.remove('hidden');
-  }
-
-  private triggerDownload(): void {
-    const jsonStr = exportSaveJson(this.simulation.state);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mediville-save-dia-${this.simulation.state.day}-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    this.showStatus('📥 Arquivo de save baixado com sucesso!', true);
-  }
-
-  private handleFileImport(input: HTMLInputElement): void {
-    const file = input.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const content = reader.result as string;
-      const loaded = importSaveJson(content);
-      if (loaded) {
-        saveGameState(loaded);
-        alert('Hospital importado com sucesso! A página será recarregada.');
-        window.location.reload();
-      } else {
-        this.showStatus('⚠️ Arquivo de save inválido ou incompatível.', false);
-      }
-    };
-    reader.readAsText(file);
+    const el = document.getElementById('save-status-msg');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = `p-3 rounded-2xl text-xs font-bold text-center ${success ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 3500);
   }
 }
-

@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "description": "Deutsche Übersetzungen für HUD, Räume und Krankenhausmanagement.",
+    "connectedFiles": [
+      "src/ui/*",
+      "src/i18n/i18n.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "Lokales Krankenhaus",
+    "subtitle": "Krankenhausmanagement & Echte Medizinische Leitlinien"
+  },
+  "hud": {
+    "cash": "Kasse",
+    "reputation": "Ansehen",
+    "satisfaction": "Zufriedenheit",
+    "queue": "Warteschlange",
+    "waiting": "wartend",
+    "avgWait": "Durchschn. Wartezeit",
+    "day": "Tag",
+    "paused": "Pausiert",
+    "speed1x": "1x",
+    "speed2x": "2x",
+    "speed3x": "3x"
+  },
+  "menu": {
+    "newHospital": "Neues Krankenhaus",
+    "continue": "Weiter",
+    "options": "Einstellungen",
+    "leaderboard": "Globale Bestenliste",
+    "encyclopedia": "Medizinisches Lexikon",
+    "suspendAudio": "Audio"
+  },
+  "room": {
+    "reception": "Zentraler Empfang",
+    "reception_short": "Empfang",
+    "waiting": "Wartezimmer",
+    "waiting_short": "Warten",
+    "consultation": "Arztpraxis",
+    "consultation_short": "Praxis",
+    "pharmacy": "Klinikapotheke",
+    "pharmacy_short": "Apotheke",
+    "triage": "Triage-Station",
+    "triage_short": "Triage",
+    "observation": "Beobachtungsbetten",
+    "observation_short": "Betten",
+    "vaccination": "Impfräumlichkeit",
+    "vaccination_short": "Impfung",
+    "laboratory": "Klinisches Labor",
+    "laboratory_short": "Labor",
+    "xray": "Röntgenabteilung",
+    "xray_short": "Röntgen",
+    "surgery": "Operationssaal",
+    "surgery_short": "OP",
+    "icu": "Intensivstation",
+    "icu_short": "Intensiv",
+    "staff_room": "Pausenraum",
+    "staff_room_short": "Pause",
+    "wound_care": "Wundbehandlung",
+    "wound_care_short": "Verband",
+    "dental": "Zahnklinik",
+    "dental_short": "Zahnarzt",
+    "medication_room": "Medikamentenausgabe",
+    "medication_room_short": "Medikation",
+    "emergency_room": "Notaufnahme",
+    "emergency_room_short": "Notfall",
+    "maternity": "Geburtsstation",
+    "maternity_short": "Geburt",
+    "trauma_center": "Traumazentrum",
+    "trauma_center_short": "Trauma",
+    "blood_bank": "Blutbank",
+    "blood_bank_short": "Blutbank",
+    "helipad": "Notfall-Hubschrauberlandeplatz",
+    "helipad_short": "Helipad",
+    "cost": "Kosten",
+    "upkeep": "Unterhalt/Tag",
+    "capacity": "Kapazität",
+    "remove": "Verkaufen",
+    "refund": "Erstattung"
+  },
+  "roles": {
+    "doctor": "Facharzt für Allgemeinmedizin",
+    "nurse": "Pflegefachkraft",
+    "pharmacist": "Apotheker(in)",
+    "janitor": "Reinigungskraft",
+    "receptionist": "Rezeptionist(in)",
+    "manager": "Verwalter(in)",
+    "surgeon": "Chirurg"
+  },
+  "actions": {
+    "build": "Bauen",
+    "cancel": "Abbrechen",
+    "removeMode": "Abreißen",
+    "close": "Schließen",
+    "acceptConduct": "Bestätigen",
+    "rejectConduct": "Ablehnen",
+    "confirm": "Bestätigen",
+    "restart": "Neustart",
+    "mainMenu": "Hauptmenü"
+  },
+  "intensity": {
+    "leve": "Leicht",
+    "moderada": "Mäßig"
+  },
+  "patient": {
+    "sheetTitle": "Patientenakte",
+    "symptoms": "Symptome",
+    "exams": "Untersuchungen",
+    "suggestedConduct": "Vorgeschlagene Behandlung",
+    "medications": "Medikamente",
+    "comorbidity": "Vorerkrankung",
+    "none": "Keine",
+    "source": "Offizielle Quelle",
+    "statusPending": "Ärztliche Prüfung ausstehend"
+  },
+  "advisor": {
+    "empty": "Keine Engpässe identifiziert.",
+    "queueDelay": "Warteschlange am Empfang wächst.",
+    "pharmacyMissing": "Fehlende Apotheke.",
+    "waitingFull": "Wartezimmer fast voll.",
+    "cashLow": "Kritischer Kassenstand !"
+  },
+  "defeat": {
+    "imminentBankruptcy": "Drohende Insolvenz",
+    "imminentIntervention": "Behördliche Schließung droht",
+    "rescueTransfer": "Notfallzuschuss",
+    "rescueDemolish": "Raum verkaufen",
+    "rescueStaff": "Personalkosten senken",
+    "daysRemaining": "Noch {days} Tage !",
+    "gameOverTitle": "Spiel vorbei",
+    "survivedDays": "Tage",
+    "savedPatients": "Geheilte Patienten",
+    "masteredProtocols": "Leitlinien",
+    "finalScore": "Punktestand",
+    "restart": "Neues Spiel",
+    "mainMenu": "Hauptmenü"
+  },
+  "leaderboard": {
+    "title": "Klinik-Rangliste",
+    "subtitle": "Beste Krankenhausmanager",
+    "position": "Rang",
+    "player": "Manager",
+    "score": "Punkte",
+    "guestModeNote": "Gastmodus aktiv",
+    "localSaveNotice": "Erfolgreich lokal gespeichert !"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "fontSize": "Schriftgröße",
+    "defaultFont": "Standard",
+    "largeFont": "Groß",
+    "xlargeFont": "Sehr Groß",
+    "saveNow": "Jetzt Speichern",
+    "exportBackup": "Backup exportieren (.json)",
+    "importBackup": "Backup importieren (.json)",
+    "resetGame": "Spiel zurücksetzen",
+    "lgpdExport": "Daten exportieren",
+    "lgpdDelete": "Konto löschen",
+    "autoSaveTip": "Automatisches tägliches Speichern."
+  },
+  "dock": {
+    "build": "Bau",
+    "treat": "Behandeln",
+    "staff": "Team",
+    "pharmacy": "Apotheke",
+    "finances": "Finanzen",
+    "recenter": "Zentrieren"
+  },
+  "music": {
+    "on": "Musik An",
+    "off": "Musik Aus",
+    "volume": "Musiklautstärke"
+  },
+  "legal": {
+    "title": "Nutzungsbedingungen & Datenschutz DSGVO",
+    "susNotice": "Pädagogischer Hinweis: Krankenhaus-Management-Simulation."
+  }
+}

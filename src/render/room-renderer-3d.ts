@@ -2,23 +2,21 @@
  * Arquivo: src/render/room-renderer-3d.ts
  *
  * 1. O que este arquivo faz?
- * Renderiza cada sala construída como arquitetura 2.5D em corte (estilo Theme Hospital): piso diferenciado por setor,
- * parede traseira extrudada (topo claro, face interna na cor clínica e rodapé), paredes laterais com espessura,
- * parede frontal em corte baixo (cutaway) e vão de porta real com batentes conforme a rotação da sala.
+ * Renderiza salas hospitalares como arquitetura 2.5D em corte (estilo Two Point Hospital / Theme Hospital):
+ * pisos texturizados por setor clínico com oclusão ambiental (AO) no encontro das paredes e móveis,
+ * paredes extrudadas em corte, batentes de porta, etiquetas com nomes curtos simplificados e reatividade instantânea ao i18n.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Substituir as caixas planas 2D antigas (rooms-view.ts) por volume arquitetônico, sem obstruir o clique nem a
- * visão dos NPCs. Cada sala vive em um Container próprio, cacheado (DisplayCache) e destruído com
- * destroy({ children: true }) ao demolir, mover, girar ou mudar o estoque da farmácia.
+ * Cumprir a Parte 1 e Parte 3 do Prompt 15, garantindo que as etiquetas sobre as salas no mapa usem exclusivamente
+ * nomes curtos de 1 palavra e atualizem instantaneamente quando o idioma mudar, com iluminação e oclusão ambiental.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * Alturas/espessuras de parede: constantes WALL_*. Pisos: FLOOR_STYLES e drawFloorDetails().
- * Se uma sala não atualizar, verifique buildSignature(). Profundidade: zIndex = base da sala (Y-sorting).
+ * Para calibrar pisos e cores, veja FLOOR_STYLES. A criação da etiqueta ocorre em createLabel() com getRoomShortName().
  *
  * Importa: pixi.js, src/entities/room.ts, src/render/theme-config.ts, src/render/voxel.ts,
  *          src/render/room-layout.ts, src/render/furniture-factory.ts, src/render/render-cache.ts,
- *          src/render/environment-state.ts
- * Conecta-se com: src/render/renderer.ts
+ *          src/render/environment-state.ts, src/i18n/i18n.ts, src/core/event-bus.ts
+ * Conecta-se com: src/render/renderer.ts, src/main.ts
  */
 
 import { Container, Graphics, Text } from 'pixi.js';
@@ -32,6 +30,8 @@ import {
 import { drawFurniture } from './furniture-factory';
 import { DisplayCache } from './render-cache';
 import { getShelfBoxCount } from './environment-state';
+import { getRoomShortName } from '../i18n/i18n';
+import { globalBus } from '../core/event-bus';
 
 const WALL_T = 5;
 const WALL_H = 13;
@@ -39,11 +39,6 @@ const FRONT_T = 4;
 const DOOR_GAP = 24;
 const SHELF_SIGNATURE_STEPS = 12;
 const WALL_CAP = 0xf8fafc;
-
-const ROOM_NAMES_MAP: Record<string, string> = {
-  reception: 'Recepção', waiting: 'Espera', consultation: 'Consultório',
-  pharmacy: 'Farmácia RENAME', triage: 'Triagem', observation: 'Leitos Clínicos',
-};
 
 interface FloorStyle { base: number; line: number; tile: number }
 
@@ -54,6 +49,20 @@ const FLOOR_STYLES: Record<string, FloorStyle> = {
   pharmacy: { base: 0xe5e7eb, line: 0xd1d5db, tile: 12 },
   triage: { base: 0xfff1e6, line: 0xfde0c5, tile: 16 },
   observation: { base: 0xe0f7fa, line: 0xc4eef3, tile: 24 },
+  vaccination: { base: 0xecfdf5, line: 0xa7f3d0, tile: 20 },
+  laboratory: { base: 0xf5f3ff, line: 0xddd6fe, tile: 24 },
+  xray: { base: 0x334155, line: 0x1e293b, tile: 24 },
+  surgery: { base: 0xccfbf1, line: 0x99f6e4, tile: 20 },
+  icu: { base: 0xffedd5, line: 0xfed7aa, tile: 20 },
+  staff_room: { base: 0xfef3c7, line: 0xfde68a, tile: 20 },
+  wound_care: { base: 0xf0fdfa, line: 0xccfbf1, tile: 16 },
+  dental: { base: 0xf0f9ff, line: 0xbae6fd, tile: 20 },
+  medication_room: { base: 0xeff6ff, line: 0xbfdbfe, tile: 20 },
+  emergency_room: { base: 0xfef2f2, line: 0xfecaca, tile: 20 },
+  maternity: { base: 0xfff1f2, line: 0xfecdd3, tile: 24 },
+  trauma_center: { base: 0xfee2e2, line: 0xfca5a5, tile: 20 },
+  blood_bank: { base: 0xfdf2f8, line: 0xfbcfe8, tile: 16 },
+  helipad: { base: 0x1e293b, line: 0x0f172a, tile: 32 },
 };
 
 function drawFloorTiles(g: Graphics, r: PixelRect, style: FloorStyle): void {
@@ -64,6 +73,11 @@ function drawFloorTiles(g: Graphics, r: PixelRect, style: FloorStyle): void {
   for (let y = r.y + style.tile; y < r.y + r.h; y += style.tile) {
     g.moveTo(r.x, y).lineTo(r.x + r.w, y).stroke({ color: style.line, width: 1 });
   }
+
+  // Oclusão ambiental (Ambient Occlusion) suave sob paredes
+  g.rect(r.x + WALL_T, r.y + WALL_T + WALL_H - 2, r.w - WALL_T * 2, 4).fill({ color: 0x0f172a, alpha: 0.16 });
+  g.rect(r.x + WALL_T, r.y + WALL_T + WALL_H, 4, r.h - WALL_T * 2 - WALL_H).fill({ color: 0x0f172a, alpha: 0.12 });
+  g.rect(r.x + r.w - WALL_T - 4, r.y + WALL_T + WALL_H, 4, r.h - WALL_T * 2 - WALL_H).fill({ color: 0x0f172a, alpha: 0.12 });
 }
 
 function drawFloorDetails(g: Graphics, typeId: string, r: PixelRect, door: DoorPosition): void {
@@ -79,6 +93,11 @@ function drawFloorDetails(g: Graphics, typeId: string, r: PixelRect, door: DoorP
       .fill({ color: 0xffffff, alpha: 0.35 });
   } else if (typeId === 'pharmacy') {
     g.rect(r.x, r.y + r.h * 0.6, r.w, 6).fill({ color: 0x3b82f6, alpha: 0.75 });
+  } else if (typeId === 'helipad') {
+    g.circle(r.x + r.w / 2, r.y + r.h / 2, r.w * 0.35).stroke({ color: 0xfacc15, width: 3 });
+    g.rect(r.x + r.w / 2 - 10, r.y + r.h / 2 - 14, 4, 28).fill({ color: 0xfacc15 });
+    g.rect(r.x + r.w / 2 + 6, r.y + r.h / 2 - 14, 4, 28).fill({ color: 0xfacc15 });
+    g.rect(r.x + r.w / 2 - 10, r.y + r.h / 2 - 2, 20, 4).fill({ color: 0xfacc15 });
   }
 }
 
@@ -88,6 +107,9 @@ function drawHorizontalWall(g: Graphics, spans: Array<[number, number]>, y: numb
       g.rect(a, y + WALL_T, b - a, WALL_H).fill({ color: inner });
       g.rect(a, y + WALL_T + WALL_H - 3, b - a, 3).fill({ color: shadeColor(inner, 0.7) });
       g.rect(a, y, b - a, WALL_T).fill({ color: WALL_CAP }).stroke({ color: 0x94a3b8, width: 0.8 });
+      // Reflexo translúcido de vidro clínico
+      g.poly([a + 4, y + WALL_T + 2, a + 12, y + WALL_T + 2, a + 8, y + WALL_T + WALL_H - 2, a, y + WALL_T + WALL_H - 2])
+        .fill({ color: 0xffffff, alpha: 0.18 });
     } else {
       g.rect(a, y - FRONT_T, b - a, FRONT_T).fill({ color: WALL_CAP }).stroke({ color: 0x94a3b8, width: 0.8 });
       g.rect(a, y - 1.5, b - a, 1.5).fill({ color: shadeColor(inner, 0.55) });
@@ -127,10 +149,10 @@ function drawWalls(g: Graphics, r: PixelRect, door: DoorPosition, color: number)
 }
 
 function createLabel(room: RoomInstance, r: PixelRect): Text {
-  const name = ROOM_NAMES_MAP[room.definition.id] ?? room.definition.id;
+  const shortName = getRoomShortName(room.definition.id);
   const label = new Text({
-    text: `${room.definition.icon} ${name}`,
-    style: { fontFamily: THEME.fontFamily, fontSize: 9, fill: '#0f172a', fontWeight: 'bold', align: 'center' },
+    text: `${room.definition.icon} ${shortName}`,
+    style: { fontFamily: THEME.fontFamily, fontSize: 10, fill: '#0f172a', fontWeight: 'bold', align: 'center' },
     anchor: { x: 0.5, y: 0 },
     x: r.x + r.w / 2,
     y: r.y + WALL_T + 2,
@@ -148,6 +170,17 @@ export class RoomRenderer3D {
     this.container.sortableChildren = true;
     this.selection.zIndex = Number.MAX_SAFE_INTEGER;
     this.container.addChild(this.selection);
+    this.setupI18nSubscription();
+  }
+
+  private setupI18nSubscription(): void {
+    globalBus.on('i18n:changed', () => {
+      this.clearCache();
+    });
+  }
+
+  public clearCache(): void {
+    this.cache.prune(new Set(), (old) => this.container.removeChild(old));
   }
 
   public static buildSignature(room: RoomInstance, stockRatio: number): string {
@@ -179,7 +212,7 @@ export class RoomRenderer3D {
     drawFloorTiles(g, r, style);
     drawFloorDetails(g, room.definition.id, r, door);
     drawWalls(g, r, door, hexToNumber(room.definition.color));
-    drawFurniture(g, getFurnitureWaypoints(room.definition.id, r, rotation), { stockRatio, timeSeed: 0 });
+    drawFurniture(g, getFurnitureWaypoints(room.definition.id, r, rotation), { stockRatio, timeSeed: Date.now() });
 
     root.addChild(g);
     root.addChild(createLabel(room, r));
@@ -192,9 +225,5 @@ export class RoomRenderer3D {
     if (!room) return;
     const r = getRoomPixelRect(room, THEME.tileSize);
     this.selection.roundRect(r.x - 2, r.y - 2, r.w + 4, r.h + 4, 6).stroke({ color: 0x38bdf8, width: 3, alpha: 0.95 });
-  }
-
-  public get cachedRoomCount(): number {
-    return this.cache.size;
   }
 }

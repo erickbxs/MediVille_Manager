@@ -11,6 +11,8 @@ import type { PatientInstance } from '../entities/patient';
 import type { HospitalSimulation } from '../core/simulation';
 import { getNextPendingDecision, finishPatientDecision } from '../systems/consultation-system';
 
+import { globalBus } from '../core/event-bus';
+
 export class DecisionModal {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
@@ -23,6 +25,7 @@ export class DecisionModal {
 
   public open(patient: PatientInstance): void {
     this.simulation.pauseForModal();
+    globalBus.emit('music:ducking_changed', { isDucking: true });
     this.currentPatient = patient;
     const pCase = patient.clinicalCase;
     const def = pCase.definition;
@@ -83,6 +86,7 @@ export class DecisionModal {
     if (this.currentPatient) {
       finishPatientDecision(this.simulation.state, this.currentPatient.id);
     }
+    globalBus.emit('music:ducking_changed', { isDucking: false });
     this.container.innerHTML = '';
     this.currentPatient = null;
     this.simulation.resumeFromModal();

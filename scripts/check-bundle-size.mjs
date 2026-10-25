@@ -1,15 +1,15 @@
 /**
  * Arquivo: scripts/check-bundle-size.mjs
- * O que faz: Verifica o tamanho dos arquivos gerados na pasta dist/ após o build e garante que o total permaneça abaixo do orçamento de 2 MB do GDD.
- * Por que existe: O GDD define uma meta estrita de carregamento inicial leve (< 2 MB) para rodar com fluidez em celulares e navegadores simples.
- * Como modificar/debugar: Execute `node scripts/check-bundle-size.mjs`. Se ultrapassar, analise os maiores chunks listados no terminal.
+ * 1. O que este arquivo faz: Verifica o tamanho dos arquivos gerados na pasta dist/ após o build e garante que o total permaneça abaixo do orçamento de 5 MB do GDD (Prompt 15).
+ * 2. Para que foi criado: Permitir maior riqueza visual 3D, áudio Web Audio procedural e localização completa sem estourar o limite de carregamento em mobile.
+ * 3. Como modificar/debugar: Execute `node scripts/check-bundle-size.mjs`. Se ultrapassar 5.00 MB, analise os maiores chunks listados no relatório do terminal.
  * Importa: node:fs, node:path
  * Conecta-se com: package.json, dist/
  */
 import fs from 'node:fs';
 import path from 'node:path';
 
-const MAX_TOTAL_BYTES = 2 * 1024 * 1024; // 2 MB
+const MAX_TOTAL_BYTES = 5 * 1024 * 1024; // 5 MB (Prompt 15)
 const distDir = path.resolve(process.cwd(), 'dist');
 
 if (!fs.existsSync(distDir)) {
@@ -44,10 +44,10 @@ for (const file of files) {
 }
 
 const totalMb = (totalBytes / (1024 * 1024)).toFixed(2);
-console.log(`\nTotal do build: ${totalMb} MB (${totalBytes} bytes) / Limite: 2.00 MB`);
+console.log(`\nTotal do build: ${totalMb} MB (${totalBytes} bytes) / Limite: 5.00 MB`);
 
 if (totalBytes > MAX_TOTAL_BYTES) {
-  console.error(`❌ [bundle-check] Falha: O pacote excedeu o orçamento de 2 MB!`);
+  console.error(`❌ [bundle-check] Falha: O pacote excedeu o orçamento de 5 MB!`);
   process.exit(1);
 } else {
   console.log('✅ [bundle-check] Sucesso: Pacote dentro do orçamento do GDD!\n');

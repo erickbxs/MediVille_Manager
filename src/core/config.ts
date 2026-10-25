@@ -29,6 +29,7 @@ export interface RoomDefinition {
   id: string;
   role: 'entry' | 'queue' | 'treatment' | 'dispense';
   nameKey: string;
+  shortName: string;
   icon: string;
   width: number;
   height: number;

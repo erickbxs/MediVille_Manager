@@ -40,23 +40,51 @@
     "suspendAudio": "Silenciar / Áudio"
   },
   "room": {
-    "reception": "Recepção",
+    "reception": "Recepção Central",
     "waiting": "Sala de Espera",
-    "consultation": "Consultório",
-    "pharmacy": "Farmácia",
-    "triage": "Triagem",
+    "consultation": "Consultório Médico",
+    "pharmacy": "Farmácia Básica RENAME",
+    "triage": "Triagem de Manchester",
     "observation": "Leitos de Observação",
     "vaccination": "Sala de Vacinação",
     "laboratory": "Laboratório Clínico",
-    "xray": "Sala de Raio-X",
+    "xray": "Sala de Raio-X e Imagem",
     "surgery": "Centro Cirúrgico",
-    "icu": "UTI - Terapia Intensiva",
+    "icu": "Unidade de Terapia Intensiva",
     "staff_room": "Sala de Descanso",
     "cost": "Custo",
     "upkeep": "Manut./dia",
     "capacity": "Capacidade",
     "remove": "Vender Sala",
-    "refund": "Reembolso"
+    "refund": "Reembolso",
+    "reception_short": "Recepção",
+    "waiting_short": "Espera",
+    "consultation_short": "Consultório",
+    "pharmacy_short": "Farmácia",
+    "triage_short": "Triagem",
+    "observation_short": "Leitos",
+    "vaccination_short": "Vacina",
+    "laboratory_short": "Lab",
+    "xray_short": "Raio-X",
+    "surgery_short": "Cirurgia",
+    "icu_short": "UTI",
+    "staff_room_short": "Descanso",
+    "wound_care": "Sala de Curativos",
+    "wound_care_short": "Curativo",
+    "dental": "Consultório Odontológico",
+    "dental_short": "Odonto",
+    "medication_room": "Sala de Medicação",
+    "medication_room_short": "Medicação",
+    "emergency_room": "Sala de Emergência",
+    "emergency_room_short": "Emergência",
+    "maternity": "Ala de Maternidade",
+    "maternity_short": "Maternidade",
+    "trauma_center": "Centro de Trauma",
+    "trauma_center_short": "Trauma",
+    "blood_bank": "Banco de Sangre",
+    "blood_bank_short": "Sangue",
+    "helipad": "Heliponto Aeromédico",
+    "helipad_short": "Heliponto"
   },
   "roles": {
     "doctor": "Médico(a) Clínico",
@@ -137,5 +165,22 @@
     "lgpdExport": "Exportar Meus Dados (JSON)",
     "lgpdDelete": "Excluir Conta e Dados",
     "autoSaveTip": "O jogo também salva seu progresso automaticamente ao final de cada dia."
+  },
+  "dock": {
+    "build": "Obras",
+    "treat": "Atender",
+    "staff": "Equipe",
+    "pharmacy": "Farmácia",
+    "finances": "Finanças",
+    "recenter": "Centro"
+  },
+  "music": {
+    "on": "Música Ligada",
+    "off": "Música Desligada",
+    "volume": "Volume da Música"
+  },
+  "legal": {
+    "title": "Termos de Uso & Privacidade LGPD/GDPR",
+    "susNotice": "Aviso Educativo: O MediVille Manager é uma simulação educacional e lúdica sobre o SUS. Não substitui consultas médicas profissionais nem atendimento emergencial."
   }
 }

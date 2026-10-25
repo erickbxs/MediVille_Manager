@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "description": "MediVille Manager 中文语言包（HUD、科室、医学案例与管理系统）",
+    "connectedFiles": [
+      "src/ui/*",
+      "src/i18n/i18n.ts"
+    ]
+  },
+  "game": {
+    "title": "MediVille Manager",
+    "unitName": "综合医院",
+    "subtitle": "医院模拟经营与真实临床指南"
+  },
+  "hud": {
+    "cash": "资金",
+    "reputation": "声誉",
+    "satisfaction": "满意度",
+    "queue": "排队人数",
+    "waiting": "人候诊",
+    "avgWait": "平均等待",
+    "day": "第",
+    "paused": "已暂停",
+    "speed1x": "1倍速",
+    "speed2x": "2倍速",
+    "speed3x": "3倍速"
+  },
+  "menu": {
+    "newHospital": "新建医院",
+    "continue": "继续游戏",
+    "options": "设置",
+    "leaderboard": "全球排行",
+    "encyclopedia": "医学典籍",
+    "suspendAudio": "声音设置"
+  },
+  "room": {
+    "reception": "中央接待大厅",
+    "reception_short": "接待处",
+    "waiting": "候诊大厅",
+    "waiting_short": "候诊",
+    "consultation": "全科诊室",
+    "consultation_short": "诊室",
+    "pharmacy": "中心药房",
+    "pharmacy_short": "药房",
+    "triage": "分诊台",
+    "triage_short": "分诊",
+    "observation": "留观病床",
+    "observation_short": "留观",
+    "vaccination": "预防接种室",
+    "vaccination_short": "接种",
+    "laboratory": "临床化验室",
+    "laboratory_short": "化验",
+    "xray": "医学影像室",
+    "xray_short": "放射",
+    "surgery": "手术中心",
+    "surgery_short": "手术",
+    "icu": "重症监护室",
+    "icu_short": "重症",
+    "staff_room": "医护休息室",
+    "staff_room_short": "休息",
+    "wound_care": "外科换药室",
+    "wound_care_short": "换药",
+    "dental": "口腔门诊",
+    "dental_short": "口腔",
+    "medication_room": "输液注射室",
+    "medication_room_short": "注射",
+    "emergency_room": "急诊抢救室",
+    "emergency_room_short": "急诊",
+    "maternity": "产科病区",
+    "maternity_short": "产科",
+    "trauma_center": "创伤急救中心",
+    "trauma_center_short": "创伤",
+    "blood_bank": "中心血库",
+    "blood_bank_short": "血库",
+    "helipad": "空中急救停机坪",
+    "helipad_short": "停机坪",
+    "cost": "造价",
+    "upkeep": "每日维护",
+    "capacity": "容纳人数",
+    "remove": "拆除售出",
+    "refund": "退款"
+  },
+  "roles": {
+    "doctor": "主治医师",
+    "nurse": "注册护士",
+    "pharmacist": "药剂师",
+    "janitor": "保洁员",
+    "receptionist": "导医接待",
+    "manager": "运营院长",
+    "surgeon": "主刀医生"
+  },
+  "actions": {
+    "build": "建造",
+    "cancel": "取消",
+    "removeMode": "拆除模式",
+    "close": "关闭",
+    "acceptConduct": "采纳方案",
+    "rejectConduct": "修改方案",
+    "confirm": "确认",
+    "restart": "重新开始",
+    "mainMenu": "返回主菜单"
+  },
+  "intensity": {
+    "leve": "轻度",
+    "moderada": "中度"
+  },
+  "patient": {
+    "sheetTitle": "患者病历卡",
+    "symptoms": "主诉症状",
+    "exams": "建议检查",
+    "suggestedConduct": "推荐治疗方案",
+    "medications": "处方药品",
+    "comorbidity": "既往病史",
+    "none": "无",
+    "source": "权威临床指南",
+    "statusPending": "等待医师复核"
+  },
+  "advisor": {
+    "empty": "运行平稳，暂无拥堵。",
+    "queueDelay": "接待台积压严重，建议增加诊室。",
+    "pharmacyMissing": "缺少药房，患者无法取药。",
+    "waitingFull": "候诊区即将满载。",
+    "cashLow": "警告：流动资金极低！"
+  },
+  "defeat": {
+    "imminentBankruptcy": "破产危机预警",
+    "imminentIntervention": "面临卫生监管介入",
+    "rescueTransfer": "申请应急补助",
+    "rescueDemolish": "出售闲置科室",
+    "rescueStaff": "优化薪酬支出",
+    "daysRemaining": "距倒闭仅剩 {days} 天！",
+    "gameOverTitle": "经营终止",
+    "survivedDays": "坚持天数",
+    "savedPatients": "治愈患者",
+    "masteredProtocols": "精通病种",
+    "finalScore": "最终得分",
+    "restart": "重新建院",
+    "mainMenu": "主菜单"
+  },
+  "leaderboard": {
+    "title": "全球医院经营排行",
+    "subtitle": "优秀医疗机构管理者榜单",
+    "position": "名次",
+    "player": "院长",
+    "score": "积分",
+    "guestModeNote": "访客模式（本地存储）",
+    "localSaveNotice": "成绩已成功保存在本地！"
+  },
+  "settings": {
+    "title": "系统设置与无障碍",
+    "fontSize": "字体缩放",
+    "defaultFont": "标准",
+    "largeFont": "大号",
+    "xlargeFont": "特大号",
+    "saveNow": "立即保存医院",
+    "exportBackup": "导出备份文件 (.json)",
+    "importBackup": "导入备份文件 (.json)",
+    "resetGame": "重置并新建医院",
+    "lgpdExport": "导出个人数据",
+    "lgpdDelete": "删除数据",
+    "autoSaveTip": "游戏在每日结束时会自动保存进度。"
+  },
+  "dock": {
+    "build": "建设",
+    "treat": "接诊",
+    "staff": "员工",
+    "pharmacy": "药房",
+    "finances": "财务",
+    "recenter": "居中"
+  },
+  "music": {
+    "on": "开启音乐",
+    "off": "静音音乐",
+    "volume": "音乐音量"
+  },
+  "legal": {
+    "title": "使用条款与隐私政策",
+    "susNotice": "教育性声明：本游戏为公共卫生医疗管理模拟，不代表真实医疗急救诊断建议。"
+  }
+}

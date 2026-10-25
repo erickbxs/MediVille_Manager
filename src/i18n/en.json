@@ -40,14 +40,14 @@
     "suspendAudio": "Mute / Audio"
   },
   "room": {
-    "reception": "Reception Desk",
+    "reception": "Central Reception",
     "waiting": "Waiting Room",
     "consultation": "Doctor's Office",
-    "pharmacy": "Pharmacy",
-    "triage": "Triage Room",
-    "observation": "Observation Ward",
-    "vaccination": "Immunization Room",
-    "laboratory": "Clinical Lab",
+    "pharmacy": "Basic Pharmacy",
+    "triage": "Manchester Triage",
+    "observation": "Observation Beds",
+    "vaccination": "Vaccination Room",
+    "laboratory": "Clinical Laboratory",
     "xray": "X-Ray Suite",
     "surgery": "Operating Theater",
     "icu": "Intensive Care Unit",
@@ -56,7 +56,35 @@
     "upkeep": "Upkeep/day",
     "capacity": "Capacity",
     "remove": "Sell Room",
-    "refund": "Refund"
+    "refund": "Refund",
+    "reception_short": "Reception",
+    "waiting_short": "Waiting",
+    "consultation_short": "Clinic",
+    "pharmacy_short": "Pharmacy",
+    "triage_short": "Triage",
+    "observation_short": "Beds",
+    "vaccination_short": "Vaccine",
+    "laboratory_short": "Lab",
+    "xray_short": "X-Ray",
+    "surgery_short": "Surgery",
+    "icu_short": "ICU",
+    "staff_room_short": "Break",
+    "wound_care": "Wound Dressing Room",
+    "wound_care_short": "Dressing",
+    "dental": "Dental Clinic",
+    "dental_short": "Dental",
+    "medication_room": "Medication Room",
+    "medication_room_short": "Medication",
+    "emergency_room": "Emergency Room",
+    "emergency_room_short": "ER",
+    "maternity": "Maternity Ward",
+    "maternity_short": "Maternity",
+    "trauma_center": "Trauma Center",
+    "trauma_center_short": "Trauma",
+    "blood_bank": "Blood Bank",
+    "blood_bank_short": "Blood",
+    "helipad": "Emergency Helipad",
+    "helipad_short": "Helipad"
   },
   "roles": {
     "doctor": "General Physician",
@@ -137,5 +165,22 @@
     "lgpdExport": "Export My Data (JSON)",
     "lgpdDelete": "Delete Account and Data",
     "autoSaveTip": "The game also saves your progress automatically at the end of each day."
+  },
+  "dock": {
+    "build": "Build",
+    "treat": "Treat",
+    "staff": "Staff",
+    "pharmacy": "Pharmacy",
+    "finances": "Finances",
+    "recenter": "Center"
+  },
+  "music": {
+    "on": "Music On",
+    "off": "Music Off",
+    "volume": "Music Volume"
+  },
+  "legal": {
+    "title": "Terms of Use & Privacy LGPD/GDPR",
+    "susNotice": "Educational Notice: MediVille Manager is an educational simulation about healthcare systems. It does not replace professional medical advice or emergency care."
   }
 }

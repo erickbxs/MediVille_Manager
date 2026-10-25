@@ -215,10 +215,31 @@ function drawNegatoscope(g: Graphics, x: number, y: number): void {
   g.rect(x - 5, y - 13, 10, 6).fill({ color: 0x64748b, alpha: 0.6 });
 }
 
+function drawIvStand(g: Graphics, x: number, y: number): void {
+  g.rect(x, y - 24, 1.5, 24).fill({ color: STEEL });
+  g.rect(x - 2, y - 24, 5.5, 1.5).fill({ color: STEEL });
+  g.roundRect(x - 1.5, y - 22, 4.5, 7, 1.5).fill({ color: 0xe0f2fe, alpha: 0.85 });
+  g.rect(x - 0.5, y - 20, 2.5, 1).fill({ color: 0x0284c7 });
+}
+
+function drawEcgLine(g: Graphics, x: number, y: number, step: number): void {
+  g.moveTo(x - 5, y)
+    .lineTo(x - 3, y)
+    .lineTo(x - 2, y - (step === 0 ? 3 : 1))
+    .lineTo(x - 1, y + (step === 0 ? 2 : 0))
+    .lineTo(x, y - (step === 1 ? 4 : 0))
+    .lineTo(x + 1, y + (step === 1 ? 2 : 0))
+    .lineTo(x + 2, y)
+    .lineTo(x + 5, y)
+    .stroke({ color: 0x22c55e, width: 1.2 });
+}
+
 function drawSurgeryTable(g: Graphics, x: number, y: number): void {
   drawBlockCentered(g, x, y, 12, 12, 10, STEEL);
   drawBlockCentered(g, x, y - 8, 32, 16, 4, 0x1e293b, false);
   g.rect(x - 14, y - 19, 28, 12).fill({ color: 0x0284c7 });
+  // Halo cirúrgico suave sobre a mesa
+  g.ellipse(x, y - 12, 24, 10).fill({ color: 0xfef08a, alpha: 0.22 });
 }
 
 function drawSurgicalLight(g: Graphics, x: number, y: number): void {
@@ -232,10 +253,10 @@ function drawSurgicalLight(g: Graphics, x: number, y: number): void {
 function drawSurgeryMonitor(g: Graphics, x: number, y: number, ctx: FurnitureContext): void {
   drawBlockCentered(g, x, y, 6, 6, 18, STEEL);
   drawBlockCentered(g, x, y - 16, 16, 4, 12, 0x0f172a, false);
-  const pulse = Math.floor(ctx.timeSeed / 400) % 2 === 0;
+  const step = Math.floor(ctx.timeSeed / 250) % 2;
   g.rect(x - 6, y - 22, 12, 7).fill({ color: 0x0f172a });
-  g.rect(x - 5, y - 20, pulse ? 10 : 8, 1.5).fill({ color: 0x22c55e });
-  g.rect(x - 5, y - 17, 6, 1.5).fill({ color: 0x38bdf8 });
+  drawEcgLine(g, x, y - 18, step);
+  g.rect(x - 5, y - 14, 6, 1.2).fill({ color: 0x38bdf8 });
 }
 
 function drawIcuBed(g: Graphics, x: number, y: number): void {
@@ -244,6 +265,7 @@ function drawIcuBed(g: Graphics, x: number, y: number): void {
   g.roundRect(x - 8, y - 25, 16, 8, 2).fill({ color: 0x93c5fd });
   g.rect(x - 11, y - 22, 2, 24).fill({ color: 0x475569 });
   g.rect(x + 9, y - 22, 2, 24).fill({ color: 0x475569 });
+  drawIvStand(g, x + 12, y - 12);
 }
 
 function drawVentilator(g: Graphics, x: number, y: number): void {
@@ -256,9 +278,9 @@ function drawVentilator(g: Graphics, x: number, y: number): void {
 function drawIcuMonitor(g: Graphics, x: number, y: number, ctx: FurnitureContext): void {
   drawBlockCentered(g, x, y, 6, 6, 16, STEEL);
   drawBlockCentered(g, x, y - 14, 14, 4, 10, 0x0f172a, false);
-  const pulse = Math.floor(ctx.timeSeed / 350) % 2 === 0;
+  const step = Math.floor(ctx.timeSeed / 200) % 2;
   g.rect(x - 5, y - 19, 10, 6).fill({ color: 0x022c22 });
-  g.rect(x - 4, y - 17, pulse ? 8 : 6, 1.5).fill({ color: 0x22c55e });
+  drawEcgLine(g, x, y - 16, step);
 }
 
 function drawStaffSofa(g: Graphics, x: number, y: number): void {

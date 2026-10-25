@@ -38,6 +38,7 @@ import { EncyclopediaModal } from './ui/encyclopedia-modal';
 import { GoalsModal } from './ui/goals-modal';
 import { trafficSystem } from './systems/traffic-system';
 import { soundSystem } from './core/sound-system';
+import { musicSystem } from './core/music-system';
 import { SettingsModal, applySavedFontScale } from './ui/settings-modal';
 import { AgeGateModal } from './ui/age-gate-modal';
 import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
@@ -123,6 +124,7 @@ class MediVilleApp {
     this.appMode = 'PLAYING';
     document.getElementById('ui-root')?.classList.remove('hidden');
     this.titleScreen.hide();
+    musicSystem.start();
     this.simulation.setSpeed(1);
     this.renderer.recenter();
     triggerTutorialTip(this.simulation.state, 'game_start');

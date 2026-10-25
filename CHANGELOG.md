@@ -2,6 +2,49 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.4.0] - 2026-10-25
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.4.0 — Nomes Simples na Aba Obras, Troca de Idioma Reativa Instantânea, Personagens 3D em Cenário 2.5D, Riqueza Gráfica, Música Bossa-Lounge Suave e Conformidade Multiplataforma
+- **PARTE 1: Nomes Simples (1 Palavra) na Aba Obras & Ergonomia do Menu (`rooms.json`, `build-menu.ts` & `room-renderer-3d.ts`)**:
+  - Padronização do campo `shortName` em todas as 20 salas do catálogo hospitalar (`Recepção`, `Espera`, `Triagem`, `Consultório`, `Farmácia`, `Leitos`, `Vacina`, `Curativo`, `Odonto`, `Medicação`, `Emergência`, `Lab`, `Raio-X`, `Cirurgia`, `UTI`, `Maternidade`, `Trauma`, `Sangue`, `Descanso`, `Heliponto`), com limite rígido de até 12 caracteres.
+  - Redesenho ergonômico dos cartões da gaveta `🏗️ Obras`: ícone grande, nome simples de 1 palavra (`font-semibold text-sm truncate`), preço curto (`R$ 5k`) e dimensões (`2x2`), deixando o nome formal completo e detalhes apenas no tooltip (`title`).
+  - Etiquetas sobre as salas no mapa 2.5D padronizadas com os nomes curtos e sincronizadas com a internacionalização ativa.
+- **PARTE 2: Troca de Idioma 100% Reativa e Instantânea em Tempo Real (`i18n.ts`, `*.json`)**:
+  - Implementação de `setLanguage(lang: 'pt' | 'es' | 'en' | 'fr' | 'de' | 'zh')` com carregamento sob demanda, persistência no `localStorage` (`mediville_lang`), atualização direta de atributos DOM `[data-i18n]` e emissão desacoplada de `eventBus.emit('i18n:changed', { lang })`.
+  - Assinatura reativa imediata sem recarregar a página em `TitleScreen`, `HospitalHUD`, `BuildMenu`, `DecisionModal`, `SettingsModal` e `RoomRenderer3D` (invalidação instantânea de cache de etiquetas das salas).
+  - Tradução dos nomes curtos das 20 salas, alertas do conselheiro e casos clínicos nos 6 idiomas suportados (PT, ES, EN, FR, DE, ZH).
+- **PARTE 3: Personagens 3D em Ambiente 2.5D & Detalhes Gráficos das Salas (`character-3d.ts`, `furniture-factory.ts` & `room-renderer-3d.ts`)**:
+  - Criação do componente procedural `Character3D`: avatares com volume 3D arredondado e sombreamento suave em múltiplas faces (cápsulas e cilindros 3D, destaques especulares e oclusão ambiental entre cabeça e tronco).
+  - Cabeça 3D esférica/arredondada: olhos expressivos com catchlight (brilho branco na pupila), sobrancelhas animadas e máscara cirúrgica automática em salas estéreis (Cirurgia e UTI).
+  - Vestimentas e acessórios específicos dos 7 cargos de saúde:
+    - *Médico*: Jaleco branco aberto com gola 3D, estetoscópio metálico no pescoço e prancheta/tablet digital durante atendimento.
+    - *Enfermeiro e Técnico*: Scrubs com sombreamento 3D, crachá pendurado e bandeja/termômetro.
+    - *Farmacêutico*: Jaleco com bolso e caixa de medicamento 3D ao dispensar.
+    - *Recepcionista e Gestor*: Traje executivo social com gravata.
+    - *Zeladoria*: Uniforme de limpeza com carrinho e mop animado.
+    - *Pacientes*: Variação de estatura (crianças, adultos, idosos com bengala) e postura cansada em casos de urgência/emergência.
+  - Refinamentos gráficos nas salas:
+    - Oclusão ambiental (AO) suave no encontro das paredes e sob os móveis.
+    - Monitores cardíacos com linha de ECG verde pulsante animada em Consultórios, Emergência, UTI e Cirurgia.
+    - Divisórias de vidro clínico com faixas diagonais translúcidas.
+    - Suportes de soro cromados com bolsas de solução fisiológica nos leitos e halo luminoso suave de foco cirúrgico sobre a mesa cirúrgica.
+- **PARTE 4: Música Suave de Fundo — Estilo Hospital / Elevador Bossa-Lounge (`music-system.ts`)**:
+  - Sintetizador Web Audio API procedural (sem MP3s externos, zero peso adicional):
+    - Timbre aveludado de piano elétrico Rhodes (ondas senoidais/triangulares com LPF em 900 Hz) em ~72 BPM com progressão acolhedora (`Fmaj7` ➔ `Em7` ➔ `Dm9` ➔ `G13` ➔ `Cmaj9` ➔ `Am7`).
+    - Contrabaixo acústico suave e ritmo sutil de vassourinha/chocalho.
+    - Volume suave padrão calibrado (`gain: 0.08`), controle de volume de 0% a 100% no modal de Configurações e botão `🎵` de Música On/Off na Top Bar ao lado de `🔊`.
+    - *Audio Ducking* automático: redução de 50% no volume da música sempre que a ficha de um caso clínico (`DecisionModal`) estiver aberta.
+- **PARTE 5: Segurança, Privacidade LGPD/GDPR e Multiplataforma (`_headers`, `legal-modal.ts`, `tauri.conf.json` & `capacitor.config.ts`)**:
+  - Cabeçalhos de segurança HTTP em `public/_headers` (Content-Security-Policy, HSTS, X-Content-Type-Options: nosniff, Referrer-Policy e Permissions-Policy).
+  - Modal oficial `LegalModal` com Política de Privacidade e Termos de Uso em PT, ES e EN, com aviso institucional educativo do SUS/MS, acessível na Tela Inicial e nas Configurações.
+  - Arquivos de configuração base para desktop (`tauri.conf.json`) e mobile nativo (`capacitor.config.ts`) apontando para `dist/`.
+- **PARTE 6: Testes Automatizados (Vitest) e Verificação**:
+  - Nova suíte `tests/i18n-3d-music-and-shortnames.test.ts` com 14 testes cobrindo shortNames, i18n reativo, MusicSystem, Character3D e segurança.
+  - **138 testes automatizados aprovados (100% de sucesso em 18 arquivos)**.
+  - Novo teto de orçamento técnico de 5.00 MB em `check-bundle-size.mjs` (tamanho final gerado: **1.18 MB total**, com carregamento inicial super leve).
+
 ## [1.3.0] - 2026-10-25
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

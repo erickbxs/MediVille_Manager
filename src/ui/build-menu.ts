@@ -2,22 +2,25 @@
  * Arquivo: src/ui/build-menu.ts
  *
  * 1. O que este arquivo faz?
- * Renderiza o Dock Inferior Colapsável de 56px no mobile e tablet, com navegação rápida de ações (Construir,
- * Atender com badge, Equipe, Farmácia, Finanças, Centralizar) e gaveta sob demanda (Build Drawer) deslizante
- * com rolagem horizontal ergonômica (wheel to horizontal, setas, botões ◀ ▶ e drag).
+ * Renderiza o Dock Inferior Colapsável e a Gaveta de Obras (Build Drawer) com cartões limpos e minimalistas
+ * (ícone grande, nome simples de 1 palavra, preço curto, dimensão e tooltip com o nome formal completo),
+ * além de rolagem horizontal fluida e suporte a troca reativa instantânea de idioma.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Manter mais de 82% da tela livre para interação no mobile e oferecer navegação fluida pelos setores hospitalares.
+ * Cumprir a Parte 1 do Prompt 15, simplificando os nomes dos setores para caberem com ergonomia nos cartões do menu,
+ * além de manter mais de 80% da tela livre para interação no mobile e tablet.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * Para adicionar botões no dock ou novas salas, altere render() e bindEvents(). A rolagem é gerenciada por horizontal-scroll.ts.
+ * Rótulos e cartões são gerados em renderRoomsHtml() usando getRoomShortName() e t(). A rolagem horizontal é gerida por horizontal-scroll.ts.
  *
- * Importa: src/core/config.ts, src/ui/horizontal-scroll.ts
- * Conecta-se com: src/main.ts, src/ui/hud.ts
+ * Importa: src/core/config.ts, src/ui/horizontal-scroll.ts, src/i18n/i18n.ts, src/core/event-bus.ts
+ * Conecta-se com: src/main.ts, src/ui/hud.ts, src/render/room-renderer-3d.ts
  */
 
 import { ROOMS_CATALOG, type RoomDefinition } from '../core/config';
 import { enableHorizontalScroll } from './horizontal-scroll';
+import { getRoomShortName, t } from '../i18n/i18n';
+import { globalBus } from '../core/event-bus';
 
 export interface BuildMenuCallbacks {
   onSelectRoom: (def: RoomDefinition) => void;
@@ -31,21 +34,6 @@ export interface BuildMenuCallbacks {
   onOpenPharmacy?: () => void;
   onOpenFinances?: () => void;
 }
-
-const ROOM_FRIENDLY_NAMES: Record<string, string> = {
-  reception: 'Recepção',
-  waiting: 'Espera',
-  consultation: 'Consultório',
-  pharmacy: 'Farmácia',
-  triage: 'Triagem',
-  observation: 'Leitos',
-  vaccination: 'Vacinação',
-  laboratory: 'Laboratório',
-  xray: 'Raio-X',
-  surgery: 'Cirurgia',
-  icu: 'UTI',
-  staff_room: 'Descanso',
-};
 
 export class BuildMenu {
   private container: HTMLElement;
@@ -61,6 +49,15 @@ export class BuildMenu {
     this.container = container;
     this.callbacks = callbacks;
     this.render();
+    this.setupI18nSubscription();
+  }
+
+  private setupI18nSubscription(): void {
+    globalBus.on('i18n:changed', () => {
+      const wasOpen = this.isDrawerOpen;
+      this.render();
+      if (wasOpen) this.openDrawerForRoom();
+    });
   }
 
   public updateBadges(pendingCases: number, hasZeroStock = false): void {
@@ -86,20 +83,32 @@ export class BuildMenu {
   }
 
   private renderRoomsHtml(): string {
-    return ROOMS_CATALOG.rooms.map((room) => `
-      <button data-room-id="${room.id}" class="build-card snap-start pointer-events-auto flex flex-col items-center justify-center min-w-[70px] min-h-[56px] px-2.5 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md transition-all active:scale-95 hover:border-sky-500">
-        <span class="text-xl">${room.icon}</span>
-        <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">${ROOM_FRIENDLY_NAMES[room.id] || room.id}</span>
-        <span class="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">R$ ${(room.cost / 1000).toFixed(0)}k</span>
-      </button>
-    `).join('');
+    return ROOMS_CATALOG.rooms.map((room) => {
+      const shortName = getRoomShortName(room.id);
+      const fullName = t(room.nameKey);
+      const costK = (room.cost / 1000).toFixed(0);
+      const dimensions = `${room.width}x${room.height}`;
+
+      return `
+        <button data-room-id="${room.id}"
+          title="${fullName} — ${dimensions} — R$ ${room.cost}"
+          class="build-card snap-start pointer-events-auto flex flex-col items-center justify-between min-w-[76px] h-[76px] px-2 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md transition-all active:scale-95 hover:border-sky-500">
+          <span class="text-2xl">${room.icon}</span>
+          <span class="w-full text-center font-semibold text-sm truncate text-slate-800 dark:text-slate-100">${shortName}</span>
+          <div class="flex items-center justify-between w-full text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">R$ ${costK}k</span>
+            <span>${dimensions}</span>
+          </div>
+        </button>
+      `;
+    }).join('');
   }
 
   private renderDrawerHtml(): string {
     return `
       <div id="build-drawer" class="hidden w-full max-w-xl mx-auto p-2 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 animate-in slide-in-from-bottom duration-200">
         <div class="flex items-center justify-between pb-1 px-2 border-b border-slate-200/60 dark:border-slate-800/60 mb-2">
-          <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">🏗️ Obras & Instalações</span>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">🏗️ ${t('dock.build') || 'Obras'} & ${t('game.unitName') || 'Instalações'}</span>
           <button id="btn-close-drawer" class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold">✕</button>
         </div>
         <div class="relative flex items-center">
@@ -107,17 +116,17 @@ export class BuildMenu {
           <div id="build-drawer-carousel" class="flex items-center gap-2 overflow-x-auto p-1 scrollbar-none snap-x touch-pan-x w-full">
             ${this.renderRoomsHtml()}
             <div class="w-px h-10 bg-slate-300 dark:bg-slate-700 mx-1 shrink-0"></div>
-            <button id="btn-move" title="Mover sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[56px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-amber-500 active:scale-95">
-              <span class="text-lg">✋</span>
-              <span class="text-[9px] font-bold mt-0.5">Mover</span>
+            <button id="btn-move" title="Mover sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-amber-500 active:scale-95">
+              <span class="text-xl">✋</span>
+              <span class="text-[10px] font-bold mt-1">Mover</span>
             </button>
-            <button id="btn-rotate" title="Girar sala (R)" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[56px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-sky-500 active:scale-95">
-              <span class="text-lg">🔄</span>
-              <span class="text-[9px] font-bold mt-0.5">Girar</span>
+            <button id="btn-rotate" title="Girar sala (R)" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-sky-500 active:scale-95">
+              <span class="text-xl">🔄</span>
+              <span class="text-[10px] font-bold mt-1">Girar</span>
             </button>
-            <button id="btn-demolish" title="Vender sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[56px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-rose-500 active:scale-95">
-              <span class="text-lg">🗑️</span>
-              <span class="text-[9px] font-bold mt-0.5">Vender</span>
+            <button id="btn-demolish" title="Vender sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-rose-500 active:scale-95">
+              <span class="text-xl">🗑️</span>
+              <span class="text-[10px] font-bold mt-1">${t('room.remove') || 'Vender'}</span>
             </button>
           </div>
           <button id="btn-build-scroll-next" aria-label="Rolar direita" class="transition-opacity absolute right-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">▶</button>
@@ -129,27 +138,27 @@ export class BuildMenu {
   private renderDockHtml(): string {
     return `
       <nav aria-label="Ações Principais" class="h-14 px-3 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-2xl border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-3 text-slate-700 dark:text-slate-200">
-        <button id="btn-dock-build" title="Abrir menu de construção" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-build" title="Abrir menu de obras" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">🏗️</span>
-          <span class="text-[10px]">Obras</span>
+          <span class="text-[10px]">${t('dock.build') || 'Obras'}</span>
         </button>
-        <button id="btn-dock-atender" title="Atender paciente pronto no consultório" class="relative min-w-[52px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-emerald-600 dark:text-emerald-400">
+        <button id="btn-dock-atender" title="Atender paciente pronto" class="relative min-w-[52px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-emerald-600 dark:text-emerald-400">
           <span class="text-base">🩺</span>
-          <span class="text-[10px]">Atender</span>
+          <span class="text-[10px]">${t('dock.treat') || 'Atender'}</span>
           <span id="dock-atender-badge" class="${this.pendingCasesCount > 0 ? '' : 'hidden'} absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-black animate-pulse shadow-md">${this.pendingCasesCount}</span>
         </button>
         <button id="btn-dock-staff" title="Equipe médica e salários" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">👥</span>
-          <span class="text-[10px]">Equipe</span>
+          <span class="text-[10px]">${t('dock.staff') || 'Equipe'}</span>
         </button>
         <button id="btn-dock-pharmacy" title="Farmácia RENAME" class="relative min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">💊</span>
-          <span class="text-[10px]">Farmácia</span>
+          <span class="text-[10px]">${t('dock.pharmacy') || 'Farmácia'}</span>
           <span id="dock-pharmacy-alert" class="${this.hasPharmacyAlert ? '' : 'hidden'} absolute top-1 right-2 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
         </button>
         <button id="btn-dock-finances" title="Finanças SIGTAP" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">💰</span>
-          <span class="text-[10px]">Finanças</span>
+          <span class="text-[10px]">${t('dock.finances') || 'Finanças'}</span>
         </button>
         <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 my-auto"></div>
         <button id="btn-recenter" title="Centralizar Mapa" class="min-w-[44px] min-h-[44px] rounded-2xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-sm">🎯</button>

@@ -52,6 +52,9 @@ export interface GameEvents {
   'defeat:warning': { type: 'cash' | 'reputation'; consecutiveDays: number; daysRemaining: number };
   'game:over': { reason: string; stats: { days: number; patientsTreated: number; masteredCases: number; finalReputation: number; score: number } };
   'milestone:unlocked': { id: string; title: string; description: string };
+  'i18n:changed': { lang: string };
+  'music:mute_changed': { muted: boolean };
+  'music:ducking_changed': { isDucking: boolean };
 }
 
 export type EventKey = keyof GameEvents;
