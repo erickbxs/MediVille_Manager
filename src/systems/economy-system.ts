@@ -224,12 +224,14 @@ export function calculateDemandMultiplier(state: GameState): number {
   return Math.max(MIN_DEMAND_FLOOR, mult);
 }
 
+const PRIVATE_CONTRACT_ROLL_SPLIT = 0.5;
+
 export function calculatePatientConsultationRevenue(
   state: GameState,
   baseRevenue: number
 ): { amount: number; source: 'bpa' | 'private' | 'contract' } {
   if (state.unitType === 'private_clinic') {
-    if (state.activeContracts && state.activeContracts.length > 0 && Math.random() < 0.5) {
+    if (state.activeContracts && state.activeContracts.length > 0 && Math.random() < PRIVATE_CONTRACT_ROLL_SPLIT) {
       const randomPlanId = state.activeContracts[Math.floor(Math.random() * state.activeContracts.length)]!;
       const plan = BALANCE.mixedEconomy.plans.find((p) => p.id === randomPlanId);
       const fee = plan ? plan.feePerPatient : state.privateConsultationFee;
@@ -246,12 +248,12 @@ export function calculatePatientConsultationRevenue(
     if (roll < HOSPITAL_CONTRACT_CHANCE && state.activeContracts && state.activeContracts.length > 0) {
       const randomPlanId = state.activeContracts[Math.floor(Math.random() * state.activeContracts.length)]!;
       const plan = BALANCE.mixedEconomy.plans.find((p) => p.id === randomPlanId);
-      const fee = plan ? plan.feePerPatient : baseRevenue;
+      const fee = (plan ? plan.feePerPatient : 0) + baseRevenue;
       state.finances.contractsRevenue = (state.finances.contractsRevenue ?? 0) + fee;
       return { amount: fee, source: 'contract' };
     }
-    if (roll < 0.5) {
-      const fee = state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee;
+    if (roll < PRIVATE_CONTRACT_ROLL_SPLIT) {
+      const fee = (state.privateConsultationFee ?? BALANCE.mixedEconomy.defaultConsultationFee) + baseRevenue;
       state.finances.privateRevenue = (state.finances.privateRevenue ?? 0) + fee;
       return { amount: fee, source: 'private' };
     }
