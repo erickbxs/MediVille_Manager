@@ -91,7 +91,7 @@ export class TitleScreen {
           
           <div class="flex items-center justify-between">
             <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-500/10 text-blue-600 dark:text-blue-400">
-              v1.4.0 • SUS Tycoon
+              v1.8.0 • SUS Tycoon
             </span>
             <div class="flex items-center gap-1">
               ${this.renderLangFlags(currentLang)}
@@ -156,17 +156,18 @@ export class TitleScreen {
   }
 
   private renderLangFlags(current: SupportedLocale): string {
-    const list: Array<{ code: SupportedLocale; flag: string }> = [
-      { code: 'pt', flag: '🇧🇷' },
-      { code: 'en', flag: '🇺🇸' },
-      { code: 'es', flag: '🇪🇸' },
-      { code: 'fr', flag: '🇫🇷' },
-      { code: 'de', flag: '🇩🇪' },
-      { code: 'zh', flag: '🇨🇳' },
+    const list: Array<{ code: SupportedLocale; flag: string; label: string }> = [
+      { code: 'pt', flag: '🇧🇷', label: 'PT' },
+      { code: 'en', flag: '🇺🇸', label: 'EN' },
+      { code: 'es', flag: '🇪🇸', label: 'ES' },
+      { code: 'fr', flag: '🇫🇷', label: 'FR' },
+      { code: 'de', flag: '🇩🇪', label: 'DE' },
+      { code: 'zh', flag: '🇨🇳', label: '中文' },
     ];
     return list.map((item) => `
-      <button data-lang="${item.code}" class="btn-lang-choice min-w-[30px] min-h-[30px] rounded-lg text-sm flex items-center justify-center transition-all ${item.code === current ? 'bg-sky-500/20 ring-1 ring-sky-500 scale-105' : 'opacity-70 hover:opacity-100'}">
-        ${item.flag}
+      <button data-lang="${item.code}" title="${item.label}" class="btn-lang-choice min-w-0 truncate px-1.5 py-1 rounded-lg text-xs font-bold flex items-center justify-center gap-0.5 transition-all ${item.code === current ? 'bg-sky-500/20 ring-1 ring-sky-500 scale-105 text-sky-600 dark:text-sky-300' : 'opacity-70 hover:opacity-100 text-slate-600 dark:text-slate-400'}">
+        <span>${item.flag}</span>
+        <span class="hidden md:inline text-[10px] truncate">${item.label}</span>
       </button>
     `).join('');
   }

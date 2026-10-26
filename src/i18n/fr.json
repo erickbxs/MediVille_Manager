@@ -175,5 +175,20 @@
   "legal": {
     "title": "Mentions Légales & Confidentialité RGPD",
     "susNotice": "Avis éducatif : simulation hospitalière pédagogique."
+  },
+  "map": {
+    "expand": "Agrandir le Terrain",
+    "expandSuccess": "Terrain hospitalier agrandi avec succès (+4x4)!",
+    "nextTier": "Prochaine Expansion: {cols}x{rows}"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer"
+  },
+  "glossary": {
+    "sus": "SUS — Système Unique de Santé publique brésilien (Santé universelle)",
+    "ubs": "UBS — Centre de Santé Primaire (Soins de base et préventifs)",
+    "upa": "UPA 24h — Unité de Soins d'Urgence 24h"
   }
 }

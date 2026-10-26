@@ -15,6 +15,7 @@ import type { PatientInstance } from '../entities/patient';
 import { updateArrivalSystem } from '../systems/arrival-system';
 import { updateQueueSystem } from '../systems/queue-system';
 import { dischargePatient, updateConsultationSystem } from '../systems/consultation-system';
+import { updateStaffFatigueSystem } from '../systems/staff-fatigue-system';
 import { updateDaySystem } from '../systems/day-system';
 import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom, moveRoom as sysMoveRoom } from '../systems/grid-system';
 import { updateEventSystem } from '../systems/event-system';
@@ -40,6 +41,7 @@ export class HospitalSimulation {
     updateArrivalSystem(this.state, scaledDelta);
     updateQueueSystem(this.state, scaledDelta);
     updateConsultationSystem(this.state, scaledDelta);
+    updateStaffFatigueSystem(this.state, scaledDelta);
     updateEventSystem(this.state, scaledDelta);
     updateDaySystem(this.state, scaledDelta);
 

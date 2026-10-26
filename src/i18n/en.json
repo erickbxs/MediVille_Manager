@@ -192,5 +192,10 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "close": "Close"
+  },
+  "glossary": {
+    "sus": "SUS — Brazilian Unified Health System (Universal public healthcare)",
+    "ubs": "UBS — Primary Health Center (Basic and preventive care)",
+    "upa": "UPA 24h — 24-Hour Emergency Care Center (Urgent care)"
   }
 }

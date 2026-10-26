@@ -1,10 +1,18 @@
 /**
  * Arquivo: src/entities/staff.ts
- * O que faz: Representa a entidade de um membro da equipe (médico, enfermeiro, farmacêutico) com nome, cargo, nível de habilidade e cálculo de tempo de atendimento.
- * Para que foi criado: Cumprir o Prompt 5 do GDD (equipe com habilidades e salários) e aplicar a fórmula T_{atend} = T_{base} * (1 - 0.05 * (H - 1)).
- * Como modificar/debugar: Altere a taxa de redução de tempo em src/data/balance.json.
+ *
+ * 1. O que este arquivo faz?
+ * Representa a entidade de um membro da equipe (médico, enfermeiro, técnico, etc.) com nome, cargo,
+ * nível de habilidade (1 a 5 estrelas), energia/fadiga (0 a 100%) e rotina de descanso.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir a gestão de folha salarial, produtividade e a mecânica de fadiga e Sala de Descanso (Prompt 19).
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Taxas de redução de tempo e parâmetros de fadiga são lidos de src/data/balance.json.
+ *
  * Importa: src/core/config.ts
- * Conecta-se com: src/systems/staff-system.ts, src/systems/consultation-system.ts, src/ui/staff-modal.ts
+ * Conecta-se com: src/systems/staff-system.ts, src/systems/staff-fatigue-system.ts, src/ui/staff-modal.ts
  */
 
 import { BALANCE, type StaffRoleDefinition } from '../core/config';
@@ -17,6 +25,9 @@ export interface StaffMember {
   skill: number;
   dailySalary: number;
   assignedRoomId: string | null;
+  energy?: number;
+  isResting?: boolean;
+  restTimerSec?: number;
 }
 
 export function calculateConsultationDuration(baseTimeSec: number, skill: number): number {

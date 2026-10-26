@@ -1,9 +1,19 @@
 /**
  * Arquivo: src/systems/consultation-system.ts
- * O que faz: Coordena o atendimento em consultórios, alocação de pacientes da fila, disparo de decisões médicas e conclusão do caso.
- * Para que foi criado: É o coração do loop principal do MediVille Manager (atendimento e tomada de decisão clínica).
- * Como modificar/debugar: Caso queira mudar tempos de consulta ou regras de finalização, consulte este arquivo e balance.json.
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts, src/systems/satisfaction-system.ts
+ *
+ * 1. O que este arquivo faz?
+ * Coordena o atendimento em consultórios, alocação de pacientes da fila, aplicação de penalidades de fadiga,
+ * disparo de decisões médicas e faturamento ambulatorial/hospitalar com dedução de energia do profissional.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Centralizar o ciclo principal de atendimento clínico do SUS e conectar as mecânicas de habilidade,
+ * fadiga da equipe e satisfação do paciente.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Multiplicadores e tempos de consulta provêm de balance.json e do sistema de fadiga em staff-fatigue-system.ts.
+ *
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts,
+ *          src/systems/satisfaction-system.ts, src/systems/staff-fatigue-system.ts
  * Conecta-se com: src/core/simulation.ts, src/ui/decision-modal.ts
  */
 
@@ -16,6 +26,7 @@ import { calculatePatientSatisfaction } from './satisfaction-system';
 import { getBestDoctorSkill } from './staff-system';
 import { consumeMedicationsForCase, calculatePatientConsultationRevenue } from './economy-system';
 import { checkHospitalProgression } from './progression-system';
+import { deductStaffEnergyOnConsultation } from './staff-fatigue-system';
 
 const AUTO_TREATMENT_BASE_SEC = 3.5;
 const AUTO_TREATMENT_MIN_SEC = 1.5;
@@ -74,6 +85,13 @@ function calculateAutoTreatmentDuration(state: GameState, patient: PatientInstan
   const hasStaffRoom = Array.from(state.rooms.values()).some((r) => r.typeId === 'staff_room');
   if (hasStaffRoom) {
     duration *= BALANCE.sectors.staffRoomSpeedMultiplier;
+  }
+
+  const isTired = Array.from(state.staff.values()).some(
+    (s) => (s.roleId === 'doctor' || s.roleId === 'nurse') && (s.energy ?? BALANCE.fatigue.energyInitial) < BALANCE.fatigue.tiredThreshold
+  );
+  if (isTired) {
+    duration *= 1 + BALANCE.fatigue.tiredSpeedPenalty;
   }
 
   return duration;
@@ -256,6 +274,7 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): { 
   const result = calculatePatientConsultationRevenue(state, baseRevenue);
   state.cash += result.amount;
   state.stats.treatedCount += 1;
+  deductStaffEnergyOnConsultation(state);
   checkHospitalProgression(state);
   return result;
 }

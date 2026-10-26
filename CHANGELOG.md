@@ -2,6 +2,47 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.8.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.8.0 — Animações Médicas Procedurais nos Setores, Sistema de Cansaço e Sala de Descanso, Calibragem Oficial do balance.json, Clima Sazonal e Expansão para 6 Idiomas
+- **PARTE 1: Animações Médicas Procedurais nos Setores & Clima Sazonal (`src/render/medical-animations.ts` & `src/render/weather-view.ts`)**:
+  - **Vida Visual aos Setores em Atendimento (`WORKING` / `in_consultation`)**:
+    - *Consultório e Triagem*: prancheta animada e micro-ícones flutuantes suaves (`🩺`, `📋`, `❤️`).
+    - *Sala de Raio-X (`xray`)*: luz vermelha de advertência na porta, feixe de varredura azul-celeste luminoso (1,5s) e negatoscópio iluminado na parede.
+    - *Laboratório (`laboratory`)*: centrífuga giratória na bancada e tubos de ensaio fluorescentes.
+    - *Centro Cirúrgico (`surgery`), Trauma, Emergência e UTI*: cone de luz do foco cirúrgico de teto sobre a mesa de cirurgia e traçado acelerado de ECG no monitor multiparamétrico.
+    - *Maternidade (`maternity`)*: partículas estelares azuis e cor-de-rosa em volta do berço com ícone celebratório `👶`.
+    - *Vacinação (`vaccination`) e Curativo (`wound_care`)*: selos visuais procedurais `💉 Imunizado!` e `🩹 Curativo concluído!`.
+  - **Clima Sazonal Sincronizado com Eventos (`weather-view.ts`)**:
+    - *Chuva / Dengue / Inverno*: gotas de chuva diagonais suaves em `PIXI.Graphics` e poças reflexivas no asfalto externo.
+    - *Onda de Calor / Verão*: atmosfera ensolarada dourada vibrante.
+    - *Carnaval / Feriado*: bandeirolas festivas coloridas nos postes da avenida externa.
+- **PARTE 2: Sistema de Energia/Cansaço da Equipe e Sala de Descanso (`src/systems/staff-fatigue-system.ts` & `src/ui/staff-modal.ts`)**:
+  - **Barra de Energia por Profissional (`energy: 0 a 100%`)**: dedução contínua de 8% por consulta concluída (`lossPerPatient`).
+  - **Impacto no Desempenho Clínico**:
+    - `energy < 40%`: equipe cansada exibe ícone `💤` / `☕`, sofre penalidade de 25% na velocidade de atendimento e dispara conselho preventivo de gestão.
+    - `energy < 35%`: roteamento automático para Sala de Descanso (`staff_room`), onde o funcionário descansa por 8s restaurando 100% de energia.
+  - **Gestão na Interface de Equipe**: barra de progresso de energia verde/âmbar no modal `👥 Equipe` e botão interativo `"☕ Dar Pausa / Energizar Equipe (R$ 500)"`.
+- **PARTE 3: Calibragem Matemática Estrita em `balance.json` e 4 Fórmulas Puras (`src/utils/formulas.ts`)**:
+  - Eliminação de números mágicos: leitura integral dos parâmetros de `src/data/balance.json` (`dayDurationSec: 60`, `startingCash: 100000`, `baseIntervalSec: 15`, `baseTimeSec: 20`, `patienceSec: 90`, `skillReductionPerLevel: 0.05`).
+  - Implementação das 4 fórmulas oficiais do GDD com funções puras e determinísticas:
+    - $T_{atend} = T_{base} \times (1 - 0.05 \times (H - 1))$
+    - $S = \text{clamp}(100 - 20 \times \frac{T_{espera}}{T_{paciencia}} - 15 \times N_{erros}, 0, 100)$
+    - $R_{dia+1} = \text{clamp}(R_{dia} + 0.1 \times (S_{media} - R_{dia}), 0, 100)$
+    - $\lambda = \lambda_{base} \times (1 + 0.1 \times N_{setores})$
+- **PARTE 4: Internacionalização Completa para os 6 Idiomas do GDD (`src/i18n/`)**:
+  - Suporte completo a **6 idiomas**: Português (`pt`), Espanhol (`es`), Inglês (`en`), Francês (`fr`), Alemão (`de`) e Chinês Simplificado (`zh`).
+  - **Paridade Absoluta de 100%**: 149 chaves idênticas em todos os 6 arquivos JSON.
+  - Glossário com explicação das siglas brasileiras (`SUS`, `UBS`, `UPA`) adaptado para cada idioma.
+  - Aplicação automática da pilha de fontes de sistema para Chinês (`system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif`).
+  - Seletores ergonômicos com botões `🇫🇷 FR`, `🇩🇪 DE` e `🇨🇳 中文` com `truncate` e `min-w-0` na Tela Inicial e Configurações.
+- **PARTE 5: Testes Automatizados (Vitest) e Orçamento de Desempenho**:
+  - Nova suíte `tests/fatigue-weather-balance-and-6langs.test.ts` com 18 testes automatizados.
+  - **100% dos testes aprovados** (188 testes em 22 suítes).
+  - Pacote final compilado em **1.43 MB**, mantendo a alta velocidade de carregamento muito abaixo do teto de 5.00 MB.
+
 ## [1.7.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

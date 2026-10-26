@@ -151,6 +151,15 @@ export interface GameBalanceConfig {
     managerUpkeepReductionPerSkill: number;
     managerNegotiationBonusPerSkill: number;
   };
+  fatigue: {
+    energyInitial: number;
+    lossPerPatient: number;
+    tiredThreshold: number;
+    restThreshold: number;
+    tiredSpeedPenalty: number;
+    breakDurationSec: number;
+    coffeeBoostCost: number;
+  };
 }
 
 export interface MixedEconomyPlan {

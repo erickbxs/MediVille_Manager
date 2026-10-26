@@ -116,8 +116,17 @@ export async function setLanguage(lang: SupportedLocale): Promise<void> {
   activeDictionary = await loadDictionary(lang);
   currentLocale = lang;
 
-  if (typeof document !== 'undefined' && document.documentElement) {
-    document.documentElement.lang = lang;
+  if (typeof document !== 'undefined') {
+    if (document.documentElement) {
+      document.documentElement.lang = lang;
+    }
+    if (document.body?.style) {
+      if (lang === 'zh') {
+        document.body.style.fontFamily = "system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif";
+      } else {
+        document.body.style.fontFamily = '';
+      }
+    }
   }
 
   try {

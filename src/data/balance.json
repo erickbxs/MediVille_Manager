@@ -21,6 +21,8 @@
       "src/systems/staff-system.ts",
       "src/systems/advisor-system.ts",
       "src/ui/speed-control.ts",
+      "src/utils/formulas.ts",
+      "src/systems/staff-fatigue-system.ts",
       "tests/formulas.test.ts",
       "tests/simulation.test.ts"
     ]
@@ -205,6 +207,15 @@
     "janitorCleanlinessBonus": 10,
     "managerUpkeepReductionPerSkill": 0.1,
     "managerNegotiationBonusPerSkill": 0.15
+  },
+  "fatigue": {
+    "energyInitial": 100,
+    "lossPerPatient": 8,
+    "tiredThreshold": 40,
+    "restThreshold": 35,
+    "tiredSpeedPenalty": 0.25,
+    "breakDurationSec": 8,
+    "coffeeBoostCost": 500
   }
 }
 

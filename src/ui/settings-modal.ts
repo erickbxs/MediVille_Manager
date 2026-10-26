@@ -145,10 +145,10 @@ export class SettingsModal {
       { code: 'es', label: '🇪🇸 ES' },
       { code: 'fr', label: '🇫🇷 FR' },
       { code: 'de', label: '🇩🇪 DE' },
-      { code: 'zh', label: '🇨🇳 ZH' },
+      { code: 'zh', label: '🇨🇳 中文' },
     ];
     return list.map((item) => `
-      <button data-lang="${item.code}" class="btn-lang-choice p-2 rounded-xl border transition-all ${item.code === current ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+      <button data-lang="${item.code}" class="btn-lang-choice min-w-0 truncate px-2 py-2 rounded-xl border text-center transition-all ${item.code === current ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'}">
         ${item.label}
       </button>
     `).join('');

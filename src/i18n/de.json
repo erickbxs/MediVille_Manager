@@ -175,5 +175,20 @@
   "legal": {
     "title": "Nutzungsbedingungen & Datenschutz DSGVO",
     "susNotice": "Pädagogischer Hinweis: Krankenhaus-Management-Simulation."
+  },
+  "map": {
+    "expand": "Grundstück Erweitern",
+    "expandSuccess": "Krankenhausgelände erfolgreich erweitert (+4x4)!",
+    "nextTier": "Nächste Erweiterung: {cols}x{rows}"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen"
+  },
+  "glossary": {
+    "sus": "SUS — Brasilianisches Einheitliches Gesundheitssystem (Universelle Gesundheitsversorgung)",
+    "ubs": "UBS — Primäres Gesundheitszentrum (Basis- und Präventivversorgung)",
+    "upa": "UPA 24h — 24-Stunden-Notfallstation (Akutversorgung)"
   }
 }

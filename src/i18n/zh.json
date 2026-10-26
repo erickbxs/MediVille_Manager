@@ -175,5 +175,20 @@
   "legal": {
     "title": "使用条款与隐私政策",
     "susNotice": "教育性声明：本游戏为公共卫生医疗管理模拟，不代表真实医疗急救诊断建议。"
+  },
+  "map": {
+    "expand": "扩建地块",
+    "expandSuccess": "医院院区成功扩建 (+4x4)！",
+    "nextTier": "下一次扩建: {cols}x{rows}"
+  },
+  "common": {
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭"
+  },
+  "glossary": {
+    "sus": "SUS — 巴西全民统一医疗系统 (Sistema Único de Saúde)",
+    "ubs": "UBS — 基层社区卫生站 (Unidade Básica de Saúde)",
+    "upa": "UPA 24h — 24小时急诊医疗中心 (Unidade de Pronto Atendimento)"
   }
 }

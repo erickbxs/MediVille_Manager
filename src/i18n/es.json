@@ -192,5 +192,10 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "close": "Cerrar"
+  },
+  "glossary": {
+    "sus": "SUS — Sistema Único de Salud (Sanidad pública universal de Brasil)",
+    "ubs": "UBS — Unidad Básica de Salud (Atención primaria y preventiva)",
+    "upa": "UPA 24h — Unidad de Pronta Atención (Urgencias y emergencias)"
   }
 }

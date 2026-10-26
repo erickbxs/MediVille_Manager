@@ -192,5 +192,10 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "close": "Fechar"
+  },
+  "glossary": {
+    "sus": "SUS — Sistema Único de Saúde (Saúde pública universal do Brasil)",
+    "ubs": "UBS — Unidade Básica de Saúde (Atenção primária e preventiva)",
+    "upa": "UPA 24h — Unidade de Pronto Atendimento (Urgência e emergência)"
   }
 }
