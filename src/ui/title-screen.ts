@@ -91,7 +91,7 @@ export class TitleScreen {
           
           <div class="flex items-center justify-between">
             <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-500/10 text-blue-600 dark:text-blue-400">
-              v1.8.0 • SUS Tycoon
+              v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.9.0'} • SUS Tycoon
             </span>
             <div class="flex items-center gap-1">
               ${this.renderLangFlags(currentLang)}

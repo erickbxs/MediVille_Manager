@@ -9,3 +9,4 @@ description: Regras arquiteturais e de código limpo obrigatórias em todas as t
 - A simulação (`src/core/`, `src/systems/`) deve permanecer 100% separada do desenho (`src/render/`, `src/ui/`) comunicando-se via `EventBus`.
 - Nunca escreva strings visíveis ao usuário fixas no código: use sempre `t('chave')` do sistema `i18n` (`pt.json`, `es.json`, `en.json`).
 - Sempre rode `npm run verify` ao finalizar qualquer alteração e corrija todos os erros antes de entregar.
+- Ao atualizar a versão semântica ou concluir entregas de release, siga obrigatoriamente a Skill `release-e-deploy-web` executando `npm run sync:version`, deploy no Cloudflare Pages (`wrangler pages deploy dist`) e commit/push no Git.

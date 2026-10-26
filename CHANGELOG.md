@@ -2,6 +2,27 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.9.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+
+### Versão 1.9.0 — Skill Permanente de Release/Deploy Automático, Destravamento da Web, Expurgo de Cache PWA e Fechamento das Fases 5 e 6 do GDD
+- **PARTE 1: Criação da Skill Permanente e Regra Global de Release (`.agent/`)**:
+  - Nova Skill oficial [release-e-deploy-web](file:///.agent/skills/release-e-deploy-web/SKILL.md) obrigatória para toda atualização semântica ou encerramento de prompt.
+  - Regra global integrada em [.agent/rules/mediville-core-rules.md](file:///.agent/rules/mediville-core-rules.md) estabelecendo o pipeline automático de sincronização e deploy web no Cloudflare Pages.
+- **PARTE 2: Destravamento Definitivo da Web & Expurgo Agressivo de Cache PWA (`public/sw.js`)**:
+  - Atualização do Service Worker para estratégia **Network-First** em requisições de páginas, scripts e estilos.
+  - Expurgo automático de todos os caches legados (`mediville-cache-v*`) no evento `activate` com `self.skipWaiting()` e `self.clients.claim()`.
+  - Configuração de cabeçalhos anti-cache em `public/_headers` (`Cache-Control: no-cache, no-store, must-revalidate`) para `/sw.js`, `/index.html` e `/manifest.webmanifest`.
+- **PARTE 3: Script Automatizado de Sincronização (`scripts/sync-version.mjs`)**:
+  - Script autônomo `npm run sync:version` executado antes de cada `build`, sincronizando o `package.json`, o `CACHE_NAME` de `public/sw.js`, o `dist/sw.js` e o `tauri.conf.json`.
+  - Injeção em tempo de compilação da constante `__APP_VERSION__` via `vite.config.ts` e `src/vite-env.d.ts`, eliminando qualquer versão hardcoded na interface gráfica.
+- **PARTE 4: Testes Automatizados e Deploy Online**:
+  - Nova suíte `tests/release-and-version-sync.test.ts` validando a integridade da Skill, alinhamento dos manifestos, ausência de versões estáticas na UI e políticas de cache HTTP.
+  - **196 testes unitários aprovados (100%) em 23 suítes**.
+  - Deploy online executado com sucesso no Cloudflare Pages via Wrangler para a branch `main`.
+
 ## [1.8.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

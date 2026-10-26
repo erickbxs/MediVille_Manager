@@ -6,22 +6,25 @@
       "tsconfig.json",
       "eslint.config.js",
       "wrangler.toml",
-      "scripts/check-bundle-size.mjs"
+      "scripts/check-bundle-size.mjs",
+      "scripts/sync-version.mjs",
+      "public/sw.js"
     ]
   },
   "name": "mediville-manager",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "build": "tsc --noEmit && vite build && node scripts/check-bundle-size.mjs",
+    "sync:version": "node scripts/sync-version.mjs",
+    "build": "npm run sync:version && tsc --noEmit && vite build && node scripts/check-bundle-size.mjs",
     "preview": "vite preview --host",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
-    "deploy": "npm run verify && wrangler pages deploy dist --project-name=mediville-manager --branch=master"
+    "deploy": "npm run verify && wrangler pages deploy dist --project-name=mediville-manager --branch=main"
   },
   "dependencies": {
     "pixi.js": "^8.22.0"

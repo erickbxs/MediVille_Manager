@@ -270,7 +270,8 @@ describe('Prompt 15: Segurança, Privacidade e Multiplataforma', () => {
 
     const config = JSON.parse(fs.readFileSync(tauriPath, 'utf-8'));
     expect(config.build.frontendDist).toBe('dist');
-    expect(config.version).toBe('1.4.0');
+    const pkg = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'));
+    expect(config.version).toBe(pkg.version);
   });
 
   it('capacitor.config.ts deve estar configurado para mobile apontando para dist', () => {
