@@ -1,17 +1,38 @@
 /**
  * Arquivo: src/ui/decision-modal.ts
- * O que faz: Exibe o modal da ficha clínica do paciente para tomada de decisão médica pelo jogador, com feedback educativo imediato.
- * Para que foi criado: Cumprir o pilar central de micro-aprendizado do GDD com condutas reais do SUS/RENAME e explicações curtas.
- * Como modificar/debugar: Ajuste fontes e textos em src/data/cases.json e pt.json.
- * Importa: src/entities/patient.ts, src/core/simulation.ts
- * Conecta-se com: src/main.ts
+ *
+ * 1. O que este arquivo faz?
+ * Exibe o modal da ficha clínica do paciente para tomada de decisão médica pelo jogador,
+ * com feedback educativo imediato e compra rápida de medicamento em falta com 1 clique (Lei de Tesler).
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir o pilar de micro-aprendizado do GDD com condutas reais do SUS/RENAME e ergonomia tátil sem atrito.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * O catálogo de condutas provém de src/data/cases.json e a verificação de estoque utiliza findRelevantMedication e buyMedicationBatch.
+ *
+ * Importa: src/entities/patient.ts, src/core/simulation.ts, src/systems/consultation-system.ts, src/core/config.ts, src/systems/economy-system.ts, src/core/event-bus.ts
+ * Conecta-se com: src/main.ts, tests/ux-20-laws-and-aesthetics.test.ts
  */
 
 import type { PatientInstance } from '../entities/patient';
 import type { HospitalSimulation } from '../core/simulation';
 import { getNextPendingDecision, finishPatientDecision } from '../systems/consultation-system';
-
+import { PHARMACY_CATALOG, type RenameMedication } from '../core/config';
+import { buyMedicationBatch } from '../systems/economy-system';
 import { globalBus } from '../core/event-bus';
+
+export function findRelevantMedication(conductText: string, caseName = ''): RenameMedication {
+  const norm = (conductText + ' ' + caseName).toLowerCase();
+  for (const med of PHARMACY_CATALOG.medications) {
+    const medKey = med.id.split('-')[0] ?? '';
+    const namePart = med.genericName.toLowerCase().split(' ')[0] ?? '';
+    if (norm.includes(medKey) || (namePart.length > 3 && norm.includes(namePart))) {
+      return med;
+    }
+  }
+  return PHARMACY_CATALOG.medications[0]!;
+}
 
 export class DecisionModal {
   private container: HTMLElement;
@@ -29,9 +50,11 @@ export class DecisionModal {
     this.currentPatient = patient;
     const pCase = patient.clinicalCase;
     const def = pCase.definition;
+    const med = findRelevantMedication(def.suggestedConduct.text, def.name);
+    const stock = this.simulation.state.pharmacyStock[med.id] ?? 0;
 
     const optionsHtml = pCase.conductOptions.map((opt) => `
-      <button data-conduct-id="${opt.id}" class="conduct-btn w-full min-h-[48px] text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-slate-700/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-100 active:scale-[0.99]">
+      <button data-conduct-id="${opt.id}" class="conduct-btn btn-interactive w-full min-h-[48px] text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-slate-700/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-100 active:scale-[0.99]">
         ${opt.text}
       </button>
     `).join('');
@@ -63,6 +86,11 @@ export class DecisionModal {
               </div>
             ` : ''}
 
+            <!-- Lei de Tesler: Status do medicamento RENAME e compra com 1 clique -->
+            <div id="med-stock-container">
+              ${this.renderMedStockBanner(med, stock)}
+            </div>
+
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 block">Selecione a Conduta Médica:</span>
               <div id="options-container" class="space-y-2.5">${optionsHtml}</div>
@@ -80,6 +108,48 @@ export class DecisionModal {
       </div>
     `;
     this.bindOptionClicks();
+    this.bindQuickBuyMed(med);
+  }
+
+  private renderMedStockBanner(med: RenameMedication, currentStock: number): string {
+    const inStock = currentStock > 0;
+    const bannerBg = inStock
+      ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
+      : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200';
+
+    return `
+      <div class="p-3.5 rounded-2xl border text-xs font-medium flex flex-wrap items-center justify-between gap-2 ${bannerBg}">
+        <div class="flex items-center gap-2">
+          <span class="text-base">💊</span>
+          <div>
+            <span class="font-bold">${med.genericName}</span>:
+            <span>${inStock ? `✅ Em estoque: ${currentStock} un` : `⚠️ Sem estoque — Comprar 1 lote agora`}</span>
+          </div>
+        </div>
+        ${!inStock ? `
+          <button id="btn-quick-buy-med" data-med-id="${med.id}" class="btn-interactive min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all active:scale-95 shadow-sm text-xs">
+            Comprar Lote (${med.batchSize} un por R$ ${med.batchCost})
+          </button>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  private bindQuickBuyMed(med: RenameMedication): void {
+    const btn = document.getElementById('btn-quick-buy-med');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const res = buyMedicationBatch(this.simulation.state, med.id);
+      const container = document.getElementById('med-stock-container');
+      if (res.success && container) {
+        const newStock = this.simulation.state.pharmacyStock[med.id] ?? 0;
+        container.innerHTML = this.renderMedStockBanner(med, newStock);
+        this.bindQuickBuyMed(med);
+      } else if (!res.success) {
+        alert(res.error ?? 'Saldo insuficiente para adquirir lote.');
+      }
+    });
   }
 
   private close(): void {

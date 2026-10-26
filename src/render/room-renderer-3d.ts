@@ -208,7 +208,9 @@ export class RoomRenderer3D {
     const door = getDoorPosition(r, rotation);
     const style = FLOOR_STYLES[room.definition.id] ?? { base: 0xf8fafc, line: 0xe2e8f0, tile: 24 };
 
-    g.rect(r.x + 3, r.y + 4, r.w, r.h).fill({ color: 0x0f172a, alpha: 0.12 });
+    // Sombra de contato suave externa (Ambient Occlusion)
+    g.roundRect(r.x + 2, r.y + 3, r.w, r.h, 4).fill({ color: 0x0f172a, alpha: 0.14 });
+    g.roundRect(r.x + 4, r.y + 6, r.w - 2, r.h - 2, 6).fill({ color: 0x0f172a, alpha: 0.08 });
     drawFloorTiles(g, r, style);
     drawFloorDetails(g, room.definition.id, r, door);
     drawWalls(g, r, door, hexToNumber(room.definition.color));

@@ -21,6 +21,7 @@ import { globalBus } from '../core/event-bus';
 import { soundSystem } from '../core/sound-system';
 import { musicSystem } from '../core/music-system';
 import { t } from '../i18n/i18n';
+import { renderLevelProgressionHtml } from './progression-bar';
 
 export interface HudCallbacks {
   onOpenStaff?: () => void;
@@ -64,42 +65,56 @@ export class HospitalHUD {
   }
 
   private renderInitial(): void {
+    const state = this.simulation.state;
     this.container.innerHTML = `
-      <header class="pointer-events-auto relative w-full max-w-3xl mx-auto">
-        <!-- Pílula Única Ultra-Compacta (48px de alto) -->
-        <div class="h-12 px-3 sm:px-4 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-slate-800 dark:text-slate-100 text-xs font-bold gap-2">
-          
-          <div class="flex items-center gap-1.5 shrink-0">
-            <span class="text-base">🏥</span>
-            <span id="hud-unit-level" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400">UBS</span>
+      <header class="pointer-events-auto relative w-full max-w-5xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+        
+        <!-- Cápsula Esquerda: Economia e Reputação -->
+        <div class="h-11 sm:h-12 px-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 text-xs font-bold shrink-0">
+          <div class="flex items-center gap-1">
+            <span class="text-sm">💰</span>
             <span id="hud-cash" class="tabular-nums text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400">R$ 100k</span>
           </div>
+          <div class="w-px h-5 bg-slate-200 dark:bg-slate-700"></div>
+          <span id="hud-reputation" class="tabular-nums flex items-center gap-0.5 text-amber-500 font-extrabold text-xs">⭐ 50%</span>
+          <span id="hud-pharmacy-pill" class="tabular-nums hidden xs:flex items-center gap-1 text-slate-600 dark:text-slate-300 text-xs">💊 <span id="hud-pharmacy-stock" class="tabular-nums">0</span></span>
+        </div>
 
-          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-            <span id="hud-reputation" class="tabular-nums flex items-center gap-0.5 text-amber-500 font-extrabold">⭐ 50%</span>
-            <span id="hud-pharmacy-pill" class="tabular-nums flex items-center gap-1 text-slate-600 dark:text-slate-300">💊 <span id="hud-pharmacy-stock" class="tabular-nums">0</span></span>
-            <span id="hud-clock-pill" class="tabular-nums hidden xs:inline-block px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Dia 1 • 1x</span>
+        <!-- Cápsula Central: Porte da Unidade e Barra de Progresso do Próximo Nível (Zeigarnik) -->
+        <div id="hud-level-capsule" class="h-11 sm:h-12 px-2 sm:px-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1.5 shrink-0">
+          ${renderLevelProgressionHtml(state)}
+        </div>
+
+        <!-- Cápsula Direita: Dia, Turno, Controles de Tempo e Ações Rápidas -->
+        <div class="h-11 sm:h-12 px-2 sm:px-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1 text-xs font-bold shrink-0 ml-auto sm:ml-0">
+          <span id="hud-clock-pill" class="tabular-nums px-2 py-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-extrabold flex items-center gap-1">
+            <span id="hud-day-shift">☀️</span>
+            <span>Dia 1</span>
+          </span>
+
+          <!-- Grupo Conectado de Velocidade -->
+          <div class="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl">
+            <button id="btn-quick-pause" title="Pausar / Retomar" class="min-w-[32px] min-h-[32px] rounded-lg flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">⏸️</button>
+            <button id="btn-1x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">1x</button>
+            <button id="btn-2x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">2x</button>
+            <button id="btn-3x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">3x</button>
           </div>
 
-          <div class="flex items-center gap-1 shrink-0">
-            <button id="btn-topbar-expand-map" title="${t('map.expand') || 'Expandir Mapa (+4x4)'}" class="min-h-[36px] px-2.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 flex items-center gap-1 text-[11px] font-black active:scale-95 shadow-sm">
-              <span>📐</span>
-              <span class="hidden sm:inline">+Mapa</span>
-            </button>
-            <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
-              <span id="btn-toggle-music-icon">${musicSystem.isMuted() ? '🔇' : '🎵'}</span>
-              <span id="btn-toggle-music-indicator" class="${musicSystem.isMuted() ? 'hidden' : ''} absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            </button>
-            <button id="btn-toggle-sound" title="Ligar / Desligar Efeitos Sonoros" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
-              ${soundSystem.isMuted() ? '🔇' : '🔊'}
-            </button>
-            <button id="btn-toggle-details" title="Ver detalhes financeiros e controles" class="min-h-[36px] px-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-1 text-[11px] font-bold active:scale-95">
-              <span>▾ Detalhes</span>
-            </button>
-            <button id="btn-quick-pause" title="Pausar / Retomar" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
-              ⏸️
-            </button>
-          </div>
+          <!-- Ações Rápidas -->
+          <button id="btn-topbar-expand-map" title="${t('map.expand') || 'Expandir Mapa (+4x4)'}" class="min-h-[32px] px-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 flex items-center gap-1 text-[11px] font-black active:scale-95 shadow-sm">
+            <span>📐</span>
+            <span class="hidden md:inline">+Mapa</span>
+          </button>
+          <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[32px] min-h-[32px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
+            <span id="btn-toggle-music-icon">${musicSystem.isMuted() ? '🔇' : '🎵'}</span>
+            <span id="btn-toggle-music-indicator" class="${musicSystem.isMuted() ? 'hidden' : ''} absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          </button>
+          <button id="btn-toggle-sound" title="Ligar / Desligar Som" class="min-w-[32px] min-h-[32px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
+            ${soundSystem.isMuted() ? '🔇' : '🔊'}
+          </button>
+          <button id="btn-toggle-details" title="Detalhes do Hospital" class="min-h-[32px] px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 text-[11px] font-bold active:scale-95">
+            <span>▾</span>
+          </button>
         </div>
 
         <!-- Painel Flutuante Colapsável de Detalhes -->
@@ -123,7 +138,6 @@ export class HospitalHUD {
             </div>
           </div>
 
-
           <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800 gap-2 flex-wrap">
             <div class="flex items-center gap-2">
               <button id="btn-request-grant" class="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold flex items-center gap-1.5 transition-all active:scale-95">
@@ -135,11 +149,6 @@ export class HospitalHUD {
               <button id="btn-hud-goals" class="min-h-[44px] px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-1 transition-all active:scale-95">
                 <span>🏆 Metas</span>
               </button>
-            </div>
-            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-              <button id="btn-1x" class="min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold">1x</button>
-              <button id="btn-2x" class="min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold">2x</button>
-              <button id="btn-3x" class="min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold">3x</button>
             </div>
             <button id="btn-open-settings" class="min-w-[44px] min-h-[44px] px-3 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold">
               ⚙️ Ajustes
@@ -232,8 +241,9 @@ export class HospitalHUD {
 
     const clockPill = document.getElementById('hud-clock-pill');
     if (clockPill) {
+      const shiftIcon = this.simulation.state.dayTimeSec < 20 ? '☀️' : this.simulation.state.dayTimeSec < 45 ? '🌤️' : '🌙';
       const spdText = speed === 0 ? '⏸️' : `${speed}x`;
-      clockPill.textContent = `Dia ${this.simulation.state.day} • ${spdText}`;
+      clockPill.innerHTML = `<span>${shiftIcon}</span><span>Dia ${this.simulation.state.day} • ${spdText}</span>`;
     }
 
     const map: Record<string, number> = { 'btn-1x': 1, 'btn-2x': 2, 'btn-3x': 3 };
@@ -241,8 +251,8 @@ export class HospitalHUD {
       const btn = document.getElementById(id);
       if (!btn) continue;
       btn.className = speed === btnSpeed
-        ? 'min-w-[36px] min-h-[36px] px-2 rounded-lg font-extrabold bg-sky-500 text-white shadow-sm'
-        : 'min-w-[36px] min-h-[36px] px-2 rounded-lg font-bold text-slate-500 hover:text-slate-800';
+        ? 'min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-extrabold bg-sky-500 text-white shadow-sm text-[11px]'
+        : 'min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-slate-500 hover:text-slate-800 text-[11px]';
     }
   }
 
@@ -261,6 +271,9 @@ export class HospitalHUD {
 
     const staffEl = document.getElementById('hud-staff-count');
     if (staffEl) staffEl.textContent = `${state.staff.size} prof.`;
+
+    const levelCapsule = document.getElementById('hud-level-capsule');
+    if (levelCapsule) levelCapsule.innerHTML = renderLevelProgressionHtml(state);
 
     let totalStock = 0;
     let hasZero = false;

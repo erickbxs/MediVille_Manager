@@ -2,18 +2,17 @@
  * Arquivo: src/ui/build-controller.ts
  *
  * 1. O que este arquivo faz?
- * Gerencia o modo de construção ergonômica tátil "Tap, Nudge & Confirm" (BUILD_PREVIEW) para celulares, tablets e PCs.
- * Exibe a barra flutuante de precisão com D-Pad (ajuste fino 1 bloco por toque), rotação 90°, botão de confirmação e cancelamento.
+ * Gerencia o modo de construção ergonômica tátil "Tap, Nudge & Confirm" (BUILD_PREVIEW) para celulares, tablets e PCs,
+ * com feedback de erro em shake de 200ms na tentativa inválida (Lei de Murphy) e botões táteis confortáveis >= 48x48px (Lei de Fitts).
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Evitar posicionamento acidental de salas ao soltar o dedo em telas touch (Prompt 16 - Parte 1), permitindo micro-ajustes
- * milimétricos com botões confortáveis (>= 48x48px) e atalhos de teclado (WASD/Setas, R, Enter, Esc).
+ * Evitar posicionamento acidental e frustração do jogador em telas touch, permitindo micro-ajustes e prevenção tolerante de erros.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * O cálculo de posições e colisões passa pelo callback onValidate. Ajustes de layout da barra flutuante são feitos em renderBarHtml().
+ * O cálculo de posições e colisões passa pelo callback onValidate. Animação de erro e mensagens são controladas por triggerShakeError().
  *
- * Importa: src/core/config.ts, src/i18n/i18n.ts, src/state/game-state.ts
- * Conecta-se com: src/main.ts, src/ui/build-menu.ts, src/render/ghost-view.ts
+ * Importa: src/core/config.ts, src/i18n/i18n.ts
+ * Conecta-se com: src/main.ts, src/ui/build-menu.ts, src/render/ghost-view.ts, tests/ux-20-laws-and-aesthetics.test.ts
  */
 
 import type { RoomDefinition } from '../core/config';
@@ -96,8 +95,33 @@ export class BuildController {
     this.updateBarState();
   }
 
+  public triggerShakeError(message: string): void {
+    const bar = document.getElementById('build-confirm-bar');
+    if (!bar) return;
+    bar.classList.remove('animate-shake');
+    // Força reflow para reiniciar animação CSS de 200ms
+    void bar.offsetWidth;
+    bar.classList.add('animate-shake');
+
+    let badge = document.getElementById('build-error-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'build-error-badge';
+      badge.className = 'w-full text-center text-xs font-bold text-rose-300 bg-rose-950/90 border border-rose-700/80 px-3 py-1.5 rounded-xl transition-all';
+      bar.appendChild(badge);
+    }
+    badge.textContent = `⚠️ ${message}`;
+    setTimeout(() => {
+      bar.classList.remove('animate-shake');
+    }, 250);
+  }
+
   public confirm(): void {
-    if (!this.active || !this.def || !this.isValid) return;
+    if (!this.active || !this.def) return;
+    if (!this.isValid) {
+      this.triggerShakeError(t('build.invalid_space') || 'Espaço ocupado ou fora dos limites!');
+      return;
+    }
     this.callbacks.onConfirm(this.col, this.row, this.rotated, this.def, this.isMove, this.movingRoomId);
     this.close();
   }
@@ -160,33 +184,33 @@ export class BuildController {
     const confirmLabel = this.isMove ? '✅ Mover' : `✅ ${t('room.build') || 'Construir'}${costText}`;
     const btnConfirmClass = this.isValid
       ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/30'
-      : 'bg-slate-400 text-slate-200 opacity-50 cursor-not-allowed pointer-events-none';
+      : 'bg-slate-700/80 text-slate-300 border border-rose-500/50 hover:bg-slate-700/90 active:scale-95';
 
     return `
       <div id="build-confirm-bar" class="pointer-events-auto flex flex-wrap items-center justify-center gap-2 p-2 sm:p-3 rounded-3xl bg-slate-900/95 text-white shadow-2xl border border-slate-700/80 backdrop-blur-xl animate-in fade-in slide-in-from-bottom duration-150">
-        <!-- D-Pad Ajuste Fino -->
+        <!-- D-Pad Ajuste Fino (Lei de Fitts >= 48x48px) -->
         <div class="flex items-center gap-1 bg-slate-800/80 p-1 rounded-2xl border border-slate-700">
-          <button id="btn-nudge-left" title="Mover para esquerda" class="min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬅️</button>
+          <button id="btn-nudge-left" title="Mover para esquerda" class="btn-interactive min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬅️</button>
           <div class="flex flex-col gap-1">
-            <button id="btn-nudge-up" title="Mover para cima" class="min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬆️</button>
-            <button id="btn-nudge-down" title="Mover para baixo" class="min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬇️</button>
+            <button id="btn-nudge-up" title="Mover para cima" class="btn-interactive min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬆️</button>
+            <button id="btn-nudge-down" title="Mover para baixo" class="btn-interactive min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">⬇️</button>
           </div>
-          <button id="btn-nudge-right" title="Mover para direita" class="min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">➡️</button>
+          <button id="btn-nudge-right" title="Mover para direita" class="btn-interactive min-w-[48px] min-h-[48px] w-12 h-12 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 flex items-center justify-center text-lg font-bold">➡️</button>
         </div>
 
         <!-- Girar 90° -->
-        <button id="btn-preview-rotate" title="Girar 90° (R)" class="min-w-[48px] min-h-[48px] px-3 h-12 rounded-2xl bg-sky-600 hover:bg-sky-500 active:scale-95 flex items-center gap-1.5 font-bold text-sm shadow-md">
+        <button id="btn-preview-rotate" title="Girar 90° (R)" class="btn-interactive min-w-[48px] min-h-[48px] px-3 h-12 rounded-2xl bg-sky-600 hover:bg-sky-500 active:scale-95 flex items-center gap-1.5 font-bold text-sm shadow-md">
           <span class="text-xl">🔄</span>
           <span class="hidden sm:inline">Girar 90°</span>
         </button>
 
-        <!-- Confirmar Construção / Movimento -->
-        <button id="btn-preview-confirm" class="min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm active:scale-95 flex items-center gap-1.5 shadow-lg ${btnConfirmClass}">
+        <!-- Confirmar Construção / Movimento (Lei de Fitts & Murphy) -->
+        <button id="btn-preview-confirm" class="btn-interactive min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm active:scale-95 flex items-center gap-1.5 shadow-lg ${btnConfirmClass}">
           <span>${confirmLabel}</span>
         </button>
 
         <!-- Cancelar -->
-        <button id="btn-preview-cancel" title="Cancelar seleção (Esc)" class="min-w-[48px] min-h-[48px] px-3.5 h-12 rounded-2xl bg-rose-600/90 hover:bg-rose-500 active:scale-95 font-bold text-sm text-white flex items-center gap-1 shadow-md">
+        <button id="btn-preview-cancel" title="Cancelar seleção (Esc)" class="btn-interactive min-w-[48px] min-h-[48px] px-3.5 h-12 rounded-2xl bg-rose-600/90 hover:bg-rose-500 active:scale-95 font-bold text-sm text-white flex items-center gap-1 shadow-md">
           <span>❌</span>
           <span class="hidden sm:inline">${t('common.cancel') || 'Cancelar'}</span>
         </button>
@@ -209,10 +233,14 @@ export class BuildController {
     const confirmLabel = this.isMove ? '✅ Mover' : `✅ ${t('room.build') || 'Construir'}${costText}`;
     confirmBtn.innerHTML = `<span>${confirmLabel}</span>`;
 
+    const badge = document.getElementById('build-error-badge');
     if (this.isValid) {
-      confirmBtn.className = 'min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm active:scale-95 flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/30';
+      if (badge && typeof badge.remove === 'function') {
+        badge.remove();
+      }
+      confirmBtn.className = 'btn-interactive min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm active:scale-95 flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/30';
     } else {
-      confirmBtn.className = 'min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm flex items-center gap-1.5 shadow-lg bg-slate-400 text-slate-200 opacity-50 cursor-not-allowed pointer-events-none';
+      confirmBtn.className = 'btn-interactive min-w-[48px] min-h-[48px] px-4 h-12 rounded-2xl font-black text-sm active:scale-95 flex items-center gap-1.5 shadow-lg bg-slate-700/80 text-slate-300 border border-rose-500/50 hover:bg-slate-700/90';
     }
   }
 

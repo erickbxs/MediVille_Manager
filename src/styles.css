@@ -44,3 +44,24 @@
   touch-action: none;
 }
 
+@keyframes shake-soft {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake-soft 0.2s ease-in-out;
+}
+
+/* Resposta tátil ultrarrápida (Doherty Threshold < 100ms) */
+.btn-interactive {
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-interactive:active {
+  transform: scale(0.95);
+}
+.btn-interactive:hover {
+  filter: brightness(1.05);
+}
+

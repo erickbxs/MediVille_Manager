@@ -3,16 +3,16 @@
  *
  * 1. O que este arquivo faz?
  * Renderiza o compêndio interativo da Enciclopédia Médica do SUS com os 150 casos clínicos da APS,
- * com busca reativa, medicamentos RENAME e rolagem horizontal ergonômica nas abas de especialidade.
+ * com busca reativa tolerante a acentos e maiúsculas/minúsculas (Lei de Postel) e rolagem horizontal ergonômica.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Garantir layout responsivo, filtros categorizados e retenção pedagógica com rolagem suave por roda, setas e botões.
+ * Garantir layout responsivo, busca amigável (Postel) e retenção pedagógica com rolagem suave por roda, setas e botões.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * O catálogo provém de src/data/cases.json e a rolagem horizontal utiliza enableHorizontalScroll de horizontal-scroll.ts.
+ * O catálogo provém de src/data/cases.json e a busca tolerante utiliza normalizeText().
  *
  * Importa: src/core/config.ts, src/systems/goals-system.ts, src/ui/horizontal-scroll.ts
- * Conecta-se com: src/ui/title-screen.ts, src/main.ts, src/ui/hud.ts
+ * Conecta-se com: src/ui/title-screen.ts, src/main.ts, src/ui/hud.ts, tests/ux-20-laws-and-aesthetics.test.ts
  */
 
 import { CASES_CATALOG, type ClinicalCaseDefinition } from '../core/config';
@@ -50,20 +50,31 @@ const CATEGORY_LIST: CategoryOption[] = [
   { id: 'orl_ophthalmology', label: 'Oftalmologia/ORL', keywords: ['oftalmo', 'orl', 'ouvido', 'olho', 'otite', 'cerume', 'terçol'] },
 ];
 
-function caseMatchesCategory(c: ClinicalCaseDefinition, cat: CategoryOption): boolean {
-  if (cat.id === 'all') return true;
-  const area = c.area.toLowerCase();
-  const name = c.name.toLowerCase();
-  return cat.keywords.some((kw) => area.includes(kw) || name.includes(kw));
+export function normalizeText(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
 }
 
-function caseMatchesSearch(c: ClinicalCaseDefinition, query: string): boolean {
+export function caseMatchesCategory(c: ClinicalCaseDefinition, cat: CategoryOption): boolean {
+  if (cat.id === 'all') return true;
+  const area = normalizeText(c.area);
+  const name = normalizeText(c.name);
+  return cat.keywords.some((kw) => {
+    const normKw = normalizeText(kw);
+    return area.includes(normKw) || name.includes(normKw);
+  });
+}
+
+export function caseMatchesSearch(c: ClinicalCaseDefinition, query: string): boolean {
   if (!query) return true;
-  const q = query.toLowerCase().trim();
-  const inName = c.name.toLowerCase().includes(q);
-  const inArea = c.area.toLowerCase().includes(q);
-  const inSymptoms = c.symptoms.some((s) => s.toLowerCase().includes(q));
-  const inConduct = c.suggestedConduct.text.toLowerCase().includes(q);
+  const q = normalizeText(query);
+  const inName = normalizeText(c.name).includes(q);
+  const inArea = normalizeText(c.area).includes(q);
+  const inSymptoms = c.symptoms.some((s) => normalizeText(s).includes(q));
+  const inConduct = normalizeText(c.suggestedConduct.text).includes(q);
   return inName || inArea || inSymptoms || inConduct;
 }
 

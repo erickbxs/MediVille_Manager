@@ -2,6 +2,44 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.7.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.7.0 — Overhaul Estético Premium & Refatoração de Interface Baseada nas 20 Leis de UI/UX
+- **PARTE 1: Design System Visual, Cores Semânticas e Micro-Interações (< 100ms)**:
+  - **Limiar de Doherty (< 100ms)**: botões, abas e cartões com classe `.btn-interactive` e respostas imediatas (`transition-all duration-100 active:scale-95 hover:brightness-105`).
+  - **Navalha de Occam & Carga Cognitiva**: eliminação de bordas pesadas e sombras excessivas em favor de superfícies *Glassmorphism* limpas (`bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-md rounded-2xl`).
+  - **Paleta Semântica Unificada**:
+    - Azul Institucional SUS (`#0284C7` / `sky-600`) para serviços clínicos, fichas e especialidades.
+    - Verde Esmeralda (`#059669` / `emerald-600`) para receitas, confirmações de obra, estoque disponível e alta médica.
+    - Âmbar Atenção (`#D97706` / `amber-600`) para desabastecimento, filas e alertas.
+    - Vermelho Coral (`#E11D48` / `rose-600`) para emergências, demolição e erros.
+  - **Conectividade Uniforme & Proximidade na Top Bar**:
+    - Cápsula Esquerda: `💰 Caixa` + `⭐ Reputação` + `💊 Estoque RENAME`.
+    - Cápsula Central: `🏥 Porte da Unidade (UBS/UPA/Hospital)` com `Barra de Progresso do Próximo Nível` (Zeigarnik + Gradiente de Meta).
+    - Cápsula Direita: `📅 Dia + Turno (☀️ Manhã / 🌤️ Tarde / 🌙 Noite)` + Controles de velocidade conectados `⏸ | 1x | 2x | 3x` + Ações rápidas `📐 +Mapa`, `🎵`, `🔊` e `▾ Detalhes`.
+- **PARTE 2: Arquitetura de Decisão e Ergonomia Tátil (Hick, Miller, Fitts, Posição Serial e Von Restorff)**:
+  - **Lei de Hick & Lei de Miller na Gaveta `🏗️ Obras`**: 4 pílulas de filtro rápido (`🏥 Base`, `🩺 Clínico`, `🔬 Exames & Leitos`, `🚨 Alta Complexidade`, mais `"Todas"`), agrupando as 20 salas em 3 a 7 opções confortáveis ($7 \pm 2$).
+  - **Lei de Postel (Tolerância de Entrada)**: busca inteligente na Enciclopédia via `normalizeText`, tolerante a maiúsculas, minúsculas e acentuação diacrítica.
+  - **Efeito de Posição Serial no Dock Inferior**: ações mais frequentes posicionadas nas extremidades:
+    - Início (Esquerda): `🏗️ Obras` e `🩺 Atender (N)`.
+    - Meio: `👥 Equipe`, `💊 Farmácia`, `📖 Enciclopédia`.
+    - Fim (Direita): `💰 Finanças` e `🎯 Centralizar`.
+  - **Efeito Von Restorff (Destaque por Isolamento)**: quando há pacientes aguardando conduta (`N > 0`), o botão `🩺 Atender (N)` ganha anel pulsante esmeralda brilhante (`ring-2 ring-emerald-500 animate-pulse bg-emerald-50 border-emerald-400`).
+- **PARTE 3: Psicologia de Engajamento, Prevenção de Erros e Estética 3D/2.5D**:
+  - **Efeito Zeigarnik & Gradiente de Meta (`progression-bar.ts`)**: evolução contínua da unidade hospitalar e dos protocolos dominados; quando o progresso atinge $\ge 75\%$, a barra ativa um gradiente dourado/esmeralda com brilho animado (`animate-pulse`).
+  - **Regra do Pico-Fim (Peak-End Rule)**:
+    - *No Pico*: ao dominar novo protocolo ou subir de nível hospitalar, acorde triunfante suave e selo de conquista elegante no canto direito.
+    - *No Fim do Turno Diário*: Resumo Rápido de Fim de Dia compacto no canto superior direito (`NotificationCenter.pushDailySummary`) exibindo pacientes salvos, caixa, bônus de metas e reputação, com fechamento automático em 5s ou 1 clique.
+  - **Lei de Tesler**: no modal de Caso Clínico (`DecisionModal`) e na Farmácia, destaque visual claro se o medicamento está disponível (`✅ Em estoque: X un`) ou em falta (`⚠️ Sem estoque — Comprar 1 lote agora`), permitindo adquirir o lote em 1 clique sem sair do atendimento.
+  - **Lei de Murphy**: tentativa de posicionar sala em local inválido dispara animação de *shake* suave de 200ms (`animate-shake`) com mensagem de orientação, sem cancelar a pré-visualização.
+  - **Upgrade Estético 2.5D/3D (`room-renderer-3d.ts`)**: sombreamento em dupla camada de oclusão de contato (*ambient occlusion*) sob fundações, móveis e paredes.
+- **PARTE 4: Testes Automatizados (Vitest) e Orçamento Técnico**:
+  - Nova suíte `tests/ux-20-laws-and-aesthetics.test.ts` cobrindo as 20 leis de UI/UX, filtros de Hick/Miller, busca tolerante de Postel, limiares de gradiente de meta ($\ge 75\%$) e dimensões ergonômicas táteis ($\ge 44\text{px}$ e $\ge 48\text{px}$).
+  - 100% dos 170 testes unitários aprovados em 21 arquivos.
+  - Pacote final compilado em **1.42 MB**, muito abaixo do orçamento máximo de 5.00 MB.
+
 ## [1.6.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

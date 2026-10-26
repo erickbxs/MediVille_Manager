@@ -2,18 +2,17 @@
  * Arquivo: src/ui/notification-center.ts
  *
  * 1. O que este arquivo faz?
- * Gerencia a pilha unificada de notificações e alertas de emergência no canto superior direito da tela ("Corner Toast Stack").
- * Oferece fechamento por botão ✕ (>= 44x44px), gesto de swipe-to-dismiss para mobile/tablet, botão "Limpar Tudo" e
- * auto-minimização de eventos ativos para selo circular pulsante após 4 segundos, garantindo zero pop-ups obstrutivos no centro.
+ * Gerencia a pilha unificada de notificações e alertas de emergência no canto superior direito da tela ("Corner Toast Stack"),
+ * incluindo o Resumo Rápido de Fim de Dia da Regra do Pico-Fim (Peak-End Rule) e auto-minimização para selo circular pulsante.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 4 do Prompt 17, liberando 100% da área útil do hospital e mapa 3D para o jogador sem interrupções centrais.
+ * Manter 100% da área útil do hospital livre de pop-ups obstrutivos e fornecer fechamento em 5s ou 1 clique.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * Notificações expiram com tempo configurado em pushToast(). O estado minimizado do evento ativo é controlado por isEventMinimized.
+ * O tempo de expiração é definido em pushToast e pushDailySummary. O evento diário é alimentado pelo barramento global.
  *
- * Importa: src/entities/event.ts, src/core/event-bus.ts
- * Conecta-se com: src/main.ts, src/ui/event-banner.ts
+ * Importa: src/entities/event.ts
+ * Conecta-se com: src/main.ts, src/ui/event-banner.ts, tests/ux-20-laws-and-aesthetics.test.ts
  */
 
 import type { ActiveEvent } from '../entities/event';
@@ -26,6 +25,14 @@ export interface ToastItem {
   timestamp: number;
 }
 
+export interface DailySummaryStats {
+  day: number;
+  patientsCured: number;
+  revenue: number;
+  goalBonus: number;
+  reputationDelta: number;
+}
+
 export class NotificationCenter {
   private container: HTMLElement;
   private toasts: ToastItem[] = [];
@@ -36,6 +43,22 @@ export class NotificationCenter {
 
   constructor(container: HTMLElement) {
     this.container = container;
+  }
+
+  public pushDailySummary(stats: DailySummaryStats): string {
+    const isRepPositive = stats.reputationDelta >= 0;
+    const content = `
+      <div class="space-y-1 text-left">
+        <div class="font-black text-xs text-amber-300">Resumo do Dia ${stats.day}</div>
+        <div class="text-[11px] text-slate-200">
+          <div>👥 Salvos: <strong class="text-emerald-400">${stats.patientsCured}</strong></div>
+          <div>💰 Caixa: <strong class="text-emerald-400">R$ ${stats.revenue.toLocaleString('pt-BR')}</strong></div>
+          ${stats.goalBonus > 0 ? `<div>🎯 Bônus: <strong class="text-amber-400">+R$ ${stats.goalBonus.toLocaleString('pt-BR')}</strong></div>` : ''}
+          <div>⭐ Reputação: <strong class="${isRepPositive ? 'text-emerald-400' : 'text-rose-400'}">${isRepPositive ? '+' : ''}${stats.reputationDelta}%</strong></div>
+        </div>
+      </div>
+    `;
+    return this.pushToast(content, 'success', '🌅');
   }
 
   public pushToast(text: string, type: ToastItem['type'] = 'info', icon?: string): string {

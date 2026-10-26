@@ -190,6 +190,7 @@ class MediVilleApp {
       onOpenStaff: () => this.staffModal.open(),
       onOpenPharmacy: () => this.pharmacyModal.open(),
       onOpenFinances: () => this.financesModal.open(),
+      onOpenEncyclopedia: () => this.encyclopediaModal.open(),
       onExpandMap: () => this.handleDirectMapExpansion(),
       getState: () => this.simulation.state,
     });
@@ -232,6 +233,30 @@ class MediVilleApp {
       onMove: (room) => this.startMovingExistingRoom(room),
       onRotate: (room) => this.rotateExistingRoom(room),
       onDemolish: (room) => this.demolishExistingRoom(room),
+    });
+
+    globalBus.on('day:end', (payload) => {
+      this.notificationCenter.pushDailySummary({
+        day: payload.day,
+        patientsCured: payload.patientsTreated,
+        revenue: payload.cash,
+        goalBonus: 0,
+        reputationDelta: 0,
+      });
+    });
+
+    globalBus.on('protocol:mastered', (payload) => {
+      soundSystem.playSuccess();
+      this.notificationCenter.pushToast(
+        `🏆 Protocolo Dominado: ${payload.diseaseName} (${payload.totalMastered} dominados)`,
+        'success',
+        '⭐'
+      );
+    });
+
+    globalBus.on('progression:level_up', (payload) => {
+      soundSystem.playSuccess();
+      this.notificationCenter.pushToast(`🎉 Unidade Hospitalar Evoluída para ${payload.name}!`, 'success', '🏥');
     });
   }
 
