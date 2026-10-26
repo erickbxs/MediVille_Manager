@@ -126,6 +126,8 @@ export class HospitalRenderer {
     globalBus.on('map:expanded', ({ newGridSize }: { newGridSize: number }) => {
       this.camera.setGridSize(newGridSize);
       this.gridView.updateSize(newGridSize);
+      this.cityEnv.updateGridSize(newGridSize);
+      urbanLifeSystem.updateGridSize(newGridSize);
       this.camera.fitMapToScreen();
     });
   }

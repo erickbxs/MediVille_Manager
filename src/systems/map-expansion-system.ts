@@ -2,18 +2,20 @@
  * Arquivo: src/systems/map-expansion-system.ts
  *
  * 1. O que este arquivo faz?
- * Gerencia o sistema de expansão progressiva paga do terreno hospitalar (12x12 -> 16x16 -> 20x20 -> 24x24),
- * calculando custos, validando saldo em caixa, atualizando o tamanho da grade no estado e emitindo o evento 'map:expanded'.
+ * Gerencia a expansão progressiva paga do terreno hospitalar (12x12 -> 16x16 -> 20x20 -> 24x24) com crescimento
+ * exclusivamente para trás (fundo do lote) e para as laterais, preservando a fachada frontal e a linha da rua
+ * sem sobreposição de asfalto, calculando custos, atualizando a grade e emitindo o evento 'map:expanded'.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 2 do Prompt 16, permitindo que hospitais em crescimento expandam seu espaço físico ordenadamente
- * pagando valores balanceados de investimento imobiliário sem perda de salas ou progresso.
+ * Cumprir a Parte 1 do Prompt 21, garantindo que o hospital jamais invada a avenida principal frontal
+ * e que os novos lotes construíveis surjam de forma realista atrás e aos lados da unidade de saúde.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * Para alterar custos ou tamanhos das etapas, ajuste a tabela EXPANSION_TIERS. Para verificar permissões, use canExpandMap().
+ * Use isTileOverlappingStreet() para validar colisões com a rua. Os custos e tamanhos estão em EXPANSION_TIERS.
  *
  * Importa: src/state/game-state.ts, src/core/event-bus.ts, src/systems/save-system.ts
- * Conecta-se com: src/ui/build-menu.ts, src/ui/finances-modal.ts, src/render/renderer.ts, src/systems/grid-system.ts
+ * Conecta-se com: src/ui/build-menu.ts, src/render/renderer.ts, src/render/city-environment.ts,
+ *                 src/render/map-expansion-handles.ts, src/systems/grid-system.ts
  */
 
 import type { GameState } from '../state/game-state';
@@ -29,6 +31,8 @@ export interface ExpansionOption {
 
 export const MIN_GRID_SIZE = 12;
 export const MAX_GRID_SIZE = 24;
+export const FRONT_STREET_ANCHOR = 'south';
+const LATERAL_EXPANSION_DIVISOR = 2;
 
 export type ExpansionTier = { nextSize: number; cost: number; title: string };
 
@@ -37,6 +41,14 @@ export const EXPANSION_TIERS: Record<number, ExpansionTier> = {
   16: { nextSize: 20, cost: 95000, title: 'Quadra Hospitalar (20x20)' },
   20: { nextSize: 24, cost: 180000, title: 'Complexo Metropolitano (24x24)' },
 };
+
+/**
+ * Validação estrita: verifica se um tile da grade ultrapassa os limites ou sobrepõe a rua frontal.
+ * A rua frontal localiza-se estritamente ao sul (row >= gridSize).
+ */
+export function isTileOverlappingStreet(col: number, row: number, gridSize: number = MIN_GRID_SIZE): boolean {
+  return row >= gridSize || row < 0 || col < 0 || col >= gridSize;
+}
 
 export function getCurrentGridSize(state: GameState): number {
   return state.gridSize ?? MIN_GRID_SIZE;
@@ -60,15 +72,31 @@ export function canExpandMap(state: GameState): boolean {
   return state.cash >= next.cost;
 }
 
+/**
+ * Expande o mapa hospitalar exclusivamente para trás (fundo) e laterais:
+ * - A borda frontal do terreno permanece na mesma distância da calçada e da rua.
+ * - As salas existentes são transladadas preservando a posição relativa da recepção e fachada frontal.
+ * - As novas linhas construíveis surgem atrás (norte) e aos lados (leste/oeste).
+ */
 export function expandMap(state: GameState): boolean {
   const next = getNextExpansion(state);
   if (!next || state.cash < next.cost) return false;
 
+  const oldSize = getCurrentGridSize(state);
+  const newSize = next.nextSize;
+  const deltaRow = newSize - oldSize;
+  const deltaCol = Math.floor((newSize - oldSize) / LATERAL_EXPANSION_DIVISOR);
+
   state.cash -= next.cost;
-  state.gridSize = next.nextSize;
+  state.gridSize = newSize;
+
+  for (const room of state.rooms.values()) {
+    room.row += deltaRow;
+    room.col += deltaCol;
+  }
 
   saveGameState(state);
-  globalBus.emit('map:expanded', { newGridSize: next.nextSize, cost: next.cost });
+  globalBus.emit('map:expanded', { newGridSize: newSize, cost: next.cost, deltaRow, deltaCol });
   globalBus.emit('cash:changed', { cash: state.cash, delta: -next.cost, reason: 'Expansão de Terreno Hospitalar' });
 
   return true;

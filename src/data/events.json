@@ -127,6 +127,28 @@
       "durationSec": 45,
       "arrivalMultiplier": 1.4,
       "reputationBonus": 5
+    },
+    {
+      "id": "dengue_taskforce",
+      "type": "seasonal",
+      "title": "Mutirão de Combate à Dengue",
+      "icon": "🦟🛡️",
+      "description": "Mobilização comunitária para eliminação de focos do mosquito e atendimento rápido a sintomáticos.",
+      "durationSec": 50,
+      "arrivalMultiplier": 1.6,
+      "preferredArea": "Viral",
+      "reputationBonus": 8
+    },
+    {
+      "id": "pink_october",
+      "type": "seasonal",
+      "title": "Campanha Outubro Rosa & Novembro Azul",
+      "icon": "🎗️🔬",
+      "description": "Exames preventivos de rastreamento com bonificação especial e engajamento da comunidade.",
+      "durationSec": 55,
+      "arrivalMultiplier": 1.5,
+      "preferredArea": "Clínica Geral",
+      "reputationBonus": 10
     }
   ]
 }

@@ -2,6 +2,29 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.10.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+
+### Versão 1.10.0 — Correção Direcional da Expansão do Terreno (Crescimento Exclusivo para Trás/Laterais sem Invadir a Rua), Vizinhança Urbana Rica em 2.5D/3D e Campanhas SUS
+- **PARTE 1: Correção Definitiva da Expansão do Mapa (`src/systems/map-expansion-system.ts` & `src/systems/grid-system.ts`)**:
+  - **Linha de Fachada Frontal Imutável (`FRONT_STREET_ANCHOR = 'south'`)**: A avenida frontal, calçadas, faixa de pedestres e baia do SAMU permanecem ancoradas de forma fixa, com garantia estrita de não invasão pelo hospital.
+  - **Crescimento Exclusivo para Trás (Norte) e Laterais (Leste/Oeste)**: Ao expandir de $N \times N$ para $(N+4) \times (N+4)$, as salas já construídas são transladadas preservando intacta a fachada da recepção rente à calçada frontal. As novas células construíveis surgem exclusivamente atrás e aos lados.
+  - **Placas de Expansão e Bloqueio de Invasão**: As placas interativas `➕ Expandir Terreno (+4x4)` surgem apenas na borda traseira (norte) e nas laterais. Removida qualquer alça do lado sul da rua. A função `isTileOverlappingStreet(col, row, gridSize)` impede qualquer sala fantasma ou colocação que sobreponha a rua.
+- **PARTE 2: Vizinhança Urbana em 4 Lados em 2.5D/3D (`src/render/city-environment.ts` & `src/systems/urban-life-system.ts`)**:
+  - **Lado Frontal (Sul)**: Avenida asfaltada dupla, calçadão, semáforo com temporizador e do outro lado da rua um quarteirão comercial completo: **Cafeteria / Bistrô 2.5D** com mesas e guarda-sóis coloridos, **Farmácia Popular Comunitária do SUS**, **Edifícios Residenciais/Comerciais** com janelas iluminadas ao entardecer, ponto de táxi com veículo amarelo e canteiros floridos.
+  - **Lado Esquerdo (Oeste)**: **Estacionamento do Hospital SUS** com vagas demarcadas em branco (incluindo vagas prioritárias para idosos/PCD e médicos), guarita com cancela automática e 4 a 6 carros voxel.
+  - **Lado Direito (Leste)**: **Jardim Terapêutico e Ciclovia** com pergolado de madeira, bancos de descanso, canteiros de flores, chafariz/fonte circular com água animada e ciclovia vermelha com bicicletário.
+  - **Fundo do Terreno (Norte)**: **Parque Municipal Arborizado** com bosque de árvores voxel em vários tons de verde, pista de cooper e quiosque, que recua dinamicamente a cada nível de expansão da grade (`16x16`, `20x20`, `24x24`).
+- **PARTE 3: Campanhas de Saúde Pública e Enquadramento em 3 Resoluções (`src/data/events.json` & `src/render/camera.ts`)**:
+  - Inclusão das campanhas oficiais do SUS: *Mutirão de Combate à Dengue* (`dengue_taskforce`) e *Outubro Rosa & Novembro Azul* (`pink_october`), com bônus de repasse e reputação municipal para hospitais equipados com Laboratório, Consultório, Vacinação e Triagem.
+  - Verificação e garantia de enquadramento do hospital e do bairro circundante nas 3 resoluções oficiais: Mobile (`375x667`), Tablet (`768x1024`) e Desktop (`1920x1080`).
+- **PARTE 4: Testes Automatizados e Deploy Online**:
+  - Nova suíte `tests/backward-expansion-and-urban-neighborhood.test.ts` cobrindo 8 cenários de expansão direcional, translação de salas, não invasão da rua frontal, dinâmica do bairro e enquadramento em 3 resoluções.
+  - Suíte total: **204 testes unitários e de integração aprovados (100%) em 24 arquivos de teste**.
+  - Pipeline de verificação `npm run verify` e release duplo no Cloudflare Pages para as branches `master` (produção) e `main`.
+
 ## [1.9.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

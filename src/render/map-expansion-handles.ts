@@ -2,15 +2,16 @@
  * Arquivo: src/render/map-expansion-handles.ts
  *
  * 1. O que este arquivo faz?
- * Renderiza faixas tracejadas de loteamento e placas/botões interativos clicáveis nas 4 bordas externas da grade do hospital,
- * permitindo ao jogador expandir o terreno (12x12 -> 16x16 -> 20x20 -> 24x24) com apenas 1 clique direto no canvas PixiJS.
+ * Renderiza a sinalização de agrimensura e placas interativas táteis de expansão do terreno hospitalar
+ * exclusivamente nas bordas traseira (norte) e laterais (leste/oeste), sem invadir ou sobrepor a rua frontal.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 3 do Prompt 17, tornando a expansão de terreno altamente visível e intuitiva tanto em touchscreens
- * quanto no mouse, eliminando a dependência de menus escondidos.
+ * Cumprir a Parte 1 do Prompt 21, garantindo que o jogador expanda o hospital intuitivamente para trás e lados
+ * com 1 clique direto no canvas PixiJS, sem nunca colocar placas na avenida principal.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * O cálculo das bordas usa gridSize e THEME.tileSize. A detecção de cliques usa eventMode = 'static' e repassa ao callback onExpand.
+ * O posicionamento das placas baseia-se em w e h da grade. A detecção de cliques usa eventMode = 'static'
+ * e repassa ao callback onExpand.
  *
  * Importa: pixi.js, src/render/theme-config.ts, src/systems/map-expansion-system.ts
  * Conecta-se com: src/render/renderer.ts, src/main.ts
@@ -66,39 +67,40 @@ export class MapExpansionHandles {
   private drawLotBorders(w: number, h: number, nextSize: number): void {
     const { tileSize } = THEME;
     const addedPixels = (nextSize - (w / tileSize)) * tileSize;
+    const lateralShift = addedPixels / 2;
     const offset = 4;
 
-    // Faixa tracejada amarela/verde do novo loteamento
-    this.graphics.rect(-offset, -offset, w + offset * 2 + addedPixels, h + offset * 2 + addedPixels)
+    // Faixa tracejada amarela/verde do novo loteamento expandindo PARA TRÁS (topo, y < 0) e LATERAIS
+    this.graphics.rect(-lateralShift - offset, -addedPixels - offset, w + addedPixels + offset * 2, h + addedPixels + offset * 2)
       .stroke({ color: 0xfacc15, width: 2, alpha: 0.65 });
 
-    // Cantoneiras estéticas de agrimensura
+    // Cantoneiras estéticas de agrimensura no topo e laterais
     const markerLen = 16;
-    const right = w + addedPixels;
-    const bottom = h + addedPixels;
+    const left = -lateralShift - offset;
+    const right = w + lateralShift + offset;
+    const top = -addedPixels - offset;
 
-    this.graphics.roundRect(right - markerLen, -offset - 4, markerLen + 8, markerLen + 8, 3)
+    this.graphics.roundRect(left - 4, top - 4, markerLen + 8, markerLen + 8, 3)
       .fill({ color: 0x10b981, alpha: 0.85 });
-    this.graphics.roundRect(right - markerLen, bottom - markerLen, markerLen + 8, markerLen + 8, 3)
-      .fill({ color: 0x10b981, alpha: 0.85 });
-    this.graphics.roundRect(-offset - 4, bottom - markerLen, markerLen + 8, markerLen + 8, 3)
+    this.graphics.roundRect(right - markerLen, top - 4, markerLen + 8, markerLen + 8, 3)
       .fill({ color: 0x10b981, alpha: 0.85 });
   }
 
-  private drawExpansionPill(w: number, h: number, tier: ExpansionTier): void {
-    const pillW = 210;
+  private drawExpansionPill(w: number, _h: number, tier: ExpansionTier): void {
+    const pillW = 230;
     const pillH = 34;
+    // Borda Traseira (Norte, acima de y = 0) - NUNCA na frente/sul da rua
     const pillX = w / 2 - pillW / 2;
-    const pillY = h + 14;
+    const pillY = -44;
 
-    // Placa interativa 3D de expansão
+    // Placa interativa 3D de expansão posicionada no fundo do terreno
     this.graphics.roundRect(pillX, pillY, pillW, pillH, 17)
       .fill({ color: 0x0f172a, alpha: 0.95 })
       .stroke({ color: 0x10b981, width: 2.5 });
 
     const costLabel = `R$ ${Math.round(tier.cost / 1000)}k`;
     const label = new Text({
-      text: `➕ Expandir (+4x4) — ${costLabel}`,
+      text: `➕ Expandir Lote (+4x4) — ${costLabel}`,
       style: {
         fontSize: 11,
         fontWeight: 'bold',

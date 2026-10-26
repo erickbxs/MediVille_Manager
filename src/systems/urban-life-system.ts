@@ -16,7 +16,6 @@
  * Conecta-se com: src/render/city-environment.ts, src/render/renderer.ts, src/main.ts
  */
 
-import { BALANCE } from '../core/config';
 
 export type UrbanNpcRole = 'pedestrian' | 'jogger' | 'dog_walker' | 'bench_sitter' | 'bus_waiter' | 'kiosk_customer';
 
@@ -42,18 +41,34 @@ const DOG_Y_OFFSET = 8;
 const BUS_Y_OFFSET = 4;
 const KIOSK_Y_OFFSET = 4;
 const DIVISION_FACTOR = 2;
+const DEFAULT_INITIAL_GRID = 12;
 
 export class UrbanLifeSystem {
   public citizens: UrbanCitizen[] = [];
   public trafficLightState: 'RED' | 'YELLOW' | 'GREEN' = 'GREEN';
   private trafficLightTimer = 0;
 
+  private currentGridSize = DEFAULT_INITIAL_GRID;
+
   constructor() {
-    this.initCitizens();
+    this.initCitizens(this.currentGridSize);
   }
 
-  private initCitizens(): void {
-    const sidewalkY = BALANCE.grid.rows * TILE_PX + SIDEWALK_BASE_OFFSET;
+  public updateGridSize(gridSize: number): void {
+    if (this.currentGridSize === gridSize) return;
+    this.currentGridSize = gridSize;
+    const sidewalkY = gridSize * TILE_PX + SIDEWALK_BASE_OFFSET;
+
+    for (const c of this.citizens) {
+      if (c.role === 'pedestrian' || c.role === 'dog_walker' || c.role === 'bus_waiter' || c.role === 'kiosk_customer') {
+        const offset = c.role === 'dog_walker' ? DOG_Y_OFFSET : (c.role === 'bus_waiter' ? BUS_Y_OFFSET : (c.role === 'kiosk_customer' ? KIOSK_Y_OFFSET : 0));
+        c.y = sidewalkY + offset;
+      }
+    }
+  }
+
+  private initCitizens(gridSize = 12): void {
+    const sidewalkY = gridSize * TILE_PX + SIDEWALK_BASE_OFFSET;
 
     // Pedestres e Corredores nas Calçadas e Parque
     this.citizens.push(
@@ -80,7 +95,7 @@ export class UrbanLifeSystem {
     this.citizens = [];
     this.trafficLightTimer = 0;
     this.trafficLightState = 'GREEN';
-    this.initCitizens();
+    this.initCitizens(this.currentGridSize);
   }
 
   public getCitizens(): UrbanCitizen[] {

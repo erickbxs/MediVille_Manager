@@ -1,15 +1,24 @@
 /**
  * Arquivo: src/systems/grid-system.ts
- * O que faz: Gerencia a grade hospitalar: posicionamento de salas, detecção de colisões, limites do terreno e remoção/demolição com reembolso.
- * Para que foi criado: Permitir que o jogador construa e expanda o hospital em grade livre conforme o GDD.
- * Como modificar/debugar: Caso precise de novas validações de colocação (ex: salas precisam de corredor), adicione em canPlaceRoom().
- * Importa: src/core/config.ts, src/entities/room.ts, src/state/game-state.ts
+ *
+ * 1. O que este arquivo faz?
+ * Gerencia a grade hospitalar: posicionamento de salas, detecção de colisões, limites do terreno,
+ * validação estrita anti-sobreposição com a rua frontal e remoção/demolição com reembolso.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Garantir construção livre e correta no hospital conforme o GDD, impedindo que salas invadam a avenida ou calçadas.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * canPlaceRoom() valida saldo, limites e ausência de colisão com outras salas e com a rua frontal.
+ *
+ * Importa: src/core/config.ts, src/entities/room.ts, src/state/game-state.ts, src/systems/map-expansion-system.ts
  * Conecta-se com: src/core/simulation.ts, src/render/ghost-view.ts, src/ui/build-menu.ts
  */
 
 import { BALANCE, ROOMS_CATALOG } from '../core/config';
 import { createRoomInstance, type RoomInstance } from '../entities/room';
 import type { GameState } from '../state/game-state';
+import { isTileOverlappingStreet } from './map-expansion-system';
 
 export function isWithinGrid(
   col: number,
@@ -47,6 +56,9 @@ export function canPlaceRoom(
   const maxGrid = state.gridSize ?? BALANCE.grid.cols;
 
   if (!isWithinGrid(col, row, width, height, maxGrid, maxGrid)) return false;
+  if (isTileOverlappingStreet(col, row, maxGrid) || isTileOverlappingStreet(col + width - 1, row + height - 1, maxGrid)) {
+    return false;
+  }
   if (state.cash < def.cost) return false;
 
   for (const room of state.rooms.values()) {
