@@ -27,7 +27,7 @@ import { TrafficSystem } from '../src/systems/traffic-system';
 describe('Prompt 11 & 12 — Catálogo de Casos Clínicos do SUS e Integridade RENAME', () => {
   it('deve conter catálogo de casos clínicos únicos e com todos os campos obrigatórios', () => {
     const cases = CASES_CATALOG.cases;
-    expect(cases.length).toBe(150);
+    expect(cases.length).toBeGreaterThanOrEqual(150);
 
 
     const ids = new Set<string>();

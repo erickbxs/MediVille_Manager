@@ -7,7 +7,7 @@
  * Conecta-se com: src/core/simulation.ts, src/ui/settings-modal.ts, src/main.ts
  */
 
-import { ROOMS_CATALOG, STAFF_CATALOG } from '../core/config';
+import { BALANCE, ROOMS_CATALOG, STAFF_CATALOG } from '../core/config';
 import type { GameState, HospitalStats, FinancialStats } from '../state/game-state';
 import type { RoomInstance } from '../entities/room';
 import type { StaffMember } from '../entities/staff';
@@ -74,6 +74,8 @@ export interface SerializedGameState {
   privateConsultationFee?: number;
   activeContracts?: string[];
   cleanlinessRating?: number;
+  gridSize?: number;
+  milestones?: string[];
 }
 
 function serializeRooms(rooms: Map<string, RoomInstance>): SerializedRoom[] {
@@ -110,6 +112,17 @@ function serializeProgressState(state: GameState) {
   };
 }
 
+function serializeCommercialState(state: GameState) {
+  return {
+    unitType: state.unitType,
+    privateConsultationFee: state.privateConsultationFee,
+    activeContracts: state.activeContracts ? [...state.activeContracts] : [],
+    cleanlinessRating: state.cleanlinessRating ?? DEFAULT_CLEANLINESS_RATING,
+    gridSize: state.gridSize ?? BALANCE.grid.cols,
+    milestones: state.milestones ? [...state.milestones] : [],
+  };
+}
+
 export function serializeGameState(state: GameState): SerializedGameState {
   return {
     version: 1,
@@ -137,10 +150,7 @@ export function serializeGameState(state: GameState): SerializedGameState {
     eventTimerSec: state.eventTimerSec,
     pharmacyStock: { ...state.pharmacyStock },
     finances: { ...state.finances },
-    unitType: state.unitType,
-    privateConsultationFee: state.privateConsultationFee,
-    activeContracts: state.activeContracts ? [...state.activeContracts] : [],
-    cleanlinessRating: state.cleanlinessRating ?? DEFAULT_CLEANLINESS_RATING,
+    ...serializeCommercialState(state),
     ...serializeProgressState(state),
   };
 }
@@ -239,6 +249,8 @@ export function deserializeGameState(data: SerializedGameState): GameState {
     eventTimerSec: data.eventTimerSec,
     pharmacyStock: data.pharmacyStock,
     finances: data.finances,
+    gridSize: data.gridSize ?? BALANCE.grid.cols,
+    milestones: data.milestones ? [...data.milestones] : [],
     ...restoreNegotiationState(data),
     ...restoreCommercialState(data),
   };

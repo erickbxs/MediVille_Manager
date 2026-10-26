@@ -24,6 +24,7 @@ import {
   toggleContract,
   type NegotiationResult,
 } from '../systems/economy-system';
+import { getNextExpansion, expandMap } from '../systems/map-expansion-system';
 
 export class FinancesModal {
   private container: HTMLElement;
@@ -70,6 +71,24 @@ export class FinancesModal {
           <div class="p-5 overflow-y-auto space-y-6 text-sm flex-1">
             ${isCommercial ? this.renderCommercialSection() : ''}
             ${isSusUnit ? this.renderNegotiationCard(chances, cooldown, bonusMultiplier) : ''}
+
+            ${(() => {
+              const nextExp = getNextExpansion(state);
+              if (!nextExp) return '';
+              const canAfford = state.cash >= nextExp.cost;
+              return `
+                <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <span class="text-[10px] uppercase tracking-wider font-extrabold text-indigo-600 dark:text-indigo-400">Expansão de Terreno</span>
+                    <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200">${nextExp.title}</h4>
+                    <p class="text-[11px] text-slate-500 max-w-sm mt-0.5">Expande a laje para acomodar novas instalações de alta complexidade.</p>
+                  </div>
+                  <button id="btn-finance-expand" ${canAfford ? '' : 'disabled'} class="min-h-[42px] px-4 py-2 rounded-xl text-xs font-black shadow-md transition-all ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-95' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 opacity-60 cursor-not-allowed'}">
+                    📐 Expandir Terreno (+4x4 — R$ ${(nextExp.cost / 1000).toFixed(0)}k)
+                  </button>
+                </div>
+              `;
+            })()}
 
             ${isSusUnit ? `
             <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-3">
@@ -270,6 +289,11 @@ export class FinancesModal {
 
     document.getElementById('btn-close-finances')?.addEventListener('click', close);
     document.getElementById('btn-done-finances')?.addEventListener('click', close);
+
+    document.getElementById('btn-finance-expand')?.addEventListener('click', () => {
+      const expanded = expandMap(this.simulation.state);
+      if (expanded) this.open();
+    });
 
     document.getElementById('btn-modal-grant')?.addEventListener('click', () => {
       requestEmergencyGrant(this.simulation.state);

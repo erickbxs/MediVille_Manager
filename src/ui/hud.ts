@@ -81,8 +81,9 @@ export class HospitalHUD {
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
-            <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
-              ${musicSystem.isMuted() ? '🔇' : '🎵'}
+            <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
+              <span id="btn-toggle-music-icon">${musicSystem.isMuted() ? '🔇' : '🎵'}</span>
+              <span id="btn-toggle-music-indicator" class="${musicSystem.isMuted() ? 'hidden' : ''} absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             </button>
             <button id="btn-toggle-sound" title="Ligar / Desligar Efeitos Sonoros" class="min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
               ${soundSystem.isMuted() ? '🔇' : '🔊'}
@@ -160,8 +161,13 @@ export class HospitalHUD {
     document.getElementById('btn-toggle-music')?.addEventListener('click', () => {
       musicSystem.start();
       const isMuted = musicSystem.toggleMute();
-      const btn = document.getElementById('btn-toggle-music');
-      if (btn) btn.textContent = isMuted ? '🔇' : '🎵';
+      const icon = document.getElementById('btn-toggle-music-icon');
+      const ind = document.getElementById('btn-toggle-music-indicator');
+      if (icon) icon.textContent = isMuted ? '🔇' : '🎵';
+      if (ind) ind.classList.toggle('hidden', isMuted);
+      globalBus.emit('toast:show', {
+        text: isMuted ? '🔇 Música Ambiente: Desativada' : '🎵 Música Ambiente: Ativada',
+      });
     });
 
     document.getElementById('btn-toggle-sound')?.addEventListener('click', () => {

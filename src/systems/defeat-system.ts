@@ -48,6 +48,7 @@ const PATIENTS_TIER_3 = 1000;
 const PROTOCOLS_TIER_1 = 50;
 const PROTOCOLS_TIER_2 = 100;
 const PROTOCOLS_TIER_3 = 150;
+const PROTOCOLS_TIER_4 = 250;
 
 export function calculateFinalScore(state: GameState): FinalScoreSummary {
   const days = Math.max(1, state.day);
@@ -85,7 +86,8 @@ export function checkGameMilestones(state: GameState): string[] {
   check('milestone_patients_1000', treated >= PATIENTS_TIER_3, '1.000 Vidas Salvas', 'Hospital de referência regional');
   check('milestone_protocols_50', mastered >= PROTOCOLS_TIER_1, '50 Protocolos Dominados', 'Amplo domínio das diretrizes clínicas do SUS');
   check('milestone_protocols_100', mastered >= PROTOCOLS_TIER_2, '100 Protocolos Dominados', 'Centro de excelência médica do Ministério da Saúde');
-  check('milestone_protocols_150', mastered >= PROTOCOLS_TIER_3, '150 Protocolos Dominados', 'Mestre Absoluto da Enciclopédia RENAME');
+  check('milestone_protocols_150', mastered >= PROTOCOLS_TIER_3, '150 Protocolos Dominados', 'Mestre da Enciclopédia RENAME');
+  check('milestone_protocols_250', mastered >= PROTOCOLS_TIER_4, '250 Protocolos Dominados', 'Mestre Supremo da Enciclopédia SUS (Catálogo Completo)');
 
   state.milestones = current;
   return newlyUnlocked;

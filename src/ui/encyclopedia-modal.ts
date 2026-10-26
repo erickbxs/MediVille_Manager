@@ -35,6 +35,8 @@ const CATEGORY_LIST: CategoryOption[] = [
   { id: 'parasitic', label: 'Parasitária', keywords: ['parasit', 'larva', 'tênia', 'bicho', 'pediculose'] },
   { id: 'digestive', label: 'Digestiva', keywords: ['digest', 'gástrico', 'hepátic', 'intestinal', 'fissura', 'hemorroida'] },
   { id: 'cardiovascular', label: 'Cardiovascular', keywords: ['cardio', 'pressão', 'pericardite', 'bradicardia', 'taquicardia'] },
+  { id: 'hematology', label: 'Hematologia', keywords: ['hematol', 'anemia', 'falciforme', 'leucemia', 'púrpura', 'plaqueta', 'neutropenia'] },
+  { id: 'rheumatology', label: 'Reumatologia', keywords: ['reumato', 'lúpus', 'espondilite', 'artrite', 'fibromialgia'] },
   { id: 'neurological', label: 'Neurológica', keywords: ['neuro', 'cefaleia', 'trigêmeo'] },
   { id: 'endocrine', label: 'Endócrina', keywords: ['endócrin', 'diabetes', 'tireoide', 'adrenal', 'potássio'] },
   { id: 'trauma', label: 'Trauma', keywords: ['trauma', 'entorse', 'fratura', 'luxação'] },

@@ -50,6 +50,8 @@ import { RankingModal } from './ui/ranking-modal';
 import { executeEmergencyTransferRescue } from './systems/defeat-system';
 import { initI18n } from './i18n/i18n';
 import type { RoomDefinition } from './core/config';
+import { BuildController } from './ui/build-controller';
+import { expandMap } from './systems/map-expansion-system';
 
 class MediVilleApp {
   private simulation = new HospitalSimulation(loadGameState() ?? undefined);
@@ -71,6 +73,7 @@ class MediVilleApp {
   private financesModal!: FinancesModal;
   private eventBanner!: EventBannerView;
   private buildMenu!: BuildMenu;
+  private buildController!: BuildController;
   private ghost: GhostState = { def: null, col: 0, row: 0, rotated: false, isValid: false };
   private isDemolishMode = false;
   private isMoveMode = false;
@@ -86,6 +89,7 @@ class MediVilleApp {
     this.setupModalsAndHud(modalContainer);
     this.setupTitleScreen(modalContainer);
 
+    this.setupBuildController();
     this.setupBuildMenu();
     this.setupInput(canvasContainer);
     this.setupEventSubscriptions();
@@ -130,6 +134,45 @@ class MediVilleApp {
     triggerTutorialTip(this.simulation.state, 'game_start');
   }
 
+  private handleBuildConfirm(col: number, row: number, rotated: boolean, def: RoomDefinition, isMove: boolean, movingRoomId: string | null): void {
+    if (isMove && movingRoomId) {
+      const moved = this.simulation.moveRoom(movingRoomId, col, row, rotated);
+      if (moved) {
+        this.showToast('✅ Sala reposicionada com sucesso!');
+        soundSystem.playClick();
+      }
+      this.movingRoomId = null;
+      this.isMoveMode = false;
+    } else {
+      const placed = this.simulation.buildRoom(def.id, col, row, rotated);
+      if (placed) {
+        this.showToast(`✅ ${def.shortName} construída!`);
+        soundSystem.playClick();
+      }
+    }
+    this.ghost.def = null;
+  }
+
+  private setupBuildController(): void {
+    const buildConfirmContainer = document.getElementById('build-confirm-container') || document.body;
+    this.buildController = new BuildController(buildConfirmContainer, {
+      onValidate: (col, row, rotated, def, isMove, movingRoomId) => {
+        if (isMove && movingRoomId) {
+          return canMoveRoom(this.simulation.state, movingRoomId, col, row, rotated);
+        }
+        return canPlaceRoom(this.simulation.state, def.id, col, row, rotated);
+      },
+      onConfirm: (col, row, rotated, def, isMove, movingRoomId) => this.handleBuildConfirm(col, row, rotated, def, isMove, movingRoomId),
+      onCancel: () => this.cancelSelection(),
+      onChange: (col, row, rotated, isValid) => {
+        this.ghost.col = col;
+        this.ghost.row = row;
+        this.ghost.rotated = rotated;
+        this.ghost.isValid = isValid;
+      },
+    });
+  }
+
   private setupBuildMenu(): void {
     this.buildMenu = new BuildMenu(document.getElementById('build-menu-container')!, {
       onSelectRoom: (def: RoomDefinition) => this.selectRoomToBuild(def),
@@ -142,6 +185,14 @@ class MediVilleApp {
       onOpenStaff: () => this.staffModal.open(),
       onOpenPharmacy: () => this.pharmacyModal.open(),
       onOpenFinances: () => this.financesModal.open(),
+      onExpandMap: () => {
+        const ok = expandMap(this.simulation.state);
+        if (ok) {
+          this.showToast('📐 Terreno Hospitalar Expandido com Sucesso!');
+          this.renderer.recenter();
+        }
+      },
+      getState: () => this.simulation.state,
     });
   }
 
@@ -222,11 +273,26 @@ class MediVilleApp {
     this.isDemolishMode = false;
     this.isMoveMode = false;
     this.movingRoomId = null;
+    this.buildMenu.closeDrawer();
+
+    const maxGrid = this.simulation.state.gridSize ?? 12;
+    const startCol = Math.max(0, Math.floor((maxGrid - def.width) / 2));
+    const startRow = Math.max(0, Math.floor((maxGrid - def.height) / 2));
+
     this.ghost.def = def;
-    this.ghost.isValid = canPlaceRoom(this.simulation.state, def.id, this.ghost.col, this.ghost.row, this.ghost.rotated);
+    this.ghost.col = startCol;
+    this.ghost.row = startRow;
+    this.ghost.rotated = false;
+    this.ghost.isValid = canPlaceRoom(this.simulation.state, def.id, startCol, startRow, false);
+
+    this.buildController.startPreview(def, startCol, startRow, false, null, false);
   }
 
   private toggleRotate(): void {
+    if (this.buildController.isActive()) {
+      this.buildController.toggleRotate();
+      return;
+    }
     this.ghost.rotated = !this.ghost.rotated;
     if (this.movingRoomId && this.ghost.def) {
       this.ghost.isValid = canMoveRoom(this.simulation.state, this.movingRoomId, this.ghost.col, this.ghost.row, this.ghost.rotated);
@@ -240,6 +306,7 @@ class MediVilleApp {
     this.isMoveMode = false;
     this.movingRoomId = null;
     this.ghost.def = null;
+    this.buildController.close();
   }
 
   private toggleMove(): void {
@@ -247,6 +314,7 @@ class MediVilleApp {
     this.isDemolishMode = false;
     this.movingRoomId = null;
     this.ghost.def = null;
+    this.buildController.close();
   }
 
   private cancelSelection(): void {
@@ -255,6 +323,7 @@ class MediVilleApp {
     this.isMoveMode = false;
     this.movingRoomId = null;
     this.selectedRoomId = null;
+    this.buildController.close();
   }
 
   private setupInput(canvasContainer: HTMLElement): void {
@@ -262,12 +331,25 @@ class MediVilleApp {
       onGridClick: (col, row) => this.handleGridClick(col, row),
       onGridHover: (col, row) => this.handleGridHover(col, row),
       onRotateKey: () => this.toggleRotate(),
+      isBuildPreviewActive: () => this.buildController.isActive(),
+      onPreviewDrag: (col, row) => this.buildController.setPosition(col, row),
     });
   }
 
   private handleGridClick(col: number, row: number): void {
     if (this.appMode === 'MENU') return;
     this.hud.closeDetails();
+
+    if (this.buildController.isActive()) {
+      const state = this.buildController.getPreviewState();
+      if (state.col === col && state.row === row && state.isValid) {
+        this.buildController.confirm();
+      } else {
+        this.buildController.setPosition(col, row);
+      }
+      return;
+    }
+
     if (this.movingRoomId) {
       this.applyRoomMove(col, row);
       this.buildMenu.closeDrawer();
@@ -306,8 +388,12 @@ class MediVilleApp {
     if (this.isMoveMode && clicked) {
       this.movingRoomId = clicked.id;
       this.ghost.def = clicked.definition;
+      this.ghost.col = clicked.col;
+      this.ghost.row = clicked.row;
       this.ghost.rotated = clicked.rotated;
-      this.ghost.isValid = canMoveRoom(this.simulation.state, clicked.id, col, row, clicked.rotated);
+      this.ghost.isValid = true;
+      this.buildMenu.closeDrawer();
+      this.buildController.startPreview(clicked.definition, clicked.col, clicked.row, true, clicked.id, clicked.rotated);
       return;
     }
     this.selectedRoomId = clicked ? clicked.id : null;
@@ -369,28 +455,7 @@ class MediVilleApp {
     }, toastDurationMs);
   }
 
-  private setupEventSubscriptions(): void {
-    globalBus.on('tick', () => {
-      this.hud.update(this.simulation.state);
-      this.advisorView.update(this.simulation.state);
-      this.eventBanner.update(this.simulation.state.activeEvents);
-      const hasZeroStock = Object.values(this.simulation.state.pharmacyStock).some((c) => c === 0);
-      this.buildMenu.updateBadges(this.simulation.state.pendingDecisionPatientIds.length, hasZeroStock);
-    });
-
-    globalBus.on('feedback:gain_float', ({ text, col, row }) => this.showGainFeedback(text, col, row));
-    globalBus.on('goal:completed', ({ goal, rewardCash }) => {
-      soundSystem.playSuccess();
-      this.showToast(`🏆 Meta Concluída: ${goal.title} (+R$ ${rewardCash.toLocaleString('pt-BR')})`);
-    });
-    globalBus.on('encyclopedia:case_unlocked', () => {
-      this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!');
-    });
-
-    globalBus.on('save:restored_from_backup', () => {
-      this.showToast('🛡️ Save principal restaurado com sucesso a partir do backup!');
-    });
-
+  private setupLifecycleEvents(): void {
     globalBus.on('day:end', () => saveGameState(this.simulation.state));
     const autoSaveIntervalMs = 45000;
     window.setInterval(() => saveGameState(this.simulation.state), autoSaveIntervalMs);
@@ -407,6 +472,27 @@ class MediVilleApp {
       this.simulation.setSpeed(0);
       this.gameOverModal.open(reason, stats);
     });
+  }
+
+  private setupEventSubscriptions(): void {
+    globalBus.on('tick', () => {
+      this.hud.update(this.simulation.state);
+      this.advisorView.update(this.simulation.state);
+      this.eventBanner.update(this.simulation.state.activeEvents);
+      const hasZeroStock = Object.values(this.simulation.state.pharmacyStock).some((c) => c === 0);
+      this.buildMenu.updateBadges(this.simulation.state.pendingDecisionPatientIds.length, hasZeroStock);
+    });
+
+    globalBus.on('feedback:gain_float', ({ text, col, row }) => this.showGainFeedback(text, col, row));
+    globalBus.on('goal:completed', ({ goal, rewardCash }) => {
+      soundSystem.playSuccess();
+      this.showToast(`🏆 Meta Concluída: ${goal.title} (+R$ ${rewardCash.toLocaleString('pt-BR')})`);
+    });
+    globalBus.on('encyclopedia:case_unlocked', () => this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!'));
+    globalBus.on('save:restored_from_backup', () => this.showToast('🛡️ Save principal restaurado com sucesso a partir do backup!'));
+    globalBus.on('toast:show', ({ text }) => this.showToast(text));
+
+    this.setupLifecycleEvents();
   }
 }
 

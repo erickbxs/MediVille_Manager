@@ -91,22 +91,29 @@ function buildInitialEconomyState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hosp
   };
 }
 
-export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hospital'): GameState {
-  const chosenCash = unitChoice ? UNIT_CASH[unitChoice] : BALANCE.economy.startingCash;
-  const level = unitChoice === 'upa' || unitChoice === 'hospital' ? unitChoice : 'ubs';
-
+function buildCoreProgressState() {
   return {
     day: 1,
     dayTimeSec: 0,
     speed: BALANCE.time.initialSpeed,
     previousSpeed: BALANCE.time.initialSpeed,
+    isDefeated: false,
+    defeatReason: null,
+    consecutiveNegativeCashDays: 0,
+    consecutiveLowReputationDays: 0,
+  };
+}
+
+export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hospital'): GameState {
+  const chosenCash = unitChoice ? UNIT_CASH[unitChoice] : BALANCE.economy.startingCash;
+  const level = unitChoice === 'upa' || unitChoice === 'hospital' ? unitChoice : 'ubs';
+
+  return {
+    ...buildCoreProgressState(),
     cash: chosenCash,
     reputation: BALANCE.reputation.initial,
     satisfactionAverage: BALANCE.satisfaction.initial,
-    consecutiveNegativeCashDays: 0,
-    consecutiveLowReputationDays: 0,
-    isDefeated: false,
-    defeatReason: null,
+    gridSize: BALANCE.grid.cols,
     rooms: buildStarterRoomsMap(),
     patients: new Map(),
     queueIds: [],

@@ -55,6 +55,8 @@ export interface GameEvents {
   'i18n:changed': { lang: string };
   'music:mute_changed': { muted: boolean };
   'music:ducking_changed': { isDucking: boolean };
+  'map:expanded': { newGridSize: number; cost: number };
+  'toast:show': { text: string };
 }
 
 export type EventKey = keyof GameEvents;

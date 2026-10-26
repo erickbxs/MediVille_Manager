@@ -2,6 +2,52 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.5.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.5.0 — Construção Tátil de Precisão ("Tap, Nudge & Confirm"), Expansão Paga do Mapa (12x12 até 24x24), Internacionalização Global Reativa, Autoplay Unlock da Música e +100 Doenças SUS (250 Casos Clínicos)
+- **PARTE 1: Construção Ergonômica Mobile/Tablet — Modo "Tap, Nudge & Confirm" (`build-controller.ts`, `ghost-view.ts` & `canvas-input.ts`)**:
+  - Fluxo de duas etapas `BUILD_PREVIEW`: ao selecionar uma sala ou acionar a ferramenta mover, a gaveta `🏗️ Obras` é recolhida para liberar 100% de visão da grade sem colocar a sala por acidente ao soltar o dedo.
+  - Pré-visualização com sala fantasma (`GhostView`): contorno em **Verde Esmeralda** (`#10b981`) para posições válidas ou **Vermelho** (`#ef4444`) para colisões/limites do mapa, com destaque da grade de 1 bloco ao redor.
+  - Offset visual tátil: arraste com o dedo no mapa aplica deslocamento de `-40px` no eixo Y em dispositivos touch para não obstruir a visão da sala que está sendo posicionada.
+  - Barra Flutuante de Precisão (`Build Confirm Bar`): container fixo na base com botões ergonômicos ($\ge 48\times 48\text{px}$):
+    - D-Pad de Ajuste Fino bloco a bloco (`⬅️`, `⬆️`, `⬇️`, `➡️`).
+    - Botão `🔄 Girar (90°)` com revalidação imediata de colisões.
+    - Botão `✅ Construir (R$ X)` habilitado apenas com saldo suficiente e sem colisão.
+    - Botão `❌ Cancelar` sem débito financeiro.
+    - Suporte a PC e atalhos de teclado: `WASD`/Setas para deslocar, `R` para girar, `Enter` para confirmar e `Esc` para cancelar.
+- **PARTE 2: Expansão Paga do Mapa Dinâmico (`12x12` ➔ `16x16` ➔ `20x20` ➔ `24x24`) (`map-expansion-system.ts`, `grid-system.ts` & `renderer.ts`)**:
+  - Substituição da grade estática `12x12` por sistema progressivo de 4 patamares de expansão:
+    - *Nível 1 (Inicial)*: Grade `12x12` (144 blocos).
+    - *Nível 2 (Terreno Ampliado)*: Grade `16x16` (256 blocos) — Custo: `R$ 45.000`.
+    - *Nível 3 (Quadra Hospitalar)*: Grade `20x20` (400 blocos) — Custo: `R$ 95.000`.
+    - *Nível 4 (Complexo Metropolitano)*: Grade `24x24` (576 blocos) — Custo: `R$ 180.000`.
+  - Botão de destaque `📐 Expandir Mapa (+4x4 — R$ X)` integrado na gaveta `🏗️ Obras` e na aba de Finanças.
+  - Disparo de `map:expanded` no `EventBus`: preservação das coordenadas de todas as salas existentes e NPCs, redimensionamento imediato das camadas do PixiJS (`GridView`, `Camera`, `HospitalRenderer`), ajuste suave de zoom (`fitMapToScreen`) e persistência no `IndexedDB` e `localStorage`.
+- **PARTE 3: Internacionalização Global Reativa Completa (`i18n.ts`, `pt.json`, `es.json`, `en.json`)**:
+  - Função central reativa `t(key, vars)` com interpolação de variáveis dinâmicas.
+  - Atualização do idioma raiz `document.documentElement.lang = lang` e método global `refreshAppLanguage()` para sincronizar instantaneamente todos os componentes de UI (`TitleScreen`, `TopBar`, `BottomDock`, `BuildDrawer`, `DecisionModal`, `StaffModal`, `PharmacyModal`, `FinancesModal`, `EncyclopediaModal`, `SettingsModal`, `GameOverModal`, `EventBanner`, `TutorialView`).
+  - Tradução dos nomes de salas, cargos, termos da grade, eventos dinâmicos e novos setores nos dicionários em Português, Espanhol e Inglês.
+- **PARTE 4: Correção Definitiva da Música de Fundo e Autoplay Unlock (`music-system.ts` & `hud.ts`)**:
+  - Sistema `setupAutoplayUnlock()` com desbloqueio global de `AudioContext` no primeiro toque ou clique (`['pointerdown', 'touchstart', 'keydown', 'click']`).
+  - Calibração de ganho audível agradável (`DEFAULT_GAIN = 0.18`) com envoltória ADSR suave estilo piano elétrico Rhodes e melodia pentatônica contínua.
+  - Botão `🎵` na Top Bar com indicador verde ativo/mudo e toast de status `"🎵 Música Ambiente: Ativada / Desativada"`.
+- **PARTE 5: Expansão para 250 Doenças Reais na Enciclopédia SUS (`cases.json` & `clinical-cases.json`)**:
+  - Adição de 100 novas patologias clínicas reais do SUS/APS/UPA/Hospital (casos 151 a 250), totalizando exatamente **250 casos clínicos únicos**:
+    - *Cardiologia, Vascular e Hematologia (151–165)*: Endocardite Infecciosa Subaguda, Dissecção Aguda de Aorta, DAOP, Úlcera Varicosa, Tromboflebite, BAVT, TV Sustentada, Cor Pulmonale, Miocardite Viral, Estenose Aórtica, Anemia Falciforme, Anemia Megaloblástica, PTI, Leucemia Aguda e Neutropenia Febril.
+    - *Pneumologia, Alergia e Otorrinolaringologia (166–180)*: Bronquiectasia, Abscesso Pulmonar, Derrame Pleural TB, Rinite Alérgica, Laringite Viral, Abscesso Periamigdaliano, Mastoidite, Labirintite, Doença de Ménière, Perfuração Timpânica, Corpo Estranho Nasal, SAOS, Silicose, APLV e Angioedema por IECA.
+    - *Gastroenterologia, Hepatologia e Cirurgia Geral (181–195)*: Megaesôfago Chagásico, Esofagite Erosiva, Mallory-Weiss, Hepatite B, Hepatite C, Cirrose com Ascite, PBE, Colangite Aguda, Obstrução por Bridas, Hérnia Encarcerada, Hérnia Umbilical Infantil, Doença de Crohn, Retocolite Ulcerativa, Abscesso Anorretal e Doença Celíaca.
+    - *Nefrologia, Urologia e Endocrinologia (196–210)*: Pielonefrite Aguda, GNDA, Síndrome Nefrótica, Injúria Renal Aguda, DRC Estágio 4, HPB, Prostatite, Orquiepididimite, Torção Testicular, Bexigoma, EHH, De Quervain, Tempestade Tireoidiana, Hiperparatireoidismo e SOP.
+    - *Neurologia, Psiquiatria e Geriatria (211–225)*: AIT, HSA, Guillain-Barré, Miastenia Gravis, Parkinson, Alzheimer, Delirium no Idoso, Esclerose Múltipla, HPN, TAG, TOC, Esquizofrenia, Intoxicação por Benzodiazepínicos, Intoxicação por Opioides e Intoxicação por Organofosforados.
+    - *Reumatologia, Ortopedia, Trauma e Emergências (226–240)*: LES, Espondilite Anquilosante, Fibromialgia, Osteoartrite, Osteoporose, Artrite Séptica, Osteomielite, Luxação de Ombro, Fratura de Fêmur no Idoso, Síndrome Compartimental, Tamponamento Cardíaco, Hemotórax Maciço, Afogamento Grau 3, Acidente por Loxosceles e Acidente por Cascavel.
+    - *Ginecologia, Obstetrícia, Pediatria e Especialidades (241–250)*: Placenta Prévia Sangrante, DPP, Atonia Uterina com Ocitocina, Icterícia Neonatal, Estenose Hipertrófica de Piloro, Intussuscepção, Psoríase Vulgar, Acne Grau 3, Úlcera de Córnea e Uveíte Anterior.
+  - Integração aos novos marcos de auto-resolução de condutas SUS (`milestone_protocols_250`) e categorias completas na Enciclopédia.
+- **PARTE 6: Verificação Completa e Testes Automatizados**:
+  - Nova suíte `tests/mobile-build-expansion-i18n-250cases.test.ts` cobrindo preview, D-Pad, rotação, expansão progressiva, i18n e catálogo clínico.
+  - **149 testes automatizados aprovados (100% de sucesso em 19 arquivos)**.
+  - Tamanho final do pacote: **1.38 MB total**, com carregamento inicial ultraleve e estritamente abaixo do orçamento de 5.00 MB.
+
 ## [1.4.0] - 2026-10-25
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

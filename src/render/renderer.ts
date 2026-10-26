@@ -33,6 +33,7 @@ import { trafficSystem } from '../systems/traffic-system';
 import { THEME } from './theme-config';
 import { BALANCE, PHARMACY_CATALOG, type RoomDefinition } from '../core/config';
 import type { GameState } from '../state/game-state';
+import { globalBus } from '../core/event-bus';
 
 export interface GhostState {
   def: RoomDefinition | null;
@@ -40,6 +41,7 @@ export interface GhostState {
   row: number;
   rotated: boolean;
   isValid: boolean;
+  touchOffsetY?: number;
 }
 
 const LAYER_Z = { city: 0, traffic: 5, grid: 10, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
@@ -87,6 +89,12 @@ export class HospitalRenderer {
       const observer = new ResizeObserver(() => onResize());
       observer.observe(containerElement);
     }
+
+    globalBus.on('map:expanded', ({ newGridSize }: { newGridSize: number }) => {
+      this.camera.setGridSize(newGridSize);
+      this.gridView.updateSize(newGridSize);
+      this.camera.fitMapToScreen();
+    });
   }
 
   public recenter(): void {
@@ -119,6 +127,12 @@ export class HospitalRenderer {
   }
 
   public render(state: GameState, ghost: GhostState, selectedRoomId: string | null): void {
+    const currentGrid = state.gridSize ?? BALANCE.grid.cols;
+    if (this.camera.gridCols !== currentGrid) {
+      this.camera.setGridSize(currentGrid);
+      this.gridView.updateSize(currentGrid);
+    }
+
     this.world.position.set(this.camera.x, this.camera.y);
     this.world.scale.set(this.camera.zoom);
 
@@ -132,6 +146,6 @@ export class HospitalRenderer {
     this.roomsView.render(rooms, selectedRoomId, stockRatio);
     this.lightingView.render(dayProgress, rooms);
     this.patientsView.render(state);
-    this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid);
+    this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid, ghost.touchOffsetY ?? 0);
   }
 }

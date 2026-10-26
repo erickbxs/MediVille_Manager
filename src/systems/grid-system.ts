@@ -11,9 +11,15 @@ import { BALANCE, ROOMS_CATALOG } from '../core/config';
 import { createRoomInstance, type RoomInstance } from '../entities/room';
 import type { GameState } from '../state/game-state';
 
-export function isWithinGrid(col: number, row: number, width: number, height: number): boolean {
-  const { cols, rows } = BALANCE.grid;
-  return col >= 0 && row >= 0 && col + width <= cols && row + height <= rows;
+export function isWithinGrid(
+  col: number,
+  row: number,
+  width: number,
+  height: number,
+  maxCols = BALANCE.grid.cols,
+  maxRows = BALANCE.grid.rows
+): boolean {
+  return col >= 0 && row >= 0 && col + width <= maxCols && row + height <= maxRows;
 }
 
 export function roomsOverlap(a: { col: number; row: number; width: number; height: number },
@@ -38,8 +44,9 @@ export function canPlaceRoom(
 
   const width = rotated ? def.height : def.width;
   const height = rotated ? def.width : def.height;
+  const maxGrid = state.gridSize ?? BALANCE.grid.cols;
 
-  if (!isWithinGrid(col, row, width, height)) return false;
+  if (!isWithinGrid(col, row, width, height, maxGrid, maxGrid)) return false;
   if (state.cash < def.cost) return false;
 
   for (const room of state.rooms.values()) {
@@ -91,8 +98,9 @@ export function canMoveRoom(
 
   const width = newRotated ? room.definition.height : room.definition.width;
   const height = newRotated ? room.definition.width : room.definition.height;
+  const maxGrid = state.gridSize ?? BALANCE.grid.cols;
 
-  if (!isWithinGrid(newCol, newRow, width, height)) return false;
+  if (!isWithinGrid(newCol, newRow, width, height, maxGrid, maxGrid)) return false;
 
   for (const other of state.rooms.values()) {
     if (other.id === roomId) continue;

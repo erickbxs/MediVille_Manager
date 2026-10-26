@@ -19,7 +19,7 @@ const SIMULATION_FILES = [
 ];
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '.wrangler'] },
+  { ignores: ['dist', 'node_modules', '.wrangler', 'scratch'] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

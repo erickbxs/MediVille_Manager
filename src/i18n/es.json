@@ -182,5 +182,15 @@
   "legal": {
     "title": "Términos de Uso y Privacidad LGPD/GDPR",
     "susNotice": "Aviso Educativo: MediVille Manager es una simulación de gestión hospitalaria con fines educativos. No sustituye el asesoramiento médico profesional ni la atención de urgencia."
+  },
+  "map": {
+    "expand": "Ampliar Terreno",
+    "expandSuccess": "¡Terreno del Hospital ampliado con éxito!",
+    "nextTier": "Próxima Parcela: {cols}x{rows}"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar"
   }
 }

@@ -19,26 +19,58 @@ export class GhostView {
     this.container.addChild(this.graphics);
   }
 
+  private drawHighlight(col: number, row: number, cols: number, rows: number, touchOffsetY: number, isValid: boolean): void {
+    const { tileSize } = THEME;
+    const margin = 1;
+    const hX = (col - margin) * tileSize;
+    const hY = (row - margin) * tileSize + touchOffsetY;
+    const hW = (cols + margin * 2) * tileSize;
+    const hH = (rows + margin * 2) * tileSize;
+    const color = isValid ? 0x10b981 : 0xef4444;
+
+    this.graphics.rect(hX, hY, hW, hH)
+      .fill({ color, alpha: 0.08 })
+      .stroke({ color, width: 1, alpha: 0.35 });
+  }
+
+  private drawInternalGrid(x: number, y: number, cols: number, rows: number, color: number): void {
+    const { tileSize } = THEME;
+    const width = cols * tileSize;
+    const height = rows * tileSize;
+
+    for (let c = 1; c < cols; c++) {
+      this.graphics.moveTo(x + c * tileSize, y).lineTo(x + c * tileSize, y + height).stroke({ color, width: 1, alpha: 0.4 });
+    }
+    for (let r = 1; r < rows; r++) {
+      this.graphics.moveTo(x, y + r * tileSize).lineTo(x + width, y + r * tileSize).stroke({ color, width: 1, alpha: 0.4 });
+    }
+  }
+
   public render(
     def: RoomDefinition | null,
     col: number,
     row: number,
     rotated: boolean,
-    isValid: boolean
+    isValid: boolean,
+    touchOffsetY = 0
   ): void {
     this.graphics.clear();
     if (!def || col < 0 || row < 0 || !Number.isFinite(col) || !Number.isFinite(row)) return;
 
     const { tileSize } = THEME;
-    const width = (rotated ? def.height : def.width) * tileSize;
-    const height = (rotated ? def.width : def.height) * tileSize;
+    const roomCols = rotated ? def.height : def.width;
+    const roomRows = rotated ? def.width : def.height;
     const x = col * tileSize;
-    const y = row * tileSize;
-    const color = isValid ? THEME.palettes.light.ghostValid : THEME.palettes.light.ghostInvalid;
+    const y = row * tileSize + touchOffsetY;
+    const mainColor = isValid ? 0x10b981 : 0xef4444;
 
-    this.graphics.roundRect(x, y, width, height, THEME.room.cornerRadius)
-      .fill({ color, alpha: THEME.ghost.alpha })
-      .stroke({ color, width: THEME.ghost.borderWidth });
+    this.drawHighlight(col, row, roomCols, roomRows, touchOffsetY, isValid);
+
+    this.graphics.roundRect(x, y, roomCols * tileSize, roomRows * tileSize, THEME.room.cornerRadius)
+      .fill({ color: mainColor, alpha: 0.28 })
+      .stroke({ color: mainColor, width: 3 });
+
+    this.drawInternalGrid(x, y, roomCols, roomRows, mainColor);
   }
 
   public clear(): void {

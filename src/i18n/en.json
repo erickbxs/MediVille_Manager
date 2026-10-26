@@ -182,5 +182,15 @@
   "legal": {
     "title": "Terms of Use & Privacy LGPD/GDPR",
     "susNotice": "Educational Notice: MediVille Manager is an educational simulation about healthcare systems. It does not replace professional medical advice or emergency care."
+  },
+  "map": {
+    "expand": "Expand Map",
+    "expandSuccess": "Hospital Land Expanded Successfully!",
+    "nextTier": "Next Lot: {cols}x{rows}"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close"
   }
 }

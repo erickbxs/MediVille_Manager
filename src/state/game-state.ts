@@ -43,6 +43,7 @@ export interface GameState {
   isGameOver?: boolean;
   defeatReason: string | null;
   milestones?: string[];
+  gridSize?: number;
   rooms: Map<string, RoomInstance>;
   patients: Map<string, PatientInstance>;
   queueIds: string[];

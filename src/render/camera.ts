@@ -22,6 +22,8 @@ export interface FitMapOptions {
   topMargin?: number;
   bottomMargin?: number;
   sidePadding?: number;
+  gridCols?: number;
+  gridRows?: number;
 }
 
 export interface FitMapResult {
@@ -40,8 +42,10 @@ export function fitMapToScreen(
   viewportHeight: number,
   options?: FitMapOptions
 ): FitMapResult {
-  const gridPxWidth = BALANCE.grid.cols * THEME.tileSize;
-  const gridPxHeight = BALANCE.grid.rows * THEME.tileSize;
+  const cols = options?.gridCols ?? BALANCE.grid.cols;
+  const rows = options?.gridRows ?? BALANCE.grid.rows;
+  const gridPxWidth = cols * THEME.tileSize;
+  const gridPxHeight = rows * THEME.tileSize;
 
   const topMargin = options?.topMargin ?? 64;
   const bottomMargin = options?.bottomMargin ?? 84;
@@ -73,12 +77,14 @@ export function fitMapToScreen(
 export function fitMapToViewport(
   viewportWidth: number,
   viewportHeight: number,
-  options?: { topHeight?: number; bottomHeight?: number; sidePadding?: number }
+  options?: { topHeight?: number; bottomHeight?: number; sidePadding?: number; gridCols?: number; gridRows?: number }
 ): FitMapResult {
   return fitMapToScreen(viewportWidth, viewportHeight, {
     topMargin: options?.topHeight ?? 48,
     bottomMargin: options?.bottomHeight ?? 56,
     sidePadding: options?.sidePadding ?? 12,
+    gridCols: options?.gridCols,
+    gridRows: options?.gridRows,
   });
 }
 
@@ -88,6 +94,13 @@ export class Camera {
   public zoom = 1.0;
   public viewportWidth = 800;
   public viewportHeight = 600;
+  public gridCols = BALANCE.grid.cols;
+  public gridRows = BALANCE.grid.rows;
+
+  public setGridSize(cols: number, rows = cols): void {
+    this.gridCols = cols;
+    this.gridRows = rows;
+  }
 
   public resize(width: number, height: number): void {
     this.viewportWidth = width;
@@ -122,7 +135,7 @@ export class Camera {
 
   public zoomAt(screenX: number, screenY: number, factor: number): void {
     const prevZoom = this.zoom;
-    const minLimit = Math.min(0.55, (this.viewportWidth / (BALANCE.grid.cols * THEME.tileSize)) * 0.95);
+    const minLimit = Math.min(0.55, (this.viewportWidth / (this.gridCols * THEME.tileSize)) * 0.95);
     const nextZoom = Math.max(minLimit, Math.min(2.0, prevZoom * factor));
     if (nextZoom === prevZoom) return;
 
@@ -136,6 +149,8 @@ export class Camera {
       topHeight: options?.topMargin,
       bottomHeight: options?.bottomMargin,
       sidePadding: options?.sidePadding,
+      gridCols: options?.gridCols ?? this.gridCols,
+      gridRows: options?.gridRows ?? this.gridRows,
     });
     this.zoom = result.scale;
     this.x = result.x;

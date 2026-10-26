@@ -24,14 +24,24 @@ import { THEME } from './theme-config';
 export class GridView {
   public container = new Container();
   private graphics = new Graphics();
+  private cols = BALANCE.grid.cols;
+  private rows = BALANCE.grid.rows;
 
   constructor() {
     this.container.addChild(this.graphics);
     this.draw();
   }
 
-  public draw(): void {
-    const { cols, rows } = BALANCE.grid;
+  public updateSize(cols: number, rows = cols): void {
+    if (this.cols === cols && this.rows === rows) return;
+    this.cols = cols;
+    this.rows = rows;
+    this.draw();
+  }
+
+  public draw(cols = this.cols, rows = this.rows): void {
+    this.cols = cols;
+    this.rows = rows;
     const { tileSize } = THEME;
     const width = cols * tileSize;
     const height = rows * tileSize;

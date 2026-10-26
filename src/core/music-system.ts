@@ -27,7 +27,7 @@ const BPM = 72;
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_PER_BEAT = SECONDS_IN_MINUTE / BPM;
 const BEATS_PER_CHORD = 4;
-const DEFAULT_GAIN = 0.08;
+const DEFAULT_GAIN = 0.18;
 const DUCKING_FACTOR = 0.5;
 const DEFAULT_VOLUME = 0.8;
 const MIN_GAIN = 0.0001;
@@ -100,6 +100,32 @@ export class MusicSystem {
   constructor() {
     this.loadSettings();
     this.setupListeners();
+    this.setupAutoplayUnlock();
+  }
+
+  private setupAutoplayUnlock(): void {
+    if (typeof window === 'undefined') return;
+    const unlockEvents = ['pointerdown', 'touchstart', 'keydown', 'click'];
+    const unlockHandler = async () => {
+      const ctx = this.ensureContext();
+      if (ctx && ctx.state === 'suspended') {
+        try {
+          await ctx.resume();
+        } catch {
+          // Bloqueio de áudio tratado
+        }
+      }
+      if (!this.muted && !this.isPlaying) {
+        this.start();
+      }
+      for (const ev of unlockEvents) {
+        window.removeEventListener(ev, unlockHandler);
+      }
+    };
+
+    for (const ev of unlockEvents) {
+      window.addEventListener(ev, unlockHandler, { once: true, passive: true });
+    }
   }
 
   private loadSettings(): void {

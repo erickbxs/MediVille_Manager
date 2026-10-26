@@ -116,6 +116,10 @@ export async function setLanguage(lang: SupportedLocale): Promise<void> {
   activeDictionary = await loadDictionary(lang);
   currentLocale = lang;
 
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.lang = lang;
+  }
+
   try {
     localStorage.setItem(STORAGE_LANG_KEY, lang);
     localStorage.setItem(STORAGE_LEGACY_KEY, lang);
@@ -128,6 +132,11 @@ export async function setLanguage(lang: SupportedLocale): Promise<void> {
 }
 
 export const setLocale = setLanguage;
+
+export async function refreshAppLanguage(lang?: SupportedLocale): Promise<void> {
+  const target = lang ?? currentLocale;
+  await setLanguage(target);
+}
 
 export function getLocale(): SupportedLocale {
   return currentLocale;

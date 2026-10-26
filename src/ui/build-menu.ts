@@ -21,6 +21,8 @@ import { ROOMS_CATALOG, type RoomDefinition } from '../core/config';
 import { enableHorizontalScroll } from './horizontal-scroll';
 import { getRoomShortName, t } from '../i18n/i18n';
 import { globalBus } from '../core/event-bus';
+import { getNextExpansion } from '../systems/map-expansion-system';
+import type { GameState } from '../state/game-state';
 
 export interface BuildMenuCallbacks {
   onSelectRoom: (def: RoomDefinition) => void;
@@ -33,6 +35,8 @@ export interface BuildMenuCallbacks {
   onOpenStaff?: () => void;
   onOpenPharmacy?: () => void;
   onOpenFinances?: () => void;
+  onExpandMap?: () => void;
+  getState?: () => GameState;
 }
 
 export class BuildMenu {
@@ -104,6 +108,29 @@ export class BuildMenu {
     }).join('');
   }
 
+  private renderExpandMapCardHtml(): string {
+    const state = this.callbacks.getState?.();
+    if (!state) return '';
+    const next = getNextExpansion(state);
+    if (!next) return '';
+    const costK = (next.cost / 1000).toFixed(0);
+    const canAfford = state.cash >= next.cost;
+
+    return `
+      <button id="btn-build-expand-map"
+        title="Expandir Terreno para ${next.nextSize}x${next.nextSize} (R$ ${next.cost.toLocaleString('pt-BR')})"
+        class="snap-start shrink-0 flex flex-col items-center justify-between min-w-[84px] h-[76px] px-2 py-1.5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/90 border-2 border-indigo-400 dark:border-indigo-500 shadow-md transition-all active:scale-95 ${canAfford ? 'hover:border-indigo-600' : 'opacity-60 cursor-not-allowed'}">
+        <span class="text-xl">📐</span>
+        <span class="w-full text-center font-bold text-xs truncate text-indigo-700 dark:text-indigo-300">Expandir</span>
+        <div class="flex items-center justify-between w-full text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
+          <span>+4x4</span>
+          <span>R$ ${costK}k</span>
+        </div>
+      </button>
+      <div class="w-px h-10 bg-indigo-200 dark:bg-indigo-800 mx-0.5 shrink-0"></div>
+    `;
+  }
+
   private renderDrawerHtml(): string {
     return `
       <div id="build-drawer" class="hidden w-full max-w-xl mx-auto p-2 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 animate-in slide-in-from-bottom duration-200">
@@ -114,6 +141,7 @@ export class BuildMenu {
         <div class="relative flex items-center">
           <button id="btn-build-scroll-prev" aria-label="Rolar esquerda" class="opacity-0 pointer-events-none transition-opacity absolute left-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">◀</button>
           <div id="build-drawer-carousel" class="flex items-center gap-2 overflow-x-auto p-1 scrollbar-none snap-x touch-pan-x w-full">
+            ${this.renderExpandMapCardHtml()}
             ${this.renderRoomsHtml()}
             <div class="w-px h-10 bg-slate-300 dark:bg-slate-700 mx-1 shrink-0"></div>
             <button id="btn-move" title="Mover sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-amber-500 active:scale-95">
@@ -222,6 +250,12 @@ export class BuildMenu {
     });
 
     this.bindActionButtons();
+
+    document.getElementById('btn-build-expand-map')?.addEventListener('click', () => {
+      this.callbacks.onExpandMap?.();
+      this.render();
+      this.openDrawerForRoom();
+    });
 
     this.container.querySelectorAll('.build-card').forEach((btn) => {
       btn.addEventListener('click', () => {
