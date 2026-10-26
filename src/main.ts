@@ -49,15 +49,20 @@ import { DefeatWarningModal } from './ui/defeat-warning-modal';
 import { RankingModal } from './ui/ranking-modal';
 import { executeEmergencyTransferRescue } from './systems/defeat-system';
 import { initI18n } from './i18n/i18n';
-import type { RoomDefinition } from './core/config';
 import { BuildController } from './ui/build-controller';
 import { expandMap } from './systems/map-expansion-system';
+import { NotificationCenter } from './ui/notification-center';
+import { RoomContextMenu } from './ui/room-context-menu';
+import type { RoomDefinition } from './core/config';
+import type { RoomInstance } from './entities/room';
 
 class MediVilleApp {
   private simulation = new HospitalSimulation(loadGameState() ?? undefined);
-  private renderer = new HospitalRenderer();
+  private renderer = new HospitalRenderer({ onExpandMap: () => this.handleDirectMapExpansion() });
   private gameLoop!: GameLoop;
   private hud!: HospitalHUD;
+  private notificationCenter!: NotificationCenter;
+  private roomContextMenu!: RoomContextMenu;
   private titleScreen!: TitleScreen;
   private encyclopediaModal!: EncyclopediaModal;
   private goalsModal!: GoalsModal;
@@ -185,15 +190,20 @@ class MediVilleApp {
       onOpenStaff: () => this.staffModal.open(),
       onOpenPharmacy: () => this.pharmacyModal.open(),
       onOpenFinances: () => this.financesModal.open(),
-      onExpandMap: () => {
-        const ok = expandMap(this.simulation.state);
-        if (ok) {
-          this.showToast('📐 Terreno Hospitalar Expandido com Sucesso!');
-          this.renderer.recenter();
-        }
-      },
+      onExpandMap: () => this.handleDirectMapExpansion(),
       getState: () => this.simulation.state,
     });
+  }
+
+  private handleDirectMapExpansion(): void {
+    const ok = expandMap(this.simulation.state);
+    if (ok) {
+      soundSystem.playSuccess();
+      this.showToast('📐 Terreno Hospitalar Expandido com Sucesso (+4x4)!');
+      this.renderer.recenter();
+    } else {
+      this.showToast('⚠️ Saldo insuficiente ou tamanho máximo atingido!');
+    }
   }
 
   private setupDefeatRescueModals(modalContainer: HTMLElement): void {
@@ -213,12 +223,54 @@ class MediVilleApp {
     });
   }
 
+  private setupNotificationsAndContextMenu(): void {
+    const notifContainer = document.getElementById('notification-center-container') || document.body;
+    this.notificationCenter = new NotificationCenter(notifContainer);
+
+    const roomCtxContainer = document.getElementById('room-context-container') || document.body;
+    this.roomContextMenu = new RoomContextMenu(roomCtxContainer, {
+      onMove: (room) => this.startMovingExistingRoom(room),
+      onRotate: (room) => this.rotateExistingRoom(room),
+      onDemolish: (room) => this.demolishExistingRoom(room),
+    });
+  }
+
+  private startMovingExistingRoom(room: RoomInstance): void {
+    this.movingRoomId = room.id;
+    this.ghost.def = room.definition;
+    this.ghost.col = room.col;
+    this.ghost.row = room.row;
+    this.ghost.rotated = room.rotated;
+    this.ghost.isValid = true;
+    this.buildMenu.closeDrawer();
+    this.buildController.startPreview(room.definition, room.col, room.row, true, room.id, room.rotated);
+  }
+
+  private rotateExistingRoom(room: RoomInstance): void {
+    const rotated = !room.rotated;
+    const canRotate = canMoveRoom(this.simulation.state, room.id, room.col, room.row, rotated);
+    if (canRotate) {
+      this.simulation.moveRoom(room.id, room.col, room.row, rotated);
+      this.showToast('🔄 Sala rotacionada 90°!');
+      soundSystem.playClick();
+    } else {
+      this.showToast('⚠️ Espaço insuficiente para rotacionar!');
+    }
+  }
+
+  private demolishExistingRoom(room: RoomInstance): void {
+    this.simulation.demolishRoom(room.id);
+    this.showToast('🗑️ Sala demolida (+50% reembolso)!');
+    soundSystem.playClick();
+  }
+
   private setupModalsAndHud(modalContainer: HTMLElement): void {
     this.staffModal = new StaffModal(modalContainer, this.simulation);
     this.pharmacyModal = new PharmacyModal(modalContainer, this.simulation);
     this.financesModal = new FinancesModal(modalContainer, this.simulation);
     this.settingsModal = new SettingsModal(modalContainer, this.simulation);
     this.setupDefeatRescueModals(modalContainer);
+    this.setupNotificationsAndContextMenu();
     this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
     new TutorialView(document.getElementById('tutorial-container') || document.body);
     this.hud = new HospitalHUD(
@@ -233,6 +285,7 @@ class MediVilleApp {
         onOpenSettings: () => this.settingsModal.open(),
         onOpenEncyclopedia: () => this.encyclopediaModal.open(),
         onOpenGoals: () => this.goalsModal.open(),
+        onOpenExpandMap: () => this.handleDirectMapExpansion(),
       }
     );
     this.decisionModal = new DecisionModal(modalContainer, this.simulation);
@@ -386,33 +439,34 @@ class MediVilleApp {
       return;
     }
     if (this.isMoveMode && clicked) {
-      this.movingRoomId = clicked.id;
-      this.ghost.def = clicked.definition;
-      this.ghost.col = clicked.col;
-      this.ghost.row = clicked.row;
-      this.ghost.rotated = clicked.rotated;
-      this.ghost.isValid = true;
-      this.buildMenu.closeDrawer();
-      this.buildController.startPreview(clicked.definition, clicked.col, clicked.row, true, clicked.id, clicked.rotated);
+      this.startMovingExistingRoom(clicked);
       return;
     }
     this.selectedRoomId = clicked ? clicked.id : null;
-    this.checkRoomPatientDecision(clicked?.id);
+    const handledPatient = this.checkRoomPatientDecision(clicked?.id);
+    if (!handledPatient && clicked) {
+      const screenPos = this.renderer.camera.gridToScreen(
+        clicked.col + clicked.width / 2,
+        clicked.row + clicked.height / 2
+      );
+      this.roomContextMenu.show(clicked, screenPos.x, screenPos.y);
+    }
   }
 
-  private checkRoomPatientDecision(roomId?: string): void {
-    if (!roomId) return;
+  private checkRoomPatientDecision(roomId?: string): boolean {
+    if (!roomId) return false;
     const room = this.simulation.state.rooms.get(roomId);
-    if (!room) return;
+    if (!room) return false;
 
     for (const patId of room.occupantIds) {
       const pat = this.simulation.state.patients.get(patId);
       if (pat && (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision')) {
         this.simulation.triggerConsultation(pat.id);
         this.decisionModal.open(pat);
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   private handleGridHover(col: number, row: number): void {
@@ -442,6 +496,10 @@ class MediVilleApp {
   }
 
   private showToast(text: string): void {
+    if (this.notificationCenter) {
+      this.notificationCenter.pushToast(text, 'info');
+      return;
+    }
     const toast = document.createElement('div');
     toast.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-slate-900/95 text-white font-black text-xs shadow-2xl border border-amber-400/50 backdrop-blur-md animate-in slide-in-from-top duration-300 pointer-events-none';
     toast.textContent = text;
@@ -479,6 +537,7 @@ class MediVilleApp {
       this.hud.update(this.simulation.state);
       this.advisorView.update(this.simulation.state);
       this.eventBanner.update(this.simulation.state.activeEvents);
+      this.notificationCenter?.updateActiveEvent(this.simulation.state.activeEvents);
       const hasZeroStock = Object.values(this.simulation.state.pharmacyStock).some((c) => c === 0);
       this.buildMenu.updateBadges(this.simulation.state.pendingDecisionPatientIds.length, hasZeroStock);
     });

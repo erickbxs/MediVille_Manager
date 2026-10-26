@@ -166,9 +166,11 @@ export class Character3D {
     // Gola 3D em V do jaleco
     this.g.poly([x + 1.5, y, x + 3.2, y + 3.5, x + 3.2, y]).fill({ color: 0xe2e8f0 });
     this.g.poly([x + w - 1.5, y, x + w - 3.2, y + 3.5, x + w - 3.2, y]).fill({ color: 0xe2e8f0 });
-    // Estetoscópio metálico no pescoço
-    this.g.arc(0, y + 2.5, 3.5, 0.2, Math.PI - 0.2).stroke({ color: 0x64748b, width: 1.2 });
-    this.g.circle(1.8, y + 5.5, 1.2).fill({ color: 0x94a3b8 }); // Diafragma metálico
+    // Estetoscópio metálico no pescoço (formas fechadas preenchidas sem stroke)
+    this.g.roundRect(-2.2, y + 2.2, 1.2, 3.2, 0.6).fill({ color: 0x64748b });
+    this.g.roundRect(1.0, y + 2.2, 1.2, 3.2, 0.6).fill({ color: 0x64748b });
+    this.g.roundRect(-1.4, y + 4.8, 2.8, 1.1, 0.5).fill({ color: 0x64748b });
+    this.g.circle(1.6, y + 5.4, 1.2).fill({ color: 0x94a3b8 }); // Diafragma metálico
   }
 
   private drawNurseOrTechTorso(x: number, y: number, w: number, h: number): void {
@@ -185,8 +187,9 @@ export class Character3D {
   private drawPharmacistTorso(x: number, y: number, w: number, h: number): void {
     this.drawCapsule3D(x, y, w, h, 0xf1f5f9);
     this.g.rect(x + 3.2, y + 1, 3.2, h - 2).fill({ color: 0x2563eb }); // Gravata / camisa
-    this.g.rect(x + 1.8, y + 4.5, 2.2, 2.5).stroke({ color: 0xcfd8dc, width: 1 }); // Bolso do jaleco com caneta
-    this.g.rect(x + 2.3, y + 3.8, 0.8, 1.5).fill({ color: 0xef4444 });
+    this.g.roundRect(x + 1.6, y + 4.3, 2.4, 2.7, 0.4).fill({ color: 0xe2e8f0 }); // Bolso do jaleco
+    this.g.roundRect(x + 1.8, y + 4.5, 2.0, 2.3, 0.4).fill({ color: 0xf8fafc });
+    this.g.rect(x + 2.3, y + 3.8, 0.8, 1.5).fill({ color: 0xef4444 }); // Caneta vermelha
   }
 
   private drawJanitorTorso(x: number, y: number, w: number, h: number): void {
@@ -246,10 +249,10 @@ export class Character3D {
       // Caixa de medicamento 3D RENAME
       this.g.roundRect(5.5, torsoY + 4 + rightArmOffset, 5, 3.5, 1).fill({ color: 0xef4444 });
       this.g.rect(6.5, torsoY + 5 + rightArmOffset, 3, 1).fill({ color: 0xffffff });
-    } else if (this.config.patientAgeGroup === 'elderly') {
-      // Bengala de apoio
-      this.g.rect(7.5, torsoY + 3, 1.5, 14).fill({ color: 0x78350f });
-      this.g.arc(8.5, torsoY + 3, 2, Math.PI, 0).stroke({ color: 0x78350f, width: 1.5 });
+      // Bengala de apoio (formas fechadas preenchidas sem stroke)
+      this.g.roundRect(7.5, torsoY + 3, 1.5, 14, 0.5).fill({ color: 0x78350f });
+      this.g.roundRect(7.0, torsoY + 1.2, 3.2, 1.8, 0.8).fill({ color: 0x78350f });
+      this.g.roundRect(9.0, torsoY + 1.8, 1.2, 2.4, 0.6).fill({ color: 0x78350f });
     }
   }
 
@@ -262,9 +265,9 @@ export class Character3D {
     this.g.circle(0, y, r).fill({ color: skin });
     this.g.ellipse(-1.2, y - 1.5, 2.2, 1.6).fill({ color: shadeColor(skin, 1.3), alpha: 0.45 });
 
-    // Volume do cabelo em camadas 3D
-    this.g.arc(0, y, r + 0.4, Math.PI * 0.9, Math.PI * 2.1).stroke({ color: hair, width: 2.2 });
-    this.g.ellipse(0, y - r * 0.65, r * 0.9, 2.2).fill({ color: hair });
+    // Volume do cabelo em camadas 3D (formas preenchidas sem stroke espúrio)
+    this.g.ellipse(0, y - r * 0.45, r + 0.6, r * 0.8).fill({ color: hair });
+    this.g.ellipse(0, y - r * 0.7, r * 0.85, 2.4).fill({ color: hair });
     if (this.config.gender === 'female') {
       this.g.roundRect(-r - 0.8, y - 1, 1.8, 6.5, 1).fill({ color: hair });
       this.g.roundRect(r - 1.0, y - 1, 1.8, 6.5, 1).fill({ color: hair });
@@ -285,9 +288,9 @@ export class Character3D {
     const isBlinking = Math.floor(timeSec * 2.5) % 12 === 0;
 
     if (isBlinking) {
-      // Olho fechado em arco suave
-      this.g.arc(-2 + eyeOffsetX, y + 0.5, 1.2, 0.1, Math.PI - 0.1).stroke({ color: 0x0f172a, width: 1 });
-      this.g.arc(2 + eyeOffsetX, y + 0.5, 1.2, 0.1, Math.PI - 0.1).stroke({ color: 0x0f172a, width: 1 });
+      // Olho fechado preenchido suave
+      this.g.roundRect(-2.8 + eyeOffsetX, y + 0.8, 2.2, 0.8, 0.4).fill({ color: 0x0f172a });
+      this.g.roundRect(1.2 + eyeOffsetX, y + 0.8, 2.2, 0.8, 0.4).fill({ color: 0x0f172a });
       return;
     }
 
@@ -326,5 +329,9 @@ export class Character3D {
       case 'receptionist': return 0xd97706;
       default: return CASUAL_CLOTHES[(this.config.skinToneIndex ?? 0) % CASUAL_CLOTHES.length]!;
     }
+  }
+
+  public destroy(): void {
+    this.container.destroy({ children: true });
   }
 }

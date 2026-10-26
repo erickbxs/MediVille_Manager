@@ -31,6 +31,7 @@ export interface HudCallbacks {
   onOpenSettings?: () => void;
   onOpenEncyclopedia?: () => void;
   onOpenGoals?: () => void;
+  onOpenExpandMap?: () => void;
 }
 
 export function formatShortCash(amount: number): string {
@@ -81,6 +82,10 @@ export class HospitalHUD {
           </div>
 
           <div class="flex items-center gap-1 shrink-0">
+            <button id="btn-topbar-expand-map" title="${t('map.expand') || 'Expandir Mapa (+4x4)'}" class="min-h-[36px] px-2.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 flex items-center gap-1 text-[11px] font-black active:scale-95 shadow-sm">
+              <span>📐</span>
+              <span class="hidden sm:inline">+Mapa</span>
+            </button>
             <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[36px] min-h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs">
               <span id="btn-toggle-music-icon">${musicSystem.isMuted() ? '🔇' : '🎵'}</span>
               <span id="btn-toggle-music-indicator" class="${musicSystem.isMuted() ? 'hidden' : ''} absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -157,6 +162,11 @@ export class HospitalHUD {
     bind('btn-1x', 1);
     bind('btn-2x', 2);
     bind('btn-3x', 3);
+
+    document.getElementById('btn-topbar-expand-map')?.addEventListener('click', () => {
+      soundSystem.playClick();
+      this.callbacks?.onOpenExpandMap?.();
+    });
 
     document.getElementById('btn-toggle-music')?.addEventListener('click', () => {
       musicSystem.start();

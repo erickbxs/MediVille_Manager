@@ -34,6 +34,10 @@ import { THEME } from './theme-config';
 import { BALANCE, PHARMACY_CATALOG, type RoomDefinition } from '../core/config';
 import type { GameState } from '../state/game-state';
 import { globalBus } from '../core/event-bus';
+import { MapExpansionHandles } from './map-expansion-handles';
+import { UrbanLifeView } from './urban-life-view';
+import { urbanLifeSystem } from '../systems/urban-life-system';
+import type { ExpansionTier } from '../systems/map-expansion-system';
 
 export interface GhostState {
   def: RoomDefinition | null;
@@ -44,7 +48,11 @@ export interface GhostState {
   touchOffsetY?: number;
 }
 
-const LAYER_Z = { city: 0, traffic: 5, grid: 10, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
+export interface HospitalRendererCallbacks {
+  onExpandMap?: (tier: ExpansionTier) => void;
+}
+
+const LAYER_Z = { city: 0, urban: 3, traffic: 5, grid: 10, handles: 15, rooms: 20, lighting: 30, patients: 40, ghost: 50 };
 
 const INITIAL_STOCK: Record<string, number> = Object.fromEntries(
   PHARMACY_CATALOG.medications.map((m) => [m.id, m.initialStock])
@@ -54,13 +62,21 @@ export class HospitalRenderer {
   public app = new Application();
   public camera = new Camera();
   private world = new Container();
+  private callbacks?: HospitalRendererCallbacks;
   private cityEnv!: CityEnvironment;
   private gridView!: GridView;
+  private expansionHandles!: MapExpansionHandles;
   private roomsView!: RoomRenderer3D;
   private lightingView!: DayLightingView;
   private trafficView!: TrafficView;
+  private urbanLifeView!: UrbanLifeView;
   private patientsView!: PatientsView;
   private ghostView!: GhostView;
+  private lastTime = performance.now();
+
+  constructor(callbacks?: HospitalRendererCallbacks) {
+    this.callbacks = callbacks;
+  }
 
   public async init(containerElement: HTMLElement): Promise<void> {
     await this.app.init({
@@ -104,26 +120,36 @@ export class HospitalRenderer {
 
   private createLayers(): void {
     this.cityEnv = new CityEnvironment();
+    this.urbanLifeView = new UrbanLifeView();
     this.trafficView = new TrafficView();
     this.gridView = new GridView();
+    this.expansionHandles = new MapExpansionHandles({
+      onExpand: (tier) => this.callbacks?.onExpandMap?.(tier),
+    });
     this.roomsView = new RoomRenderer3D();
     this.lightingView = new DayLightingView();
     this.patientsView = new PatientsView();
     this.ghostView = new GhostView();
 
+    this.setupLayerIndices();
+    this.world.addChild(
+      this.cityEnv.container, this.urbanLifeView.container, this.trafficView.container,
+      this.gridView.container, this.expansionHandles.container, this.roomsView.container,
+      this.lightingView.container, this.patientsView.container, this.ghostView.container,
+    );
+  }
+
+  private setupLayerIndices(): void {
     this.world.sortableChildren = true;
     this.cityEnv.container.zIndex = LAYER_Z.city;
+    this.urbanLifeView.container.zIndex = LAYER_Z.urban;
     this.trafficView.container.zIndex = LAYER_Z.traffic;
     this.gridView.container.zIndex = LAYER_Z.grid;
+    this.expansionHandles.container.zIndex = LAYER_Z.handles;
     this.roomsView.container.zIndex = LAYER_Z.rooms;
     this.lightingView.container.zIndex = LAYER_Z.lighting;
     this.patientsView.container.zIndex = LAYER_Z.patients;
     this.ghostView.container.zIndex = LAYER_Z.ghost;
-    this.world.addChild(
-      this.cityEnv.container, this.trafficView.container, this.gridView.container,
-      this.roomsView.container, this.lightingView.container, this.patientsView.container,
-      this.ghostView.container,
-    );
   }
 
   public render(state: GameState, ghost: GhostState, selectedRoomId: string | null): void {
@@ -132,18 +158,24 @@ export class HospitalRenderer {
       this.camera.setGridSize(currentGrid);
       this.gridView.updateSize(currentGrid);
     }
-
     this.world.position.set(this.camera.x, this.camera.y);
     this.world.scale.set(this.camera.zoom);
+
+    const now = performance.now();
+    const deltaSec = Math.min(0.1, (now - this.lastTime) / 1000);
+    this.lastTime = now;
+    urbanLifeSystem.update(state.speed === 0 ? 0 : deltaSec * state.speed);
 
     const rooms = Array.from(state.rooms.values());
     const stockRatio = getPharmacyStockRatio(state.pharmacyStock, INITIAL_STOCK);
     const dayProgress = state.dayTimeSec / BALANCE.time.dayDurationSec;
     const isNight = dayProgress > 0.75 || dayProgress < 0.2;
 
-    this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), performance.now());
+    this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), now);
+    this.urbanLifeView.render(urbanLifeSystem, now / 1000);
     this.trafficView.render(trafficSystem.vehicles, state.dayTimeSec, isNight);
     this.roomsView.render(rooms, selectedRoomId, stockRatio);
+    this.expansionHandles.update(state);
     this.lightingView.render(dayProgress, rooms);
     this.patientsView.render(state);
     this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid, ghost.touchOffsetY ?? 0);

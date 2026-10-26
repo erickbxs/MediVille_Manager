@@ -2,6 +2,45 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [1.6.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+
+### Versão 1.6.0 — Mobilidade Touchscreen de Obras (Tap-to-Move), Expansão Direta no Mapa, Vida Urbana com Cidadãos NPCs, Pop-ups de Emergência no Canto Direito, Polimento Gráfico Interno/Externo e Correção da Linha nos NPCs
+- **PARTE 1: Correção Definitiva da Linha nos NPCs (`Character3D`, `renderer.ts`)**:
+  - Eliminação de conexões diagonais espúrias atravessando os avatares no PixiJS v8 causadas por subcaminhos abertos e `.stroke()` compartilhado.
+  - Substituição de 100% dos detalhes lineares (estetoscópio, cruz de enfermagem, boca, sobrancelhas, divisórias de jaleco, crachá, sapatos e bengala) por formas preenchidas com `.fill()` (`roundRect`, `circle` e `ellipse`).
+  - Renderização limpa de todos os personagens nos estados `IDLE`, `WALKING` e `WORKING` sem artefatos gráficos.
+- **PARTE 2: Mobilidade Total de Obras em Touchscreen (`build-controller.ts`, `room-context-menu.ts` & `ghost-view.ts`)**:
+  - **Tap-to-Move Instantâneo**: tocar em qualquer bloco da grade durante a pré-visualização teleporta a sala fantasma para as coordenadas selecionadas sem exigir arraste manual por toda a tela.
+  - **Trava da Câmera (`panLocked = true`)**: ao iniciar o arraste sobre a sala fantasma no modo `ACTIVE_PLACEMENT`, o arraste da câmera é bloqueado para mover apenas a sala.
+  - **Menu Contextual de Sala Existente (`RoomContextMenu`)**: tocar em uma sala construída (quando não há atendimento clínico pendente) abre um menu flutuante ergonômico sobre a sala com 3 botões táteis diretos:
+    - `✋ Mover Sala` (destaca a sala no modo `ACTIVE_PLACEMENT` permitindo reposicioná-la de graça).
+    - `🔄 Girar 90°` (rotaciona a sala no próprio eixo se houver espaço).
+    - `🗑️ Demolir (+50%)` (reembolso imediato de metade do valor investido).
+- **PARTE 3: Expansão do Mapa Direta nas Bordas 3D (`map-expansion-handles.ts` & `hud.ts`)**:
+  - Placas e faixas tracejadas de loteamento nas 4 bordas do terreno com gatilhos táteis interativos no PixiJS: **`➕ Expandir Terreno (+4x4) — R$ 45k`**.
+  - Confirmação direta de 1 clique com expansão imediata da laje, recuo automático das ruas/árvores e recentralização suave da câmera.
+  - Botão fixo **`📐 +Mapa`** na Top Bar e na gaveta `🏗️ Obras` para acesso rápido.
+- **PARTE 4: Pilha de Notificações e Emergências no Canto Direito (`notification-center.ts`)**:
+  - **Zero Pop-ups Bloqueando o Centro**: eventos de emergência, conquistas e alertas agora empilham ordenadamente no canto superior direito (`fixed top-14 right-3 z-40 w-72 sm:w-80 pointer-events-none`).
+  - **Fechamento Ágil**: cada cartão possui botão `✕` amplo ($\ge 44\times 44\text{px}$) e suporte a arrastar/deslizar com o dedo para a direita (`Swipe-to-Dismiss`).
+  - **Auto-Minimização de Emergência**: o banner de emergência recolhe automaticamente após 4 segundos em um selo circular pulsante `🚨 00:32s` no canto direito, liberando 100% da área útil do hospital.
+  - Botão `"Limpar Tudo"` quando houver mais de 2 avisos acumulados.
+- **PARTE 5: Dimensionamento Perfeito de Abas e Modais (`build-menu.ts`, `hud.ts`)**:
+  - Cartões de salas na gaveta de obras com dimensões padronizadas e uniformes (`w-24 sm:w-28 h-24 shrink-0`).
+  - Botão `📐 Expandir Terreno` fixado à esquerda do carrossel, seguido pelos botões de navegação horizontal `◀` e `▶`.
+  - Abas e botões táteis elásticos e responsivos para telas de `360px` até `1920px`.
+- **PARTE 6: Vida Urbana com Cidadãos NPCs e Qualidade Gráfica (`urban-life-system.ts`, `urban-life-view.ts`)**:
+  - **10 a 18 Cidadãos Ambientais**: pedestres caminhando pelas calçadas externas, corredores (*joggers*) esportivos na borda do parque, passeadores com cães Voxel, passageiros aguardando no ponto de ônibus e quiosque de café com clientes.
+  - **Interações na Praça**: NPCs sentados nos bancos conversando com balões animados (`💬`, `🎵`, `☕`).
+  - **Semáforo Funcional**: alternância determinística de luzes (verde, amarelo e vermelho) na faixa de pedestres sincronizada com o tráfego urbano.
+  - **Ambiente Rico e Vivo**: árvores com folhagem oscilante pelo vento (`Math.sin`), fonte decorativa de água com ondas pulsantes na praça de entrada, e interiores hospitalares com pisos brilhantes e rodapés sombreados.
+- **PARTE 7: Testes Automatizados e Orçamento do GDD**:
+  - Nova suíte `tests/touch-mobility-urban-life-and-toasts.test.ts` cobrindo Tap-to-Move, expansão de mapa, ciclo de vida dos cidadãos, notificações e ausência de linhas nos NPCs.
+  - 100% dos 157 testes unitários aprovados em 20 arquivos.
+  - Pacote final otimizado em **1.40 MB**, respeitando com folga o limite de 5.00 MB.
+
 ## [1.5.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

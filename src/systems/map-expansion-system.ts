@@ -30,7 +30,9 @@ export interface ExpansionOption {
 export const MIN_GRID_SIZE = 12;
 export const MAX_GRID_SIZE = 24;
 
-export const EXPANSION_TIERS: Record<number, { nextSize: number; cost: number; title: string }> = {
+export type ExpansionTier = { nextSize: number; cost: number; title: string };
+
+export const EXPANSION_TIERS: Record<number, ExpansionTier> = {
   12: { nextSize: 16, cost: 45000, title: 'Terreno Ampliado (16x16)' },
   16: { nextSize: 20, cost: 95000, title: 'Quadra Hospitalar (20x20)' },
   20: { nextSize: 24, cost: 180000, title: 'Complexo Metropolitano (24x24)' },

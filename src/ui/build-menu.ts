@@ -96,9 +96,9 @@ export class BuildMenu {
       return `
         <button data-room-id="${room.id}"
           title="${fullName} — ${dimensions} — R$ ${room.cost}"
-          class="build-card snap-start pointer-events-auto flex flex-col items-center justify-between min-w-[76px] h-[76px] px-2 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md transition-all active:scale-95 hover:border-sky-500">
+          class="build-card snap-start shrink-0 pointer-events-auto flex flex-col items-center justify-between w-24 sm:w-28 h-24 p-2 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md transition-all active:scale-95 hover:border-sky-500">
           <span class="text-2xl">${room.icon}</span>
-          <span class="w-full text-center font-semibold text-sm truncate text-slate-800 dark:text-slate-100">${shortName}</span>
+          <span class="w-full text-center font-bold text-xs truncate text-slate-800 dark:text-slate-100">${shortName}</span>
           <div class="flex items-center justify-between w-full text-[10px] text-slate-500 dark:text-slate-400 font-medium">
             <span class="font-bold text-emerald-600 dark:text-emerald-400">R$ ${costK}k</span>
             <span>${dimensions}</span>
@@ -119,45 +119,46 @@ export class BuildMenu {
     return `
       <button id="btn-build-expand-map"
         title="Expandir Terreno para ${next.nextSize}x${next.nextSize} (R$ ${next.cost.toLocaleString('pt-BR')})"
-        class="snap-start shrink-0 flex flex-col items-center justify-between min-w-[84px] h-[76px] px-2 py-1.5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/90 border-2 border-indigo-400 dark:border-indigo-500 shadow-md transition-all active:scale-95 ${canAfford ? 'hover:border-indigo-600' : 'opacity-60 cursor-not-allowed'}">
-        <span class="text-xl">📐</span>
-        <span class="w-full text-center font-bold text-xs truncate text-indigo-700 dark:text-indigo-300">Expandir</span>
+        class="snap-start shrink-0 flex flex-col items-center justify-between w-24 sm:w-28 h-24 p-2 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/90 border-2 border-indigo-400 dark:border-indigo-500 shadow-md transition-all active:scale-95 ${canAfford ? 'hover:border-indigo-600' : 'opacity-60 cursor-not-allowed'}">
+        <span class="text-2xl">📐</span>
+        <span class="w-full text-center font-extrabold text-xs truncate text-indigo-700 dark:text-indigo-300">Expandir</span>
         <div class="flex items-center justify-between w-full text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
           <span>+4x4</span>
           <span>R$ ${costK}k</span>
         </div>
       </button>
-      <div class="w-px h-10 bg-indigo-200 dark:bg-indigo-800 mx-0.5 shrink-0"></div>
     `;
   }
 
   private renderDrawerHtml(): string {
     return `
-      <div id="build-drawer" class="hidden w-full max-w-xl mx-auto p-2 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 animate-in slide-in-from-bottom duration-200">
+      <div id="build-drawer" class="hidden w-full max-w-2xl mx-auto p-2 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 animate-in slide-in-from-bottom duration-200">
         <div class="flex items-center justify-between pb-1 px-2 border-b border-slate-200/60 dark:border-slate-800/60 mb-2">
           <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">🏗️ ${t('dock.build') || 'Obras'} & ${t('game.unitName') || 'Instalações'}</span>
           <button id="btn-close-drawer" class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold">✕</button>
         </div>
-        <div class="relative flex items-center">
-          <button id="btn-build-scroll-prev" aria-label="Rolar esquerda" class="opacity-0 pointer-events-none transition-opacity absolute left-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">◀</button>
-          <div id="build-drawer-carousel" class="flex items-center gap-2 overflow-x-auto p-1 scrollbar-none snap-x touch-pan-x w-full">
-            ${this.renderExpandMapCardHtml()}
-            ${this.renderRoomsHtml()}
-            <div class="w-px h-10 bg-slate-300 dark:bg-slate-700 mx-1 shrink-0"></div>
-            <button id="btn-move" title="Mover sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-amber-500 active:scale-95">
-              <span class="text-xl">✋</span>
-              <span class="text-[10px] font-bold mt-1">Mover</span>
-            </button>
-            <button id="btn-rotate" title="Girar sala (R)" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-sky-500 active:scale-95">
-              <span class="text-xl">🔄</span>
-              <span class="text-[10px] font-bold mt-1">Girar</span>
-            </button>
-            <button id="btn-demolish" title="Vender sala" class="snap-start flex flex-col items-center justify-center min-w-[54px] min-h-[76px] px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-rose-500 active:scale-95">
-              <span class="text-xl">🗑️</span>
-              <span class="text-[10px] font-bold mt-1">${t('room.remove') || 'Vender'}</span>
-            </button>
+        <div class="flex items-center gap-2">
+          ${this.renderExpandMapCardHtml()}
+          <div class="relative flex-1 flex items-center min-w-0">
+            <button id="btn-build-scroll-prev" aria-label="Rolar esquerda" class="opacity-0 pointer-events-none transition-opacity absolute left-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">◀</button>
+            <div id="build-drawer-carousel" class="flex items-center gap-2 overflow-x-auto p-1 scrollbar-none snap-x touch-pan-x w-full">
+              ${this.renderRoomsHtml()}
+              <div class="w-px h-10 bg-slate-300 dark:bg-slate-700 mx-1 shrink-0"></div>
+              <button id="btn-move" title="Mover sala" class="snap-start shrink-0 flex flex-col items-center justify-center min-w-[56px] h-24 px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-amber-500 active:scale-95">
+                <span class="text-xl">✋</span>
+                <span class="text-[10px] font-bold mt-1">Mover</span>
+              </button>
+              <button id="btn-rotate" title="Girar sala (R)" class="snap-start shrink-0 flex flex-col items-center justify-center min-w-[56px] h-24 px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-sky-500 active:scale-95">
+                <span class="text-xl">🔄</span>
+                <span class="text-[10px] font-bold mt-1">Girar</span>
+              </button>
+              <button id="btn-demolish" title="Vender sala" class="snap-start shrink-0 flex flex-col items-center justify-center min-w-[56px] h-24 px-2 py-1.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-md border border-slate-200 dark:border-slate-800 text-rose-500 active:scale-95">
+                <span class="text-xl">🗑️</span>
+                <span class="text-[10px] font-bold mt-1">${t('room.remove') || 'Vender'}</span>
+              </button>
+            </div>
+            <button id="btn-build-scroll-next" aria-label="Rolar direita" class="transition-opacity absolute right-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">▶</button>
           </div>
-          <button id="btn-build-scroll-next" aria-label="Rolar direita" class="transition-opacity absolute right-0 z-10 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 active:scale-95">▶</button>
         </div>
       </div>
     `;
