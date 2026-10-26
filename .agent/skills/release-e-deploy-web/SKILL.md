@@ -19,6 +19,9 @@ Sempre que finalizar uma entrega ou atualizar a versão do **MediVille Manager**
 5. **Commit e Push no Git**:
    - Execute `git add .` e `git commit -m "chore(release): publica versao vX.Y.Z"` (e `git push origin main` se houver repositório remoto configurado).
 6. **Deploy Online Obrigatório no Cloudflare Pages**:
-   - Execute `npx wrangler pages deploy dist --project-name=mediville-manager --branch=main` para subir os arquivos compilados de `dist/` para produção.
+   - Execute o deploy na branch de produção (`master`) para atualizar o domínio raiz `https://mediville-manager.pages.dev` e na branch (`main`) para o alias:
+     `npx wrangler pages deploy dist --project-name=mediville-manager --branch=master`
+     `npx wrangler pages deploy dist --project-name=mediville-manager --branch=main`
+   - Ou simplesmente execute `npm run deploy` que orquestra verificação completa e ambos os deploys automaticamente.
 7. **Relatório Final de Entrega**:
    - Informe ao usuário a nova versão publicada, a URL de produção/preview gerada pelo Cloudflare Pages e o resultado dos testes.

@@ -42,6 +42,7 @@ describe('Prompt 20: Pipeline de Release, Sincronização e Cache-Busting PWA', 
     expect(pkg.version).toBe('1.9.0');
     expect(pkg.scripts['sync:version']).toBe('node scripts/sync-version.mjs');
     expect(pkg.scripts.build).toContain('npm run sync:version');
+    expect(pkg.scripts.deploy).toContain('--branch=master');
     expect(pkg.scripts.deploy).toContain('--branch=main');
   });
 
