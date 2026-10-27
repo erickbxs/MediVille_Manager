@@ -1,9 +1,16 @@
 /**
  * Arquivo: src/state/game-state.ts
- * O que faz: Estrutura o estado central imutável da simulação (caixa, reputação, relógio, salas, pacientes e fila).
- * Para que foi criado: Manter uma fonte única da verdade para a simulação, facilitando testes e persistência.
- * Como modificar/debugar: Caso precise de novas estatísticas do hospital, adicione no objeto HospitalStats.
- * Importa: src/entities/room.ts, src/entities/patient.ts
+ *
+ * 1. O que este arquivo faz?
+ * Estrutura o estado central imutável da simulação (caixa, reputação, relógio, salas, pacientes, fila e timers de eventos).
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Manter uma fonte única da verdade para a simulação, facilitando testes, persistência e sincronização de subsistemas.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Novos contadores, timers de transporte (ônibus, SAMU) ou estatísticas clínicas devem ser tipados na interface GameState.
+ *
+ * Importa: src/entities/room.ts, src/entities/patient.ts, src/entities/staff.ts, src/entities/event.ts
  * Conecta-se com: src/core/simulation.ts, src/systems/*, src/ui/hud.ts
  */
 
@@ -55,6 +62,7 @@ export interface GameState {
   activeContracts: string[];
   cleanlinessRating: number;
   helipadTimerSec: number;
+  busArrivalTimerSec?: number;
   unlockedRoomIds: string[];
   seenTutorialTips: string[];
   movingRoomId: string | null;

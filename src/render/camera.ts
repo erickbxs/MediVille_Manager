@@ -96,6 +96,7 @@ export class Camera {
   public viewportHeight = 600;
   public gridCols = BALANCE.grid.cols;
   public gridRows = BALANCE.grid.rows;
+  public panLocked = false;
 
   public setGridSize(cols: number, rows = cols): void {
     this.gridCols = cols;
@@ -129,6 +130,7 @@ export class Camera {
   }
 
   public pan(dx: number, dy: number): void {
+    if (this.panLocked) return;
     this.x += dx;
     this.y += dy;
   }

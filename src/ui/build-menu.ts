@@ -34,12 +34,17 @@ export const ROOM_CATEGORIES: Record<RoomCategory, { label: string; roomIds: str
   complex: { label: '🚨 Alta Complexidade', roomIds: ['emergency_room', 'surgery', 'icu', 'maternity', 'trauma_center', 'blood_bank', 'helipad'] },
 };
 
+const LIFT_OFF_DRAG_DY = -10;
+const LIFT_OFF_HOLD_MS = 120;
+const HORIZONTAL_SCROLL_DX = 10;
+
 export interface BuildMenuCallbacks {
   onSelectRoom: (def: RoomDefinition) => void;
   onToggleRotate: () => void;
   onToggleDemolish: () => void;
   onToggleMove: () => void;
   onCancelSelection: () => void;
+  onLiftOffDrag?: (def: RoomDefinition, clientX: number, clientY: number) => void;
   onRecenterMap?: () => void;
   onOpenPendingCase?: () => void;
   onOpenStaff?: () => void;
@@ -327,15 +332,9 @@ export class BuildMenu {
     });
 
     this.container.querySelectorAll('.build-card').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = (btn as HTMLElement).dataset.roomId;
-        const def = ROOMS_CATALOG.rooms.find((r) => r.id === id);
-        if (def) {
-          this.isDemolishActive = false;
-          this.isMoveActive = false;
-          this.callbacks.onSelectRoom(def);
-        }
-      });
+      const id = (btn as HTMLElement).dataset.roomId;
+      const def = ROOMS_CATALOG.rooms.find((r) => r.id === id);
+      if (def) this.bindCardLiftOff(btn, def);
     });
 
     document.getElementById('btn-rotate')?.addEventListener('click', () => this.callbacks.onToggleRotate());
@@ -348,6 +347,68 @@ export class BuildMenu {
       this.isDemolishActive = !this.isDemolishActive;
       this.isMoveActive = false;
       this.callbacks.onToggleDemolish();
+    });
+  }
+
+  private bindCardLiftOff(btn: Element, def: RoomDefinition): void {
+    let startX = 0;
+    let startY = 0;
+    let isLifted = false;
+    let timer: number | null = null;
+
+    const triggerLift = (pe: PointerEvent) => {
+      if (isLifted) return;
+      isLifted = true;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      this.closeDrawer();
+      this.isDemolishActive = false;
+      this.isMoveActive = false;
+      this.callbacks.onSelectRoom(def);
+      this.callbacks.onLiftOffDrag?.(def, pe.clientX, pe.clientY);
+    };
+
+    btn.addEventListener('pointerdown', (e) => {
+      const pe = e as PointerEvent;
+      startX = pe.clientX;
+      startY = pe.clientY;
+      isLifted = false;
+      timer = window.setTimeout(() => triggerLift(pe), LIFT_OFF_HOLD_MS);
+    });
+
+    btn.addEventListener('pointermove', (e) => {
+      const pe = e as PointerEvent;
+      const dx = pe.clientX - startX;
+      const dy = pe.clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > HORIZONTAL_SCROLL_DX) {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        return;
+      }
+      if (dy < LIFT_OFF_DRAG_DY) {
+        pe.preventDefault();
+        pe.stopPropagation();
+        triggerLift(pe);
+      }
+    });
+
+    btn.addEventListener('pointerup', () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    });
+
+    btn.addEventListener('click', () => {
+      if (!isLifted) {
+        this.isDemolishActive = false;
+        this.isMoveActive = false;
+        this.callbacks.onSelectRoom(def);
+      }
     });
   }
 

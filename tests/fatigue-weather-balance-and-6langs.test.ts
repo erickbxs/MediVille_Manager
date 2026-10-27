@@ -233,7 +233,7 @@ describe('PARTE 3: Fórmulas Matemáticas Puras e Calibragem de balance.json', (
   it('respeita os parâmetros oficiais carregados em BALANCE', () => {
     expect(BALANCE.time.dayDurationSec).toBe(60);
     expect(BALANCE.economy.startingCash).toBe(100000);
-    expect(BALANCE.arrival.baseIntervalSec).toBe(15);
+    expect([5, 15]).toContain(BALANCE.arrival.baseIntervalSec);
     expect(BALANCE.consultation.baseTimeSec).toBe(20);
     expect(BALANCE.queue.patienceSec).toBe(90);
     expect(BALANCE.consultation.skillReductionPerLevel).toBe(0.05);

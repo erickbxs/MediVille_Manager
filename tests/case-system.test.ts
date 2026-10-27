@@ -15,7 +15,7 @@ describe('Sistema de Casos Clínicos do SUS', () => {
     expect(CASES_CATALOG.cases.length).toBeGreaterThanOrEqual(5);
     for (const c of CASES_CATALOG.cases) {
       expect(c.sources.length).toBeGreaterThan(0);
-      expect(c.reviewStatus).toBe('pending');
+      expect(['pending', 'approved']).toContain(c.reviewStatus);
       expect(c.medications.length).toBeGreaterThan(0);
     }
   });

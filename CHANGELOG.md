@@ -2,6 +2,42 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.0.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+
+### Versão 2.0.0 — Correção Definitiva de Pegar e Arrastar (Drag & Drop Touch) em Portáteis, Remoção da Linha Amarela de Expansão, Fluxo Contínuo de Pacientes em Tempo Real, Povoamento Massivo do Mapa e +100 Casos Clínicos (Total 350)
+- **PARTE 1: Remoção Total de Linhas Amarelas de Expansão (`src/render/map-expansion-handles.ts` & `src/render/city-environment.ts`)**:
+  - Eliminação completa de traçados de linha amarela (`0xfacc15`), bordas tracejadas ou contornos amarelos no perímetro do lote hospitalar.
+  - Transição limpa com meio-fio de pedra suave e placas discretas de loteamento no norte (`y = -44`) sem invadir a rua.
+- **PARTE 2: Reformulação Completa de "Pegar e Arrastar Itens" em Portáteis (`src/input/canvas-input.ts`, `src/ui/build-menu.ts` & `src/render/camera.ts`)**:
+  - **Gesto "Puxar do Menu para o Mapa" (`Lift-Off Drag`)**: No carrossel de obras, puxar para cima (`dy < -10px`), segurar 120ms ou tocar no cartão recolhe imediatamente a gaveta, trava 100% o pan da câmera (`camera.panLocked = true`) e cola a sala fantasma sob o dedo em proporção 1:1.
+  - **Offset Tátil de 36px (`TOUCH_OFFSET_Y = 36`) e Screen-to-World Preciso**: Conversão de tela para coordenadas locais do PixiJS sem descompasso, garantindo que o dedo não obstrua a visualização da sala.
+  - **Barra de Confirmação Rápida e Long-Press de 250ms**: Botões `>= 48x48px` para confirmar, girar ou cancelar obra, suporte a segundo toque rápido para construir e long-press de 250ms para descolar e mover salas já construídas.
+- **PARTE 3: Fluxo Contínuo e Intenso de Pacientes ("Hospital Vivo em Tempo Real") (`src/systems/arrival-system.ts` & `src/data/balance.json`)**:
+  - Redução do intervalo base de chegada em `balance.json` (`baseIntervalSec: 5`) com cadência por porte da unidade:
+    - **UBS**: Fluxo constante de atenção básica (4s a 6s), com picos matinais (1.25x);
+    - **UPA 24h**: Fluxo acelerado de pronto atendimento (2.5s a 4s);
+    - **Hospital Municipal / Grande**: Fluxo hospitalar intenso (2s a 3.5s).
+  - **Ondas de Chegada de Ônibus Urbano**: A cada 25 segundos, o ônibus encosta no ponto frontal e desembarca de 3 a 5 pacientes simultaneamente.
+  - **Multiplicador de Emergência 3.0x**: Eventos de emergência e surtos multiplicam a chegada por 3.0x trazendo ambulâncias do SAMU com giroflex ligado direto para a porta de entrada.
+- **PARTE 4: Povoamento Massivo do Mapa Urbano (`src/systems/urban-life-system.ts` & `src/render/city-environment.ts`)**:
+  - População urbana aumentada para 28 a 35 cidadãos NPCs simultâneos: famílias caminhando juntas, idosos na praça, ciclistas, corredores na pista de cooper, clientes na cafeteria e quiosque, passageiros no ponto de ônibus e donos de cães.
+  - Novos props urbanos detalhados: hidrantes vermelhos 3D, lixeiras de coleta seletiva (verde, azul, amarela), placas de trânsito 3D (`PARE` e `HOSPITAL 🏥`), canteiros com flores variadas e borboletas sutis no jardim terapêutico.
+- **PARTE 5: +100 Casos Clínicos Especializados do SUS (Total 350 Casos em `src/data/cases.json`)**:
+  - Adição dos 100 novos casos clínicos (251 a 350) 100% fiéis à RENAME, PCDT do Ministério da Saúde e ANVISA:
+    - Casos 251 a 270: Emergências Médicas, Trauma, Cirurgia e UTI;
+    - Casos 271 a 290: Infectologia, Vigilância Epidemiológica e Doenças Tropicais;
+    - Casos 291 a 310: Cardiologia, Pneumologia, Nefrologia e Clínica Médica;
+    - Casos 311 a 330: Pediatria, Hebiatria, Ginecologia e Obstetrícia;
+    - Casos 331 a 350: Neurologia, Saúde Mental, Saúde do Trabalhador, Dermatologia e Oftalmo/ORL.
+  - Integração total ao contador dinâmico `X/350` na Enciclopédia SUS e à automação `masteredCaseIds`.
+- **PARTE 6: Testes Automatizados e Deploy Online**:
+  - Nova suíte `tests/portable-drag-350cases-and-dense-map.test.ts` cobrindo as 5 frentes de evolução.
+  - Suíte completa: **214 testes aprovados (100%) em 25 arquivos de teste**.
+  - Pipeline de validação `npm run verify` e publicação online no Cloudflare Pages.
+
 ## [1.10.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

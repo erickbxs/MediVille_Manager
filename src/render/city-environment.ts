@@ -190,10 +190,55 @@ export class CityEnvironment {
     g.circle(fx, fy, 28).fill({ color: 0x94a3b8 });
     g.circle(fx, fy, 24).fill({ color: 0x38bdf8 });
 
+    this.drawGardenFlora(g, gardenX, gardenW, gardenH);
+
     // Ciclovia vermelha lateral
     const bikeX = gardenX + gardenW - 32;
     g.rect(bikeX, 20, 26, gardenH).fill({ color: 0xb91c1c, alpha: 0.85 });
     g.rect(bikeX + 11, 20, 4, gardenH).fill({ color: 0xfef2f2, alpha: 0.8 });
+  }
+
+  private drawGardenFlora(g: Graphics, gardenX: number, gardenW: number, gardenH: number): void {
+    const flowerColors = [0xf43f5e, 0xfacc15, 0xec4899, 0xa855f7, 0x38bdf8];
+    for (let i = 0; i < 18; i++) {
+      const flX = gardenX + 30 + ((i * 37) % (gardenW - 70));
+      const flY = 50 + ((i * 43) % (gardenH - 90));
+      const flColor = flowerColors[i % flowerColors.length] ?? 0xf43f5e;
+      g.circle(flX, flY, 3.2).fill({ color: flColor });
+      g.circle(flX, flY, 1.2).fill({ color: 0xffffff, alpha: 0.8 });
+    }
+
+    for (let b = 0; b < 4; b++) {
+      const bX = gardenX + 45 + b * 38;
+      const bY = 90 + b * 55;
+      g.ellipse(bX - 2, bY - 2, 2.5, 1.5).fill({ color: 0x38bdf8, alpha: 0.85 });
+      g.ellipse(bX + 2, bY - 2, 2.5, 1.5).fill({ color: 0x38bdf8, alpha: 0.85 });
+    }
+  }
+
+  private drawSidewalkProps(g: Graphics, gridW: number, sidewalkY: number): void {
+    // Hidrantes vermelhos 3D na calçada
+    drawBlock(g, -35, sidewalkY + 8, 8, 8, 14, 0xef4444, false);
+    g.circle(-31, sidewalkY + 8, 4).fill({ color: 0xdc2626 });
+    drawBlock(g, gridW + 35, sidewalkY + 8, 8, 8, 14, 0xef4444, false);
+    g.circle(gridW + 39, sidewalkY + 8, 4).fill({ color: 0xdc2626 });
+
+    // Lixeiras de coleta seletiva (Verde, Azul, Amarela)
+    drawBlock(g, 65, sidewalkY + 10, 6, 6, 11, 0x22c55e, false);
+    drawBlock(g, 74, sidewalkY + 10, 6, 6, 11, 0x3b82f6, false);
+    drawBlock(g, 83, sidewalkY + 10, 6, 6, 11, 0xfacc15, false);
+
+    // Placa de Trânsito PARE (Stop) 3D
+    drawBlock(g, -12, sidewalkY + 2, 4, 4, 28, 0x64748b, false);
+    g.poly([-16, sidewalkY - 26, -8, sidewalkY - 26, -4, sidewalkY - 22, -4, sidewalkY - 14, -8, sidewalkY - 10, -16, sidewalkY - 10, -20, sidewalkY - 14, -20, sidewalkY - 22]).fill({ color: 0xdc2626 });
+    g.rect(-14, sidewalkY - 19, 8, 2).fill({ color: 0xffffff });
+
+    // Placa de Trânsito HOSPITAL 🏥 3D
+    const signX = gridW / 2 + 75;
+    drawBlock(g, signX, sidewalkY + 2, 4, 4, 30, 0x64748b, false);
+    drawBlock(g, signX - 6, sidewalkY - 24, 16, 4, 16, 0x2563eb, false);
+    g.rect(signX + 1, sidewalkY - 22, 2, 10).fill({ color: 0xffffff });
+    g.rect(signX - 3, sidewalkY - 18, 10, 2).fill({ color: 0xffffff });
   }
 
   private drawFrontStreet(
@@ -208,12 +253,13 @@ export class CityEnvironment {
     const streetX0 = -WORLD_EXTENT;
     const streetX1 = gridW + WORLD_EXTENT;
 
-    // Calçada frontal do hospital
     g.rect(streetX0, sidewalkY, streetX1 - streetX0, sidewalkH).fill({ color: 0xe2e8f0 });
     for (let x = -300; x < gridW + 300; x += 30) {
       g.moveTo(x, sidewalkY).lineTo(x, sidewalkY + sidewalkH).stroke({ color: 0xcbd5e1, width: 1.5 });
     }
     drawBlock(g, streetX0, sidewalkY + sidewalkH, streetX1 - streetX0, 4, 3, 0x94a3b8, false);
+
+    this.drawSidewalkProps(g, gridW, sidewalkY);
 
     // Baia de ambulância do SAMU
     const bayX = -130;
@@ -222,26 +268,27 @@ export class CityEnvironment {
     g.rect(bayX + 4, sidewalkY - 4, bayW - 8, sidewalkH + 4).stroke({ color: 0xfacc15, width: 2.5 });
     this.drawAmbulanceBody(g, this.ambulancePos.x, this.ambulancePos.y);
 
-    // Avenida asfaltada
-    g.rect(streetX0, avenueY, streetX1 - streetX0, avenueH).fill({ color: 0x1e293b });
+    this.drawAvenueRoad(g, streetX0, streetX1, avenueY, avenueH, gridW);
+    this.drawCrosswalkAndSignal(g, gridW / 2 - 20, sidewalkY, avenueY, avenueH);
+
+    g.rect(streetX0, oppositeSidewalkY, streetX1 - streetX0, 44).fill({ color: 0xe2e8f0 });
+  }
+
+  private drawAvenueRoad(g: Graphics, x0: number, x1: number, avenueY: number, avenueH: number, gridW: number): void {
+    g.rect(x0, avenueY, x1 - x0, avenueH).fill({ color: 0x1e293b });
     const midY = avenueY + avenueH / 2;
     for (let x = -600; x < gridW + 600; x += 44) {
       g.rect(x, midY - 2, 24, 4).fill({ color: 0xfacc15 });
     }
+  }
 
-    // Faixas de pedestres brancas em relevo
-    const crossX = gridW / 2 - 20;
+  private drawCrosswalkAndSignal(g: Graphics, crossX: number, sidewalkY: number, avenueY: number, avenueH: number): void {
     for (let i = 0; i < 9; i++) {
       g.rect(crossX - 36 + i * 9, avenueY + 8, 6, avenueH - 16).fill({ color: 0xf8fafc, alpha: 0.95 });
     }
-
-    // Semáforo 3D
     drawBlock(g, crossX + 60, sidewalkY + 2, 8, 8, 36, 0x334155, false);
     g.circle(crossX + 64, sidewalkY + 8, 3).fill({ color: 0xef4444 });
     g.circle(crossX + 64, sidewalkY + 15, 3).fill({ color: 0x22c55e });
-
-    // Calçada oposta
-    g.rect(streetX0, oppositeSidewalkY, streetX1 - streetX0, 44).fill({ color: 0xe2e8f0 });
   }
 
   private drawOppositeShops(g: Graphics, cafeX: number, pharmX: number, baseY: number): void {

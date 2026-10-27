@@ -2,16 +2,14 @@
  * Arquivo: src/render/map-expansion-handles.ts
  *
  * 1. O que este arquivo faz?
- * Renderiza a sinalização de agrimensura e placas interativas táteis de expansão do terreno hospitalar
- * exclusivamente nas bordas traseira (norte) e laterais (leste/oeste), sem invadir ou sobrepor a rua frontal.
+ * Renderiza placas interativas táteis e discretas de expansão do terreno hospitalar exclusivamente na borda traseira (norte),
+ * com perímetro e meio-fio limpos de pedra, sem traçado de linhas amarelas no chão e sem invadir a rua frontal.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 1 do Prompt 21, garantindo que o jogador expanda o hospital intuitivamente para trás e lados
- * com 1 clique direto no canvas PixiJS, sem nunca colocar placas na avenida principal.
+ * Cumprir a Parte 1 do Prompt 22, mantendo a ampliação do terreno intuitiva e despoluída visualmente, sem linhas amarelas no mapa.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * O posicionamento das placas baseia-se em w e h da grade. A detecção de cliques usa eventMode = 'static'
- * e repassa ao callback onExpand.
+ * O posicionamento da placa pill baseia-se em w e h da grade. A detecção de cliques usa eventMode = 'static' e repassa ao callback onExpand.
  *
  * Importa: pixi.js, src/render/theme-config.ts, src/systems/map-expansion-system.ts
  * Conecta-se com: src/render/renderer.ts, src/main.ts
@@ -60,30 +58,8 @@ export class MapExpansionHandles {
     const mapW = gridSize * tileSize;
     const mapH = gridSize * tileSize;
 
-    this.drawLotBorders(mapW, mapH, nextTier.nextSize);
+    // Borda limpa e natural sem traçado de linha amarela no perímetro
     this.drawExpansionPill(mapW, mapH, nextTier);
-  }
-
-  private drawLotBorders(w: number, h: number, nextSize: number): void {
-    const { tileSize } = THEME;
-    const addedPixels = (nextSize - (w / tileSize)) * tileSize;
-    const lateralShift = addedPixels / 2;
-    const offset = 4;
-
-    // Faixa tracejada amarela/verde do novo loteamento expandindo PARA TRÁS (topo, y < 0) e LATERAIS
-    this.graphics.rect(-lateralShift - offset, -addedPixels - offset, w + addedPixels + offset * 2, h + addedPixels + offset * 2)
-      .stroke({ color: 0xfacc15, width: 2, alpha: 0.65 });
-
-    // Cantoneiras estéticas de agrimensura no topo e laterais
-    const markerLen = 16;
-    const left = -lateralShift - offset;
-    const right = w + lateralShift + offset;
-    const top = -addedPixels - offset;
-
-    this.graphics.roundRect(left - 4, top - 4, markerLen + 8, markerLen + 8, 3)
-      .fill({ color: 0x10b981, alpha: 0.85 });
-    this.graphics.roundRect(right - markerLen, top - 4, markerLen + 8, markerLen + 8, 3)
-      .fill({ color: 0x10b981, alpha: 0.85 });
   }
 
   private drawExpansionPill(w: number, _h: number, tier: ExpansionTier): void {

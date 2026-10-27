@@ -1,8 +1,16 @@
 /**
  * Arquivo: src/core/new-game.ts
- * O que faz: Inicializa uma nova partida do MediVille Manager com as salas iniciais, equipe médica, caixa, reputação e parâmetros do GDD.
- * Para que foi criado: Criação de estado limpo e reprodutível para início de jogo e testes automatizados.
- * Como modificar/debugar: Ajuste starterRooms, staff ou startingCash em src/data/balance.json.
+ *
+ * 1. O que este arquivo faz?
+ * Inicializa uma nova partida do MediVille Manager com as salas iniciais, equipe médica, caixa, reputação, timers e parâmetros do GDD.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Criação de estado limpo e reprodutível para início de jogo, reinicialização e testes automatizados.
+ *
+ * Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Ajuste starterRooms, staff, startingCash ou novos timers em src/data/balance.json.
+ *
  * Importa: src/core/config.ts, src/entities/room.ts, src/entities/staff.ts, src/state/game-state.ts, src/systems/staff-system.ts
  * Conecta-se com: src/core/simulation.ts, tests/simulation.test.ts
  */
@@ -88,6 +96,7 @@ function buildInitialEconomyState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 'hosp
     activeContracts: [] as string[],
     cleanlinessRating: 100,
     helipadTimerSec: 0,
+    busArrivalTimerSec: 0,
   };
 }
 

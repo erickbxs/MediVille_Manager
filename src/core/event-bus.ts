@@ -1,9 +1,16 @@
 /**
  * Arquivo: src/core/event-bus.ts
- * O que faz: Barramento de eventos tipado (Observer Pattern) que desacopla completamente a simulação da interface gráfica e do renderizador.
- * Para que foi criado: Cumprir a exigência do GDD de manter a lógica pura e independente da UI/Canvas, com zero any.
- * Como modificar/debugar: Adicione novas ações no mapa GameEvents. Use bus.on() para escutar e bus.emit() para disparar.
- * Conecta-se com: src/core/simulation.ts, src/ui/*, src/render/*
+ *
+ * 1. O que este arquivo faz?
+ * Barramento de eventos estritamente tipado (Observer Pattern) que desacopla a simulação da UI, áudio e renderizador PixiJS.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir a exigência do GDD de manter a lógica pura, modular e reativa, com zero any e comunicação orientada a eventos.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * Adicione novos eventos na interface GameEvents e registre listeners via bus.on() ou emita via bus.emit().
+ *
+ * Conecta-se com: src/core/simulation.ts, src/ui/*, src/render/*, src/systems/*
  */
 
 export interface GameEvents {
@@ -57,6 +64,7 @@ export interface GameEvents {
   'music:ducking_changed': { isDucking: boolean };
   'map:expanded': { newGridSize: number; cost: number; deltaRow?: number; deltaCol?: number };
   'toast:show': { text: string };
+  'bus:arrival': { patientCount: number };
 }
 
 export type EventKey = keyof GameEvents;

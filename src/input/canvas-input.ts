@@ -1,10 +1,18 @@
 /**
  * Arquivo: src/input/canvas-input.ts
- * O que faz: Captura eventos de mouse, teclado e toque mobile na tela do jogo (pan, zoom por pinça, clique na grade e rotação).
- * Para que foi criado: Permitir jogabilidade idêntica em PC (mouse) e celulares/tablets (toque multitoque).
- * Como modificar/debugar: Ajuste sensibilidade de arraste e limites de zoom em camera.ts ou aqui.
- * Importa: src/render/camera.ts, src/render/theme-config.ts
- * Conecta-se com: src/main.ts, src/render/renderer.ts
+ *
+ * 1. O que este arquivo faz?
+ * Captura eventos táteis, mouse e teclado para movimentação de câmera (pan e zoom), conversão exata Screen-to-World
+ * com offset de toque de 36px, travamento de câmera durante o posicionamento de obras e long-press de 250ms para mover salas.
+ *
+ * 2. Para que ele foi criado no contexto do sistema?
+ * Cumprir a Parte 2 do Prompt 22, proporcionando pegada e arraste tátil nativo em celulares e tablets sem conflito de pan.
+ *
+ * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
+ * O cálculo de grade usa camera.screenToGrid. O atraso do long-press é calibrado em LONG_PRESS_DELAY_MS.
+ *
+ * Importa: src/render/camera.ts
+ * Conecta-se com: src/main.ts, src/render/renderer.ts, src/ui/build-controller.ts
  */
 
 import type { Camera } from '../render/camera';
@@ -15,7 +23,12 @@ export interface InputHandlers {
   onRotateKey: () => void;
   isBuildPreviewActive?: () => boolean;
   onPreviewDrag?: (col: number, row: number) => void;
+  onRoomLongPress?: (col: number, row: number) => void;
 }
+
+const TOUCH_OFFSET_Y = 36;
+const DRAG_THRESHOLD_PX = 8;
+const LONG_PRESS_DELAY_MS = 250;
 
 export class CanvasInputManager {
   private element: HTMLElement;
@@ -28,6 +41,8 @@ export class CanvasInputManager {
   private lastX = 0;
   private lastY = 0;
   private touchDistance = 0;
+  private longPressTimer: number | null = null;
+  private isLongPressed = false;
 
   constructor(element: HTMLElement, camera: Camera, handlers: InputHandlers) {
     this.element = element;
@@ -48,10 +63,28 @@ export class CanvasInputManager {
   private onPointerDown(e: PointerEvent): void {
     this.isDragging = true;
     this.isDragMoved = false;
+    this.isLongPressed = false;
     this.startX = e.clientX;
     this.startY = e.clientY;
     this.lastX = e.clientX;
     this.lastY = e.clientY;
+
+    const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
+    if (isBuildPreview) {
+      this.camera.panLocked = true;
+      const rect = this.element.getBoundingClientRect();
+      const touchOffsetY = e.pointerType === 'touch' ? -TOUCH_OFFSET_Y : 0;
+      const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
+      this.handlers.onPreviewDrag?.(grid.col, grid.row);
+    } else if (this.handlers.onRoomLongPress) {
+      const rect = this.element.getBoundingClientRect();
+      const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top);
+      this.longPressTimer = window.setTimeout(() => {
+        this.isLongPressed = true;
+        this.camera.panLocked = true;
+        this.handlers.onRoomLongPress?.(grid.col, grid.row);
+      }, LONG_PRESS_DELAY_MS);
+    }
   }
 
   private onPointerMove(e: PointerEvent): void {
@@ -59,14 +92,17 @@ export class CanvasInputManager {
     const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
 
     if (this.isDragging) {
-      if (isBuildPreview) {
-        // No modo BUILD_PREVIEW, move o fantasma com offset -40px no Y no touch (sem mover câmera)
+      const totalMoved = Math.hypot(e.clientX - this.startX, e.clientY - this.startY);
+      if (totalMoved > DRAG_THRESHOLD_PX && this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+
+      if (isBuildPreview || this.isLongPressed) {
+        this.camera.panLocked = true;
         const rect = this.element.getBoundingClientRect();
-        const touchOffsetY = isTouch ? -40 : 0;
-        const grid = this.camera.screenToGrid(
-          e.clientX - rect.left,
-          e.clientY - rect.top + touchOffsetY
-        );
+        const touchOffsetY = isTouch ? -TOUCH_OFFSET_Y : 0;
+        const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
         if (this.handlers.onPreviewDrag) {
           this.handlers.onPreviewDrag(grid.col, grid.row);
         } else {
@@ -79,9 +115,7 @@ export class CanvasInputManager {
       const dy = e.clientY - this.lastY;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
-      const totalMoved = Math.hypot(e.clientX - this.startX, e.clientY - this.startY);
-      const dragThreshold = 8;
-      if (!this.isDragMoved && totalMoved > dragThreshold) {
+      if (!this.isDragMoved && totalMoved > DRAG_THRESHOLD_PX) {
         this.isDragMoved = true;
       }
       this.camera.pan(dx, dy);
@@ -93,20 +127,25 @@ export class CanvasInputManager {
   }
 
   private onPointerUp(e: PointerEvent): void {
-    const dragThreshold = 8;
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+
     const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
     const isTouch = e.pointerType === 'touch';
-    const wasPan = this.isDragMoved || Math.hypot(e.clientX - this.startX, e.clientY - this.startY) > dragThreshold;
+    const wasPan = this.isDragMoved || Math.hypot(e.clientX - this.startX, e.clientY - this.startY) > DRAG_THRESHOLD_PX;
     this.isDragging = false;
     this.isDragMoved = false;
 
+    if (isBuildPreview) {
+      this.camera.panLocked = false;
+    }
+
     if (!wasPan || (isBuildPreview && isTouch)) {
       const rect = this.element.getBoundingClientRect();
-      const touchOffsetY = isBuildPreview && isTouch ? -40 : 0;
-      const grid = this.camera.screenToGrid(
-        e.clientX - rect.left,
-        e.clientY - rect.top + touchOffsetY
-      );
+      const touchOffsetY = isBuildPreview && isTouch ? -TOUCH_OFFSET_Y : 0;
+      const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
       this.handlers.onGridClick(grid.col, grid.row);
     }
   }

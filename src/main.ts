@@ -167,8 +167,14 @@ class MediVilleApp {
         }
         return canPlaceRoom(this.simulation.state, def.id, col, row, rotated);
       },
-      onConfirm: (col, row, rotated, def, isMove, movingRoomId) => this.handleBuildConfirm(col, row, rotated, def, isMove, movingRoomId),
-      onCancel: () => this.cancelSelection(),
+      onConfirm: (col, row, rotated, def, isMove, movingRoomId) => {
+        this.renderer.camera.panLocked = false;
+        this.handleBuildConfirm(col, row, rotated, def, isMove, movingRoomId);
+      },
+      onCancel: () => {
+        this.renderer.camera.panLocked = false;
+        this.cancelSelection();
+      },
       onChange: (col, row, rotated, isValid) => {
         this.ghost.col = col;
         this.ghost.row = row;
@@ -185,6 +191,7 @@ class MediVilleApp {
       onToggleDemolish: () => this.toggleDemolish(),
       onToggleMove: () => this.toggleMove(),
       onCancelSelection: () => this.cancelSelection(),
+      onLiftOffDrag: (_def: RoomDefinition, clientX: number, clientY: number) => this.handleLiftOffDrag(clientX, clientY),
       onRecenterMap: () => this.renderer.recenter(),
       onOpenPendingCase: () => this.openNextPendingCase(),
       onOpenStaff: () => this.staffModal.open(),
@@ -194,6 +201,15 @@ class MediVilleApp {
       onExpandMap: () => this.handleDirectMapExpansion(),
       getState: () => this.simulation.state,
     });
+  }
+
+  private handleLiftOffDrag(clientX: number, clientY: number): void {
+    const canvas = this.renderer.app.canvas as HTMLCanvasElement;
+    const rect = canvas.getBoundingClientRect();
+    const touchOffsetY = -36;
+    const grid = this.renderer.camera.screenToGrid(clientX - rect.left, clientY - rect.top + touchOffsetY);
+    this.renderer.camera.panLocked = true;
+    this.buildController.setPosition(grid.col, grid.row);
   }
 
   private handleDirectMapExpansion(): void {
@@ -411,7 +427,19 @@ class MediVilleApp {
       onRotateKey: () => this.toggleRotate(),
       isBuildPreviewActive: () => this.buildController.isActive(),
       onPreviewDrag: (col, row) => this.buildController.setPosition(col, row),
+      onRoomLongPress: (col, row) => this.handleRoomLongPress(col, row),
     });
+  }
+
+  private handleRoomLongPress(col: number, row: number): void {
+    const clicked = Array.from(this.simulation.state.rooms.values()).find(
+      (r) => col >= r.col && col < r.col + r.width && row >= r.row && row < r.row + r.height
+    );
+    if (clicked && !this.buildController.isActive()) {
+      this.startMovingExistingRoom(clicked);
+      this.showToast('✋ Sala descolada para mover!');
+      soundSystem.playClick();
+    }
   }
 
   private handleGridClick(col: number, row: number): void {

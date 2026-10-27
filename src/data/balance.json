@@ -41,7 +41,7 @@
     "removeRefundRatio": 0.5
   },
   "arrival": {
-    "baseIntervalSec": 15,
+    "baseIntervalSec": 5,
     "initialProgress": 0.7,
     "sectorGrowthFactor": 0.1,
     "reputationDemandFactor": 0.3,
