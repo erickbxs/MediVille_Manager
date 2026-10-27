@@ -8,18 +8,22 @@
       "wrangler.toml",
       "scripts/check-bundle-size.mjs",
       "scripts/sync-version.mjs",
+      "scripts/code-backup.mjs",
       "public/sw.js"
     ]
   },
   "name": "mediville-manager",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
+    "checkpoint:save": "node scripts/code-backup.mjs save",
+    "checkpoint:list": "node scripts/code-backup.mjs list",
+    "rollback": "node scripts/code-backup.mjs rollback",
     "sync:version": "node scripts/sync-version.mjs",
     "build": "npm run sync:version && tsc --noEmit && vite build && node scripts/check-bundle-size.mjs",
     "preview": "vite preview --host",

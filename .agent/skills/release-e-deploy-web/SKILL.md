@@ -4,7 +4,10 @@ description: Ativa OBRIGATORIAMENTE toda vez que uma versão do projeto for incr
 ---
 # Skill: Pipeline Obrigatório de Release, Cache-Busting PWA e Deploy Web
 
-Sempre que finalizar uma entrega ou atualizar a versão do **MediVille Manager**, execute rigorosamente todos os 7 passos abaixo antes de encerrar sua resposta:
+Sempre que iniciar ou finalizar uma entrega no **MediVille Manager**, execute rigorosamente o fluxo:
+
+0. **Checkpoint Prévio Obrigatório (`npm run checkpoint:save`)**:
+   - **PASSO 0 (ANTES DE QUALQUER MUDANÇA)**: Sempre execute `npm run checkpoint:save` antes de iniciar edições de um novo prompt, criando um ponto de restauração imediato. Caso o usuário peça para voltar atrás, execute `npm run rollback`.
 
 1. **Sincronização de Versão (`package.json`)**:
    - Incremente o campo `"version"` no `package.json` (ex.: `1.9.0`, `1.10.0`, etc.).

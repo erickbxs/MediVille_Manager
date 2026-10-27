@@ -19,6 +19,8 @@ export type PatientState =
   | 'treated'
   | 'abandoned';
 
+export type ManchesterPriority = 'red' | 'orange' | 'yellow' | 'green' | 'blue';
+
 export interface PatientInstance {
   id: string;
   name: string;
@@ -34,7 +36,12 @@ export interface PatientInstance {
   satisfaction: number;
   errorsCount: number;
   isHelipadEmergency?: boolean;
+  manchesterPriority?: ManchesterPriority;
+  triaged?: boolean;
+  examRequired?: 'laboratory' | 'xray' | null;
+  examCompleted?: boolean;
 }
+
 
 
 export function isPatientPatienceCritical(

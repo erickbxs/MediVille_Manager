@@ -27,6 +27,8 @@ import { getBestDoctorSkill } from './staff-system';
 import { consumeMedicationsForCase, calculatePatientConsultationRevenue } from './economy-system';
 import { checkHospitalProgression } from './progression-system';
 import { deductStaffEnergyOnConsultation } from './staff-fatigue-system';
+import { orderQueueByManchester } from './triage-system';
+import { executeExamWorkflow } from './exam-routing-system';
 
 const AUTO_TREATMENT_BASE_SEC = 3.5;
 const AUTO_TREATMENT_MIN_SEC = 1.5;
@@ -133,6 +135,7 @@ function startConsultationForNextPatient(state: GameState): void {
   const room = findAvailableConsultationRoom(state);
   if (!room) return;
 
+  orderQueueByManchester(state);
   const patientId = state.queueIds.shift()!;
   const patient = state.patients.get(patientId);
   if (!patient || patient.state !== 'waiting') return;
@@ -274,6 +277,7 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): { 
   const result = calculatePatientConsultationRevenue(state, baseRevenue);
   state.cash += result.amount;
   state.stats.treatedCount += 1;
+  executeExamWorkflow(state, patient);
   deductStaffEnergyOnConsultation(state);
   checkHospitalProgression(state);
   return result;

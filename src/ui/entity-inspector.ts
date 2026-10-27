@@ -19,6 +19,7 @@
 import type { PatientInstance } from '../entities/patient';
 import type { StaffMember } from '../entities/staff';
 import { getStaffEnergy } from '../systems/staff-fatigue-system';
+import { getManchesterInfo } from '../systems/triage-system';
 
 export type InspectorAction = 'attend_now' | 'send_to_rest' | 'close';
 
@@ -93,6 +94,7 @@ export class EntityInspector {
     const patiencePct = Math.max(0, Math.min(100, Math.round((1 - patient.waitTimeSec / Math.max(1, patient.patienceSec)) * 100)));
     const stateInfo = STATE_LABELS[patient.state] ?? { label: patient.state, colorClass: 'text-slate-500' };
     const canAttend = patient.state === 'ready_for_treatment' || patient.state === 'needs_decision' || patient.state === 'in_consultation';
+    const manchester = getManchesterInfo(patient.manchesterPriority);
 
     this.container.innerHTML = `
       <aside id="entity-inspector-panel" class="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200" aria-label="Painel de Inspeção">
@@ -110,6 +112,11 @@ export class EntityInspector {
         </div>
 
         <div class="space-y-2.5 text-xs">
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+            <span class="text-slate-500 dark:text-slate-400">Classificação de Risco:</span>
+            <span class="font-bold ${manchester.textColorClass}">${manchester.badge}</span>
+          </div>
+
           <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
             <span class="text-slate-500 dark:text-slate-400">Status no SUS:</span>
             <span class="font-bold ${stateInfo.colorClass}">${stateInfo.label}</span>
@@ -130,6 +137,13 @@ export class EntityInspector {
             <p class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${patient.clinicalCase.definition.name}</p>
           </div>
 
+          ${patient.examCompleted ? `
+            <div class="p-2 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100/60 dark:border-emerald-900/40 flex items-center justify-between">
+              <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">🔬 Exame Diagnóstico Concluído</span>
+              <span class="font-bold text-xs text-emerald-600">+R$ 1.200</span>
+            </div>
+          ` : ''}
+
           ${canAttend ? `
             <button id="btn-inspector-attend" class="w-full min-h-[44px] py-2.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-transform">
               🩺 Atender Agora
@@ -138,6 +152,7 @@ export class EntityInspector {
         </div>
       </aside>
     `;
+
 
     this.bindPatientEvents(patient.id);
   }

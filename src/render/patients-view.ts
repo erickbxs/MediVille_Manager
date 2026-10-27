@@ -11,17 +11,18 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Para calibrar posições ou balões de atendimento, edite drawVoxelAgent ou drawSpeechBubble.
  *
- * Importa: pixi.js, src/entities/patient.ts, src/entities/room.ts, src/render/voxel-character.ts, src/systems/npc-movement-system.ts
+ * Importa: pixi.js, src/entities/patient.ts, src/entities/room.ts, src/render/voxel-character.ts, src/systems/npc-movement-system.ts, src/systems/triage-system.ts
  * Conecta-se com: src/render/renderer.ts
  */
 
 import { Container, Graphics, Text } from 'pixi.js';
-import type { PatientInstance } from '../entities/patient';
+import type { PatientInstance, ManchesterPriority } from '../entities/patient';
 import type { RoomInstance } from '../entities/room';
 import type { GameState } from '../state/game-state';
 import { VoxelCharacter, type CharacterRole } from './voxel-character';
 import { NpcMovementSystem } from '../systems/npc-movement-system';
 import { THEME } from './theme-config';
+import { MANCHESTER_CONFIG } from '../systems/triage-system';
 
 export class PatientsView {
   public container = new Container();
@@ -79,6 +80,10 @@ export class PatientsView {
       this.drawVoxelAgent(agent.id, 'patient', agent.x, agent.y, agent.facing, agent.animState, now, ratio);
 
       if (pat) {
+        if (pat.manchesterPriority) {
+          this.drawManchesterWristband(agent.x, agent.y, pat.manchesterPriority);
+        }
+
         if (pat.state === 'ready_for_treatment' || pat.state === 'needs_decision') {
           const isMastered = state.masteredCaseIds.includes(pat.clinicalCase.definition.id);
           const label = isMastered ? '🩺 Atender' : '🆕 Novo Caso! 🩺';
@@ -215,6 +220,14 @@ export class PatientsView {
       y: y - 1,
     });
     this.textContainer.addChild(iconText);
+  }
+
+  private drawManchesterWristband(x: number, y: number, priority: ManchesterPriority): void {
+    const hex = MANCHESTER_CONFIG[priority]?.colorHex ?? 0x10b981;
+    this.graphics.ellipse(x, y + 2, 8, 3.5);
+    this.graphics.stroke({ color: hex, width: 2, alpha: 0.95 });
+    this.graphics.circle(x + 5, y + 1, 2.5);
+    this.graphics.fill({ color: hex, alpha: 1 });
   }
 
 }

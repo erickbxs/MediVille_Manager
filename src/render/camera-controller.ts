@@ -49,6 +49,10 @@ export const MAX_CAMERA_ZOOM = 2.4;
 export const PINCH_COOLDOWN_MS = 80;
 const BUTTON_ZOOM_STEP = 1.25;
 
+export interface CameraControllerOptions {
+  onToggleHeatmap?: () => void;
+}
+
 /**
  * Calcula matematicamente o zoom de pinça preservando o ponto do mundo cravado sob o ponto médio dos dois dedos.
  */
@@ -125,9 +129,12 @@ export class CameraController {
   private lastPanPoint: Point | null = null;
   private uiContainer: HTMLElement | null = null;
 
-  constructor(camera: Camera, canvas: HTMLElement) {
+  private options?: CameraControllerOptions;
+
+  constructor(camera: Camera, canvas: HTMLElement, options?: CameraControllerOptions) {
     this.camera = camera;
     this.canvas = canvas;
+    this.options = options;
     this.setupGestureLock();
     this.createZoomButtons();
   }
@@ -223,6 +230,7 @@ export class CameraController {
     const btnStyle = 'w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 shadow-lg flex items-center justify-center font-bold text-lg active:scale-95 transition-transform backdrop-blur-md';
 
     container.innerHTML = `
+      <button id="btn-heatmap-toggle" class="${btnStyle}" aria-label="Alternar Mapa de Calor">🌡️</button>
       <button id="btn-zoom-in" class="${btnStyle}" aria-label="Aumentar Zoom">➕</button>
       <button id="btn-zoom-out" class="${btnStyle}" aria-label="Diminuir Zoom">➖</button>
       <button id="btn-zoom-center" class="${btnStyle}" aria-label="Centralizar Hospital">🎯</button>
@@ -230,6 +238,11 @@ export class CameraController {
 
     document.body.appendChild(container);
     this.uiContainer = container;
+
+    container.querySelector('#btn-heatmap-toggle')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.options?.onToggleHeatmap?.();
+    });
 
     container.querySelector('#btn-zoom-in')?.addEventListener('click', (e) => {
       e.stopPropagation();

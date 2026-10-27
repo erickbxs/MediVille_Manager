@@ -16,6 +16,7 @@
 
 import { BALANCE } from '../core/config';
 import type { GameState } from '../state/game-state';
+import { checkExamRoomAdvice } from './exam-routing-system';
 
 export type AlertUrgency = 'high' | 'medium' | 'low';
 export type AlertActionType = 'build_room' | 'open_pharmacy' | 'open_finances' | 'open_staff' | 'dismiss';
@@ -114,41 +115,20 @@ function checkSevereCases(state: GameState, alerts: AdvisorAlert[]): void {
 }
 
 function checkDiagnosticCases(state: GameState, alerts: AdvisorAlert[]): void {
-  const rooms = Array.from(state.rooms.values());
-  const patients = Array.from(state.patients.values());
-
-  const hasLab = rooms.some((r) => r.typeId === 'laboratory');
-  const hasInfectious = patients.some(
-    (p) => p.clinicalCase.definition.area === 'Infectologia' || p.clinicalCase.definition.area === 'Endocrinologia'
-  );
-  if (!hasLab && hasInfectious) {
+  const missingRoom = checkExamRoomAdvice(state);
+  if (missingRoom) {
     alerts.push({
-      id: 'missing_lab',
+      id: `missing_${missingRoom}`,
       urgency: 'medium',
-      title: 'Diagnósticos Lentos',
-      message: 'Casos infecciosos aguardando exames sem laboratório clínico.',
-      actionHint: 'Construir Laboratório',
+      title: 'Exames Atrasados',
+      message: 'Exames atrasados ➔ Construir Laboratório ou Sala de Raio-X',
+      actionHint: missingRoom === 'laboratory' ? 'Construir Laboratório' : 'Construir Raio-X',
       actionType: 'build_room',
-      targetRoomType: 'laboratory',
-    });
-  }
-
-  const hasXray = rooms.some((r) => r.typeId === 'xray');
-  const hasChest = patients.some(
-    (p) => p.clinicalCase.definition.area === 'Pneumologia' || p.clinicalCase.definition.area === 'Ortopedia'
-  );
-  if (!hasXray && hasChest) {
-    alerts.push({
-      id: 'missing_xray',
-      urgency: 'medium',
-      title: 'Faturamento SIGTAP Perdido',
-      message: 'Casos de trauma/tórax sem sala de Raio-X perdem repasses adicionais.',
-      actionHint: 'Construir Raio-X',
-      actionType: 'build_room',
-      targetRoomType: 'xray',
+      targetRoomType: missingRoom,
     });
   }
 }
+
 
 function checkStaffAndExpansion(state: GameState, alerts: AdvisorAlert[]): void {
   const rooms = Array.from(state.rooms.values());

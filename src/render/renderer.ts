@@ -41,6 +41,7 @@ import { UrbanLifeView } from './urban-life-view';
 import { urbanLifeSystem } from '../systems/urban-life-system';
 import { MedicalAnimationsView } from './medical-animations';
 import { WeatherView } from './weather-view';
+import { HeatmapOverlay } from './heatmap-overlay';
 import type { ExpansionTier } from '../systems/map-expansion-system';
 
 export interface GhostState {
@@ -67,6 +68,7 @@ const LAYER_Z = {
   lighting: 30,
   weather: 35,
   patients: 40,
+  heatmap: 45,
   ghost: 50,
 };
 
@@ -77,6 +79,7 @@ const INITIAL_STOCK: Record<string, number> = Object.fromEntries(
 export class HospitalRenderer {
   public app = new Application();
   public camera = new Camera();
+  public heatmapOverlay!: HeatmapOverlay;
   private world = new Container();
   private callbacks?: HospitalRendererCallbacks;
   private cityEnv!: CityEnvironment;
@@ -158,6 +161,7 @@ export class HospitalRenderer {
     this.lightingView = new DayLightingView();
     this.weatherView = new WeatherView();
     this.patientsView = new PatientsView();
+    this.heatmapOverlay = new HeatmapOverlay();
     this.ghostView = new GhostView();
 
     this.setupLayerIndices();
@@ -165,7 +169,7 @@ export class HospitalRenderer {
       this.cityEnv.container, this.urbanLifeView.container, this.trafficView.container,
       this.gridView.container, this.expansionHandles.container, this.roomsView.container,
       this.medicalAnimView.container, this.lightingView.container, this.weatherView.container,
-      this.patientsView.container, this.ghostView.container,
+      this.patientsView.container, this.heatmapOverlay.container, this.ghostView.container,
     );
   }
 
@@ -181,6 +185,7 @@ export class HospitalRenderer {
     this.lightingView.container.zIndex = LAYER_Z.lighting;
     this.weatherView.container.zIndex = LAYER_Z.weather;
     this.patientsView.container.zIndex = LAYER_Z.patients;
+    this.heatmapOverlay.container.zIndex = LAYER_Z.heatmap;
     this.ghostView.container.zIndex = LAYER_Z.ghost;
   }
 
@@ -202,6 +207,12 @@ export class HospitalRenderer {
     const stockRatio = getPharmacyStockRatio(state.pharmacyStock, INITIAL_STOCK);
     const dayProgress = state.dayTimeSec / BALANCE.time.dayDurationSec;
     const isNight = dayProgress > 0.75 || dayProgress < 0.2;
+    const isPowerCrisis = state.activeEvents.some(
+      (e) =>
+        e.definition.id.includes('blackout') ||
+        e.definition.id.includes('power') ||
+        e.definition.type === 'crisis'
+    );
 
     this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), now);
     this.urbanLifeView.render(urbanLifeSystem, now / 1000);
@@ -212,8 +223,10 @@ export class HospitalRenderer {
     this.lightingView.render(dayProgress, rooms);
     this.weatherView.render(state.activeEvents, currentGrid, now / 1000);
     this.patientsView.render(state);
+    this.heatmapOverlay.render(rooms, state, isPowerCrisis);
     this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid, ghost.touchOffsetY ?? 0);
   }
+
 
   public getPatientsView(): PatientsView {
     return this.patientsView;

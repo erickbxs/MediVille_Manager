@@ -26,6 +26,7 @@ export interface InputHandlers {
   isBuildPreviewActive?: () => boolean;
   onPreviewDrag?: (col: number, row: number) => void;
   onRoomLongPress?: (col: number, row: number) => void;
+  onToggleHeatmap?: () => void;
 }
 
 const TOUCH_OFFSET_Y = 36;
@@ -49,7 +50,9 @@ export class CanvasInputManager {
     this.element = element;
     this.camera = camera;
     this.handlers = handlers;
-    this.cameraController = new CameraController(camera, element);
+    this.cameraController = new CameraController(camera, element, {
+      onToggleHeatmap: handlers.onToggleHeatmap,
+    });
     this.bindEvents();
   }
 

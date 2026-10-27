@@ -460,6 +460,18 @@ class MediVilleApp {
       isBuildPreviewActive: () => this.buildController.isActive(),
       onPreviewDrag: (col, row) => this.buildController.setPosition(col, row),
       onRoomLongPress: (col, row) => this.handleRoomLongPress(col, row),
+      onToggleHeatmap: () => {
+        const mode = this.renderer.heatmapOverlay.cycleMode();
+        const modeNames: Record<string, string> = {
+          OFF: 'Desativado',
+          OCCUPANCY: 'Fluxo & Lotação',
+          HYGIENE: 'Higiene & Biossegurança',
+          REVENUE: 'Rentabilidade Financeira',
+        };
+        const label = modeNames[mode] ?? mode;
+        this.showToast(`🌡️ Mapa de Calor: ${label}`);
+        soundSystem.playClick();
+      },
     });
   }
 

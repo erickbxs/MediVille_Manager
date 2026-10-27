@@ -19,6 +19,7 @@ export interface RoomInstance {
   rotated: boolean;
   definition: RoomDefinition;
   occupantIds: string[];
+  hygiene?: number;
 }
 
 export function createRoomInstance(

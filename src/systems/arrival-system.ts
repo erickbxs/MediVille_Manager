@@ -22,6 +22,8 @@ import { createPatient } from './case-system';
 import { globalBus } from '../core/event-bus';
 import { getActiveArrivalMultiplier } from './event-system';
 import { calculateDemandMultiplier } from './economy-system';
+import { classifyManchester, applyTriageProcedure } from './triage-system';
+import type { PatientInstance } from '../entities/patient';
 
 const MIN_MARKET_MULTIPLIER = 0.1;
 const DEFAULT_HELIPAD_INTERVAL_SEC = 60;
@@ -104,6 +106,15 @@ export function checkHelipadArrival(state: GameState, deltaSec: number): void {
   }
 }
 
+function classifyPatientTriage(state: GameState, patient: PatientInstance): void {
+  const hasTriage = Array.from(state.rooms.values()).some((r) => r.definition.id === 'triage');
+  if (hasTriage) {
+    applyTriageProcedure(state, patient);
+  } else {
+    patient.manchesterPriority = classifyManchester(patient);
+  }
+}
+
 export function checkBusArrivalWave(state: GameState, deltaSec: number): void {
   state.busArrivalTimerSec = (state.busArrivalTimerSec ?? 0) + deltaSec;
   if (state.busArrivalTimerSec >= BUS_ARRIVAL_INTERVAL_SEC) {
@@ -113,6 +124,7 @@ export function checkBusArrivalWave(state: GameState, deltaSec: number): void {
     for (let i = 0; i < count; i++) {
       const patientId = `bus_pat_${Date.now()}_${i}`;
       const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel);
+      classifyPatientTriage(state, patient);
       state.patients.set(patientId, patient);
       state.queueIds.push(patientId);
       patient.state = 'waiting';
@@ -133,6 +145,7 @@ export function updateArrivalSystem(state: GameState, deltaSec: number): void {
     state.arrivalTimerSec -= interval;
     const patientId = `pat_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel);
+    classifyPatientTriage(state, patient);
 
     state.patients.set(patientId, patient);
     state.queueIds.push(patientId);
@@ -141,6 +154,7 @@ export function updateArrivalSystem(state: GameState, deltaSec: number): void {
     globalBus.emit('patient:arrived', { patientId, name: patient.name });
     globalBus.emit('patient:entered_queue', { patientId });
   }
+
 
   checkBusArrivalWave(state, deltaSec);
   checkHelipadArrival(state, deltaSec);

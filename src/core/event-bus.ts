@@ -65,7 +65,11 @@ export interface GameEvents {
   'map:expanded': { newGridSize: number; cost: number; deltaRow?: number; deltaCol?: number };
   'toast:show': { text: string };
   'bus:arrival': { patientCount: number };
+  'triage:classified': { patientId: string; priority: 'red' | 'orange' | 'yellow' | 'green' | 'blue'; colorHex: number };
+  'exam:completed': { patientId: string; examType: 'laboratory' | 'xray'; bonus: number };
+  'heatmap:changed': { mode: string };
 }
+
 
 export type EventKey = keyof GameEvents;
 export type EventHandler<K extends EventKey> = (payload: GameEvents[K]) => void;

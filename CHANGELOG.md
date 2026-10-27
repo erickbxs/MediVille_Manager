@@ -2,10 +2,36 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
-## [2.1.0] - 2026-10-26
+## [2.2.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
 - Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+
+### Versão 2.2.0 — Sistema de Backup Automático e Rollback de Código (Git Checkpoints), Triagem de Manchester por Cores de Risco, Fluxo de Exames (Lab/Raio-X), Mapa de Calor Administrativo e Release v2.2.0
+- **PARTE 1: Sistema de Backup Automático e Rollback de Programação (`scripts/code-backup.mjs` & Skill de Segurança)**:
+  - Criado script CLI completo `node scripts/code-backup.mjs save [label]`, `list` e `rollback [target]`.
+  - Snapshots físicos compactos em `.backups/` com retenção automática dos últimos 10 backups, tags de segurança Git (`backup-v${version}-${timestamp}`) e manifesto em `.backups/manifest.json`.
+  - Adicionados atalhos no `package.json`: `npm run checkpoint:save`, `npm run checkpoint:list` e `npm run rollback`.
+  - Integrada a regra mandatória de PASSO 0 em `.agent/skills/release-e-deploy-web/SKILL.md` e `.agent/rules/mediville-core-rules.md`.
+- **PARTE 2: Protocolo de Triagem de Manchester por Cores de Risco (`src/systems/triage-system.ts` & `src/render/`)**:
+  - Implementação fiel das 5 cores oficiais do Protocolo de Manchester SUS: 🔴 Vermelho (Emergência - Imediato), 🟠 Laranja (Muito Urgente - 10 min), 🟡 Amarelo (Urgente - 60 min), 🟢 Verde (Pouco Urgente - 120 min) e 🔵 Azul (Não Urgente - 240 min).
+  - Reordenação prioritária automática da fila do hospital (`orderQueueByManchester`): pacientes de maior gravidade passam na frente, evitando mortes e perda de paciência.
+  - Renderização procedural da pulseira de Manchester colorida no avatar voxel do paciente em `PatientsView` e exibição detalhada com badge colorida no painel `EntityInspector`.
+  - Remuneração SUS do procedimento SIGTAP `02.14.01.001-5` (Acolhimento com Classificação de Risco, +R$ 400 por paciente triado).
+- **PARTE 3: Fluxo Físico de Exames Complementares — Consultório ➔ Lab / Raio-X (`src/systems/exam-routing-system.ts`)**:
+  - Casos com hipótese diagnóstica que exigem investigação complementar (trauma, doenças respiratórias, endócrinas e infecciosas) são roteados para as salas de Laboratório (`laboratory`) e Raio-X (`xray`).
+  - Execução de workflow com animação procedural de 4s, rendendo Bônus de Precisão Diagnóstica SIGTAP de **+R$ 1.200** e ganho de satisfação do paciente de **+8%**.
+  - Alerta inteligente no Conselheiro (`advisor-system.ts`): *"Exames atrasados ➔ Construir Laboratório ou Sala de Raio-X"* quando há demanda acumulada sem salas disponíveis.
+- **PARTE 4: Mapa de Calor Administrativo (`Heatmap Overlay`) e Crises de Energia (`src/render/heatmap-overlay.ts`)**:
+  - Botão alternável `🌡️` no canto inferior direito junto aos controles de câmera (`CameraController`), acionando sobreposições translúcidas em 3 modos executivos:
+    - **Fluxo & Lotação**: Salas verdes (livres), âmbar (moderadas) e vermelhas translúcidas pulsantes (gargalo crítico).
+    - **Higiene & Biossegurança**: Visualização percentual da limpeza (0% a 100%) para direcionamento ágil dos serventes de limpeza (`janitor`).
+    - **Rentabilidade Financeira**: Destaque de receita acumulada por setor (neutro, azul e verde fluorescente).
+  - Efeito visual de luz de emergência (tom azulado e gerador ativo) durante crises dinâmicas de Falta de Energia.
+- **PARTE 5: Testes Automatizados (Vitest)**:
+  - Criada nova suíte `tests/code-backup-manchester-exams-and-heatmap.test.ts` cobrindo 12 cenários de checkpoint, Manchester, exames e heatmap. Total do projeto: 235 testes em 27 suítes com 100% de aprovação.
+
+## [2.1.0] - 2026-10-26
 
 ### Versão 2.1.0 — Sincronização Dinâmica de Carros/Ruas na Expansão do Mapa, Correção Matemática do Zoom de Pinça (Pinch-to-Zoom Focal) no Mobile, Painel de Inspeção de NPCs e Refinamento Geral
 - **PARTE 1: Sincronização Dinâmica de Carros, Ônibus, Ambulâncias e NPCs ao Expandir o Mapa (`src/core/urban-geometry.ts`, `src/systems/traffic-system.ts`, `src/systems/urban-life-system.ts` & `src/render/city-environment.ts`)**:

@@ -10,3 +10,4 @@ description: Regras arquiteturais e de código limpo obrigatórias em todas as t
 - Nunca escreva strings visíveis ao usuário fixas no código: use sempre `t('chave')` do sistema `i18n` (`pt.json`, `es.json`, `en.json`).
 - Sempre rode `npm run verify` ao finalizar qualquer alteração e corrija todos os erros antes de entregar.
 - Ao atualizar a versão semântica ou concluir entregas de release, siga obrigatoriamente a Skill `release-e-deploy-web` executando `npm run sync:version`, deploy no Cloudflare Pages (`wrangler pages deploy dist`) e commit/push no Git.
+- **PASSO 0 (ANTES DE QUALQUER MUDANÇA)**: Sempre execute `npm run checkpoint:save` antes de iniciar edições de um novo prompt, criando um ponto de restauração imediato. Caso o usuário peça para voltar atrás, execute `npm run rollback`.
