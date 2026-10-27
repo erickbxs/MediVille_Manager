@@ -33,12 +33,12 @@ describe('Tráfego Urbano Dinâmico & Desembarque de Pacientes', () => {
     expect(carEast.direction).toBe('east');
     expect(carEast.type).toBe('car');
     expect(carEast.speed).toBeGreaterThan(0);
-    expect(carEast.y).toBe(660);
+    expect(carEast.y).toBe(traffic.getGeometry().street.laneEastboundY);
 
     expect(busWest.direction).toBe('west');
     expect(busWest.type).toBe('bus');
     expect(busWest.speed).toBeLessThan(0);
-    expect(busWest.y).toBe(710);
+    expect(busWest.y).toBe(traffic.getGeometry().street.laneWestboundY);
   });
 
   it('move os veículos ao longo do tempo e remove quando saem dos limites do mapa', () => {
@@ -58,7 +58,7 @@ describe('Tráfego Urbano Dinâmico & Desembarque de Pacientes', () => {
   it('desacelera antes da faixa de pedestres quando há pedestre atravessando', () => {
     const traffic = new TrafficSystem();
     const car = traffic.spawnVehicle('east', 'car');
-    car.x = 100; // 44px antes da faixa (144)
+    car.x = traffic.getGeometry().street.crosswalkX - 44;
 
     traffic.update(0.2, true);
     expect(car.targetSpeed).toBe(0);
@@ -70,7 +70,7 @@ describe('Tráfego Urbano Dinâmico & Desembarque de Pacientes', () => {
     globalBus.on('traffic:patient_disembarked', disembarkSpy);
 
     const car = traffic.spawnVehicle('east', 'car', 'pat_drop_123');
-    car.x = 140; // Próximo da baia (144)
+    car.x = traffic.getGeometry().stops.patientDropOffX - 4;
 
     traffic.update(0.1, false);
 
@@ -79,8 +79,8 @@ describe('Tráfego Urbano Dinâmico & Desembarque de Pacientes', () => {
     expect(disembarkSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         patientId: 'pat_drop_123',
-        x: 144,
-        y: 596,
+        x: traffic.getGeometry().stops.patientDropOffX,
+        y: traffic.getGeometry().surroundings.sidewalkTopY,
       })
     );
   });

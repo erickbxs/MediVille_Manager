@@ -53,8 +53,14 @@ import { BuildController } from './ui/build-controller';
 import { expandMap } from './systems/map-expansion-system';
 import { NotificationCenter } from './ui/notification-center';
 import { RoomContextMenu } from './ui/room-context-menu';
+import { EntityInspector } from './ui/entity-inspector';
+import { THEME } from './render/theme-config';
 import type { RoomDefinition } from './core/config';
 import type { RoomInstance } from './entities/room';
+
+const HALF_TILE_OFFSET = 0.5;
+const INSPECTION_RADIUS_FACTOR = 1.3;
+const REST_TIMER_DURATION_SEC = 30;
 
 class MediVilleApp {
   private simulation = new HospitalSimulation(loadGameState() ?? undefined);
@@ -79,6 +85,7 @@ class MediVilleApp {
   private eventBanner!: EventBannerView;
   private buildMenu!: BuildMenu;
   private buildController!: BuildController;
+  private entityInspector!: EntityInspector;
   private ghost: GhostState = { def: null, col: 0, row: 0, rotated: false, isValid: false };
   private isDemolishMode = false;
   private isMoveMode = false;
@@ -314,6 +321,18 @@ class MediVilleApp {
     this.setupNotificationsAndContextMenu();
     this.eventBanner = new EventBannerView(document.getElementById('event-banner-container')!);
     new TutorialView(document.getElementById('tutorial-container') || document.body);
+    this.setupHud();
+    this.decisionModal = new DecisionModal(modalContainer, this.simulation);
+    this.defeatModal = new DefeatModal(modalContainer);
+    this.setupEntityInspector(modalContainer);
+    this.setupAdvisorView();
+
+    if (isAgeVerificationRequired()) {
+      new AgeGateModal(modalContainer, () => {}).show();
+    }
+  }
+
+  private setupHud(): void {
     this.hud = new HospitalHUD(
       document.getElementById('hud-container')!,
       this.simulation,
@@ -329,14 +348,27 @@ class MediVilleApp {
         onOpenExpandMap: () => this.handleDirectMapExpansion(),
       }
     );
-    this.decisionModal = new DecisionModal(modalContainer, this.simulation);
-    this.defeatModal = new DefeatModal(modalContainer);
-    this.setupAdvisorView();
-
-    if (isAgeVerificationRequired()) {
-      new AgeGateModal(modalContainer, () => {}).show();
-    }
   }
+
+  private setupEntityInspector(modalContainer: HTMLElement): void {
+    this.entityInspector = new EntityInspector(modalContainer, {
+      onAttendPatient: (patientId) => {
+        this.simulation.triggerConsultation(patientId);
+        const pat = this.simulation.state.patients.get(patientId);
+        if (pat) this.decisionModal.open(pat);
+      },
+      onSendStaffToRest: (staffId) => {
+        const staff = this.simulation.state.staff.get(staffId);
+        if (staff) {
+          staff.isResting = true;
+          staff.restTimerSec = REST_TIMER_DURATION_SEC;
+          this.showToast(`☕ ${staff.name} foi para a Sala de Descanso!`);
+          soundSystem.playClick();
+        }
+      },
+    });
+  }
+
 
   private setupAdvisorView(): void {
     const container = document.getElementById('advisor-container')!;
@@ -469,8 +501,48 @@ class MediVilleApp {
       }
       return;
     }
+    if (this.handleEntityInspection(col, row)) {
+      return;
+    }
     this.handleExistingRoomInteraction(col, row);
   }
+
+  private handleEntityInspection(col: number, row: number): boolean {
+    const patientsView = this.renderer.getPatientsView();
+    if (!patientsView) return false;
+    const clickWorldX = (col + HALF_TILE_OFFSET) * THEME.tileSize;
+    const clickWorldY = (row + HALF_TILE_OFFSET) * THEME.tileSize;
+    const clickRadiusSq = (THEME.tileSize * INSPECTION_RADIUS_FACTOR) ** 2;
+
+    for (const [id, agent] of patientsView.npcMovementSystem.patientAgents) {
+      const dx = agent.x - clickWorldX;
+      const dy = agent.y - clickWorldY;
+      if (dx * dx + dy * dy <= clickRadiusSq) {
+        const patient = this.simulation.state.patients.get(id);
+        if (patient) {
+          this.entityInspector.inspectPatient(patient);
+          soundSystem.playClick();
+          return true;
+        }
+      }
+    }
+
+    for (const [id, agent] of patientsView.npcMovementSystem.staffAgents) {
+      const dx = agent.x - clickWorldX;
+      const dy = agent.y - clickWorldY;
+      if (dx * dx + dy * dy <= clickRadiusSq) {
+        const staff = this.simulation.state.staff.get(id);
+        if (staff) {
+          this.entityInspector.inspectStaff(staff);
+          soundSystem.playClick();
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
 
   private applyRoomMove(col: number, row: number): void {
     if (!this.movingRoomId) return;

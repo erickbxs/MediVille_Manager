@@ -2,21 +2,23 @@
  * Arquivo: src/systems/traffic-system.ts
  *
  * 1. O que este arquivo faz?
- * Gerencia a física, aceleração, detecção de pedestres na faixa e o fluxo contínuo de veículos (carros, ônibus e SAMU)
- * na avenida frontal, além da orquestração do desembarque (drop-off) de pacientes que chegam de carro ou ônibus ao hospital.
+ * Gerencia a física, movimentação contínua, desaceleração na faixa de pedestres e desembarque de passageiros (carros, ônibus e SAMU)
+ * na avenida frontal, sincronizando as coordenadas dinamicamente com a expansão do hospital através de getUrbanGeometry.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 2 do Prompt 11, tornando a chegada de pacientes orgânica e visualmente conectada ao tráfego urbano.
+ * Cumprir a Parte 1 do Prompt 23, garantindo que ao expandir o hospital (12x12 até 24x24) todos os veículos e faixas
+ * sejam realinhados instantaneamente para a nova posição da rua, sem jamais atravessar as salas construídas.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
- * Ajuste TRAFFIC_CONFIG para velocidades e intervalos de geração de carros. O sistema emite traffic:patient_disembarked.
+ * As posições da avenida provêm de getUrbanGeometry(gridSize). Chame realignToNewStreetGeometry(gridSize) para forçar atualização.
  *
- * Importa: src/core/event-bus.ts, src/render/voxel-vehicles.ts
- * Conecta-se com: src/render/renderer.ts, src/systems/npc-movement-system.ts, src/main.ts
+ * Importa: src/core/event-bus.ts, src/render/voxel-vehicles.ts, src/core/urban-geometry.ts
+ * Conecta-se com: src/render/traffic-view.ts, src/systems/npc-movement-system.ts, src/render/renderer.ts
  */
 
 import { globalBus } from '../core/event-bus';
 import type { VehicleType, VehicleDirection } from '../render/voxel-vehicles';
+import { getUrbanGeometry, type UrbanGeometry } from '../core/urban-geometry';
 
 export type VehicleBehaviorState = 'CRUISING' | 'DECELERATING' | 'DROPPING_OFF' | 'ACCELERATING';
 
@@ -35,38 +37,34 @@ export interface TrafficVehicleInstance {
   patientIdToDropoff?: string;
 }
 
-const TRAFFIC_CONFIG = {
-  SPAWN_X_WEST: -350,
-  SPAWN_X_EAST: 950,
-  OUT_OF_BOUND_MARGIN: 50,
-  LANE_EAST_Y: 660,
-  LANE_WEST_Y: 710,
-  CRUISE_SPEED: 95,
-  BUS_SPEED: 70,
-  ACCELERATION: 60,
-  DECELERATION: 110,
-  CROSSWALK_X: 144,
-  CROSSWALK_MIN_X: 120,
-  CROSSWALK_MAX_X: 170,
-  CROSSWALK_SAFE_DIST: 55,
-  DROPOFF_STOP_TIME: 1.5,
-  MIN_SPAWN_INTERVAL_SEC: 3.5,
-  BUS_CHANCE: 0.25,
-  COLOR_COUNT: 6,
-  DOOR_SPEED_FACTOR: 2,
-  DROPOFF_DISTANCE_THRESHOLD: 12,
-  DECEL_DISTANCE_THRESHOLD: 80,
-  DECEL_SPEED: 20,
-  SIDEWALK_Y: 596,
-} as const;
+const CRUISE_SPEED = 95;
+const BUS_SPEED = 70;
+const ACCELERATION_RATE = 60;
+const DECELERATION_RATE = 110;
+const DECEL_SPEED = 20;
+const CROSSWALK_SAFE_DIST = 55;
+const DROPOFF_STOP_TIME_SEC = 1.5;
+const MIN_SPAWN_INTERVAL_SEC = 3.5;
+const BUS_CHANCE = 0.25;
+const COLOR_PALETTE_COUNT = 6;
+const DOOR_SPEED_FACTOR = 2;
+const DROPOFF_DIST_THRESHOLD = 12;
+const DECEL_DIST_THRESHOLD = 80;
+const BOUND_MARGIN_PX = 100;
+const SPAWN_WEST_OFFSET = 350;
+const SPAWN_EAST_OFFSET = 350;
+const DEFAULT_GRID_SIZE = 12;
 
 export class TrafficSystem {
   public vehicles: TrafficVehicleInstance[] = [];
+  public currentGridSize = DEFAULT_GRID_SIZE;
+  private geo: UrbanGeometry = getUrbanGeometry(DEFAULT_GRID_SIZE);
   private spawnTimerSec = 0;
   private pendingDropoffPatientIds: string[] = [];
   private nextId = 1;
 
   constructor() {
+    this.realignToNewStreetGeometry(this.currentGridSize);
     this.setupSubscriptions();
   }
 
@@ -74,7 +72,32 @@ export class TrafficSystem {
     globalBus.on('patient:spawned', ({ patientId }) => {
       this.pendingDropoffPatientIds.push(patientId);
     });
+
+    globalBus.on('map:expanded', ({ newGridSize }) => {
+      this.realignToNewStreetGeometry(newGridSize);
+    });
   }
+
+  public getGeometry(): UrbanGeometry {
+    return this.geo;
+  }
+
+  public realignToNewStreetGeometry(newGridSize: number): void {
+    this.currentGridSize = newGridSize;
+    this.geo = getUrbanGeometry(newGridSize);
+
+    // Reposiciona todos os veículos ativos para as novas faixas da avenida
+    for (const v of this.vehicles) {
+      v.y = v.direction === 'east' ? this.geo.street.laneEastboundY : this.geo.street.laneWestboundY;
+    }
+  }
+
+  public reset(): void {
+    this.vehicles = [];
+    this.spawnTimerSec = 0;
+    this.pendingDropoffPatientIds = [];
+  }
+
 
   public update(deltaSec: number, isPedestrianOnCrosswalk = false): void {
     if (deltaSec <= 0) return;
@@ -90,17 +113,17 @@ export class TrafficSystem {
   }
 
   private isOutOfBound(v: TrafficVehicleInstance): boolean {
-    return v.direction === 'east'
-      ? v.x > TRAFFIC_CONFIG.SPAWN_X_EAST + TRAFFIC_CONFIG.OUT_OF_BOUND_MARGIN
-      : v.x < TRAFFIC_CONFIG.SPAWN_X_WEST - TRAFFIC_CONFIG.OUT_OF_BOUND_MARGIN;
+    const maxX = this.geo.hospitalBounds.maxX + SPAWN_EAST_OFFSET + BOUND_MARGIN_PX;
+    const minX = -SPAWN_WEST_OFFSET - BOUND_MARGIN_PX;
+    return v.direction === 'east' ? v.x > maxX : v.x < minX;
   }
 
   private updateSpawning(deltaSec: number): void {
     this.spawnTimerSec += deltaSec;
-    if (this.spawnTimerSec >= TRAFFIC_CONFIG.MIN_SPAWN_INTERVAL_SEC) {
+    if (this.spawnTimerSec >= MIN_SPAWN_INTERVAL_SEC) {
       this.spawnTimerSec = 0;
       const isEast = Math.random() > 0.5;
-      const isBus = Math.random() < TRAFFIC_CONFIG.BUS_CHANCE;
+      const isBus = Math.random() < BUS_CHANCE;
       const patientId = this.pendingDropoffPatientIds.shift();
       this.spawnVehicle(isEast ? 'east' : 'west', isBus ? 'bus' : 'car', patientId);
     }
@@ -108,14 +131,17 @@ export class TrafficSystem {
 
   public spawnVehicle(direction: VehicleDirection, type: VehicleType = 'car', patientId?: string): TrafficVehicleInstance {
     const isEast = direction === 'east';
-    const baseSpeed = type === 'bus' ? TRAFFIC_CONFIG.BUS_SPEED : TRAFFIC_CONFIG.CRUISE_SPEED;
+    const baseSpeed = type === 'bus' ? BUS_SPEED : CRUISE_SPEED;
+    const spawnWestX = -SPAWN_WEST_OFFSET;
+    const spawnEastX = this.geo.hospitalBounds.maxX + SPAWN_EAST_OFFSET;
+
     const vehicle: TrafficVehicleInstance = {
       id: `veh_${this.nextId++}`,
       type,
-      colorIndex: Math.floor(Math.random() * TRAFFIC_CONFIG.COLOR_COUNT),
+      colorIndex: Math.floor(Math.random() * COLOR_PALETTE_COUNT),
       direction,
-      x: isEast ? TRAFFIC_CONFIG.SPAWN_X_WEST : TRAFFIC_CONFIG.SPAWN_X_EAST,
-      y: isEast ? TRAFFIC_CONFIG.LANE_EAST_Y : TRAFFIC_CONFIG.LANE_WEST_Y,
+      x: isEast ? spawnWestX : spawnEastX,
+      y: isEast ? this.geo.street.laneEastboundY : this.geo.street.laneWestboundY,
       speed: isEast ? baseSpeed : -baseSpeed,
       targetSpeed: isEast ? baseSpeed : -baseSpeed,
       state: 'CRUISING',
@@ -145,53 +171,54 @@ export class TrafficSystem {
 
   private handleDropoffState(v: TrafficVehicleInstance, deltaSec: number): void {
     v.dropoffTimerSec -= deltaSec;
-    v.doorOpenFactor = v.dropoffTimerSec > 0.5 ? 1 : Math.max(0, v.dropoffTimerSec * TRAFFIC_CONFIG.DOOR_SPEED_FACTOR);
+    v.doorOpenFactor = v.dropoffTimerSec > 0.5 ? 1 : Math.max(0, v.dropoffTimerSec * DOOR_SPEED_FACTOR);
 
     if (v.dropoffTimerSec <= 0) {
       v.state = 'ACCELERATING';
       v.doorOpenFactor = 0;
-      const baseSpeed = v.type === 'bus' ? TRAFFIC_CONFIG.BUS_SPEED : TRAFFIC_CONFIG.CRUISE_SPEED;
+      const baseSpeed = v.type === 'bus' ? BUS_SPEED : CRUISE_SPEED;
       v.targetSpeed = v.direction === 'east' ? baseSpeed : -baseSpeed;
     }
   }
 
   private checkCrosswalkSlowdown(v: TrafficVehicleInstance, isPedestrianOnCrosswalk: boolean): void {
     if (!isPedestrianOnCrosswalk) return;
-    const distToCrosswalk = v.direction === 'east'
-      ? TRAFFIC_CONFIG.CROSSWALK_X - v.x
-      : v.x - TRAFFIC_CONFIG.CROSSWALK_X;
+    const crossX = this.geo.street.crosswalkX;
+    const distToCrosswalk = v.direction === 'east' ? crossX - v.x : v.x - crossX;
 
-    if (distToCrosswalk > 0 && distToCrosswalk < TRAFFIC_CONFIG.CROSSWALK_SAFE_DIST) {
+    if (distToCrosswalk > 0 && distToCrosswalk < CROSSWALK_SAFE_DIST) {
       v.targetSpeed = 0;
     }
   }
 
   private checkDropoffTrigger(v: TrafficVehicleInstance): void {
     if (!v.patientIdToDropoff || v.state !== 'CRUISING') return;
-    const distToDropoff = Math.abs(v.x - TRAFFIC_CONFIG.CROSSWALK_X);
-    if (distToDropoff < TRAFFIC_CONFIG.DROPOFF_DISTANCE_THRESHOLD) {
+    const dropX = this.geo.stops.patientDropOffX;
+    const distToDropoff = Math.abs(v.x - dropX);
+
+    if (distToDropoff < DROPOFF_DIST_THRESHOLD) {
       v.state = 'DROPPING_OFF';
       v.speed = 0;
-      v.dropoffTimerSec = TRAFFIC_CONFIG.DROPOFF_STOP_TIME;
+      v.dropoffTimerSec = DROPOFF_STOP_TIME_SEC;
       v.doorOpenFactor = 1;
       const pId = v.patientIdToDropoff;
       v.patientIdToDropoff = undefined;
       globalBus.emit('traffic:patient_disembarked', {
         patientId: pId,
-        x: TRAFFIC_CONFIG.CROSSWALK_X,
-        y: TRAFFIC_CONFIG.SIDEWALK_Y,
+        x: dropX,
+        y: this.geo.surroundings.sidewalkTopY,
       });
-    } else if (distToDropoff < TRAFFIC_CONFIG.DECEL_DISTANCE_THRESHOLD) {
+    } else if (distToDropoff < DECEL_DIST_THRESHOLD) {
       v.state = 'DECELERATING';
-      v.targetSpeed = v.direction === 'east' ? TRAFFIC_CONFIG.DECEL_SPEED : -TRAFFIC_CONFIG.DECEL_SPEED;
+      v.targetSpeed = v.direction === 'east' ? DECEL_SPEED : -DECEL_SPEED;
     }
   }
 
   private applySpeedInterpolation(v: TrafficVehicleInstance, deltaSec: number): void {
     if (v.speed < v.targetSpeed) {
-      v.speed = Math.min(v.targetSpeed, v.speed + TRAFFIC_CONFIG.ACCELERATION * deltaSec);
+      v.speed = Math.min(v.targetSpeed, v.speed + ACCELERATION_RATE * deltaSec);
     } else if (v.speed > v.targetSpeed) {
-      v.speed = Math.max(v.targetSpeed, v.speed - TRAFFIC_CONFIG.DECELERATION * deltaSec);
+      v.speed = Math.max(v.targetSpeed, v.speed - DECELERATION_RATE * deltaSec);
     }
   }
 }

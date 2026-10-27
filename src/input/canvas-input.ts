@@ -2,20 +2,22 @@
  * Arquivo: src/input/canvas-input.ts
  *
  * 1. O que este arquivo faz?
- * Captura eventos táteis, mouse e teclado para movimentação de câmera (pan e zoom), conversão exata Screen-to-World
- * com offset de toque de 36px, travamento de câmera durante o posicionamento de obras e long-press de 250ms para mover salas.
+ * Captura e coordena eventos táteis, mouse e teclado para movimentação de câmera (Focal Pinch-to-Zoom e Pan com CameraController),
+ * conversão exata Screen-to-World com offset tátil de 36px, travamento de câmera durante o posicionamento de obras e long-press de 250ms para mover salas.
  *
  * 2. Para que ele foi criado no contexto do sistema?
- * Cumprir a Parte 2 do Prompt 22, proporcionando pegada e arraste tátil nativo em celulares e tablets sem conflito de pan.
+ * Cumprir a Parte 2 do Prompt 22 e Prompt 23, proporcionando pegada e arraste tátil nativo em celulares e tablets
+ * sem conflito entre scroll, zoom de pinça focal e movimentação de salas.
  *
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O cálculo de grade usa camera.screenToGrid. O atraso do long-press é calibrado em LONG_PRESS_DELAY_MS.
  *
- * Importa: src/render/camera.ts
+ * Importa: src/render/camera.ts, src/render/camera-controller.ts
  * Conecta-se com: src/main.ts, src/render/renderer.ts, src/ui/build-controller.ts
  */
 
 import type { Camera } from '../render/camera';
+import { CameraController } from '../render/camera-controller';
 
 export interface InputHandlers {
   onGridClick: (col: number, row: number) => void;
@@ -34,20 +36,20 @@ export class CanvasInputManager {
   private element: HTMLElement;
   private camera: Camera;
   private handlers: InputHandlers;
+  public cameraController: CameraController;
   private isDragging = false;
   private isDragMoved = false;
   private startX = 0;
   private startY = 0;
-  private lastX = 0;
-  private lastY = 0;
-  private touchDistance = 0;
   private longPressTimer: number | null = null;
   private isLongPressed = false;
+  private hadMultiplePointers = false;
 
   constructor(element: HTMLElement, camera: Camera, handlers: InputHandlers) {
     this.element = element;
     this.camera = camera;
     this.handlers = handlers;
+    this.cameraController = new CameraController(camera, element);
     this.bindEvents();
   }
 
@@ -55,19 +57,27 @@ export class CanvasInputManager {
     this.element.addEventListener('pointerdown', this.onPointerDown.bind(this));
     window.addEventListener('pointermove', this.onPointerMove.bind(this));
     window.addEventListener('pointerup', this.onPointerUp.bind(this));
+    window.addEventListener('pointercancel', this.onPointerUp.bind(this));
     this.element.addEventListener('wheel', this.onWheel.bind(this), { passive: false });
     window.addEventListener('keydown', this.onKeyDown.bind(this));
-    this.bindTouchEvents();
   }
 
   private onPointerDown(e: PointerEvent): void {
+    this.cameraController.handlePointerDown(e);
     this.isDragging = true;
     this.isDragMoved = false;
     this.isLongPressed = false;
     this.startX = e.clientX;
     this.startY = e.clientY;
-    this.lastX = e.clientX;
-    this.lastY = e.clientY;
+
+    if (this.cameraController.isPinching()) {
+      this.hadMultiplePointers = true;
+      if (this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+      return;
+    }
 
     const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
     if (isBuildPreview) {
@@ -80,14 +90,26 @@ export class CanvasInputManager {
       const rect = this.element.getBoundingClientRect();
       const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top);
       this.longPressTimer = window.setTimeout(() => {
-        this.isLongPressed = true;
-        this.camera.panLocked = true;
-        this.handlers.onRoomLongPress?.(grid.col, grid.row);
+        if (!this.cameraController.isPinching()) {
+          this.isLongPressed = true;
+          this.camera.panLocked = true;
+          this.handlers.onRoomLongPress?.(grid.col, grid.row);
+        }
       }, LONG_PRESS_DELAY_MS);
     }
   }
 
   private onPointerMove(e: PointerEvent): void {
+    const isPinchAction = this.cameraController.handlePointerMove(e);
+    if (isPinchAction || this.cameraController.isPinching()) {
+      this.hadMultiplePointers = true;
+      if (this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+      return;
+    }
+
     const isTouch = e.pointerType === 'touch';
     const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
 
@@ -97,28 +119,13 @@ export class CanvasInputManager {
         clearTimeout(this.longPressTimer);
         this.longPressTimer = null;
       }
-
       if (isBuildPreview || this.isLongPressed) {
-        this.camera.panLocked = true;
-        const rect = this.element.getBoundingClientRect();
-        const touchOffsetY = isTouch ? -TOUCH_OFFSET_Y : 0;
-        const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
-        if (this.handlers.onPreviewDrag) {
-          this.handlers.onPreviewDrag(grid.col, grid.row);
-        } else {
-          this.handlers.onGridHover(grid.col, grid.row);
-        }
+        this.handlePreviewOrLongPressDrag(e, isTouch);
         return;
       }
-
-      const dx = e.clientX - this.lastX;
-      const dy = e.clientY - this.lastY;
-      this.lastX = e.clientX;
-      this.lastY = e.clientY;
-      if (!this.isDragMoved && totalMoved > DRAG_THRESHOLD_PX) {
+      if (totalMoved > DRAG_THRESHOLD_PX) {
         this.isDragMoved = true;
       }
-      this.camera.pan(dx, dy);
     } else {
       const rect = this.element.getBoundingClientRect();
       const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top);
@@ -126,10 +133,30 @@ export class CanvasInputManager {
     }
   }
 
+  private handlePreviewOrLongPressDrag(e: PointerEvent, isTouch: boolean): void {
+    this.camera.panLocked = true;
+    const rect = this.element.getBoundingClientRect();
+    const touchOffsetY = isTouch ? -TOUCH_OFFSET_Y : 0;
+    const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
+    if (this.handlers.onPreviewDrag) {
+      this.handlers.onPreviewDrag(grid.col, grid.row);
+    } else {
+      this.handlers.onGridHover(grid.col, grid.row);
+    }
+  }
+
+
   private onPointerUp(e: PointerEvent): void {
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
       this.longPressTimer = null;
+    }
+
+    const wasPinch = this.cameraController.isPinching() || this.hadMultiplePointers;
+    this.cameraController.handlePointerUp(e);
+
+    if (this.cameraController.getActivePointerCount() === 0) {
+      this.hadMultiplePointers = false;
     }
 
     const isBuildPreview = this.handlers.isBuildPreviewActive?.() ?? false;
@@ -142,14 +169,13 @@ export class CanvasInputManager {
       this.camera.panLocked = false;
     }
 
-    if (!wasPan || (isBuildPreview && isTouch)) {
+    if (!wasPinch && (!wasPan || (isBuildPreview && isTouch))) {
       const rect = this.element.getBoundingClientRect();
       const touchOffsetY = isBuildPreview && isTouch ? -TOUCH_OFFSET_Y : 0;
       const grid = this.camera.screenToGrid(e.clientX - rect.left, e.clientY - rect.top + touchOffsetY);
       this.handlers.onGridClick(grid.col, grid.row);
     }
   }
-
 
   private onWheel(e: WheelEvent): void {
     e.preventDefault();
@@ -164,25 +190,7 @@ export class CanvasInputManager {
     }
   }
 
-  private bindTouchEvents(): void {
-    this.element.addEventListener('touchmove', (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const t1 = e.touches[0]!;
-        const t2 = e.touches[1]!;
-        const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
-        if (this.touchDistance > 0) {
-          const factor = dist / this.touchDistance;
-          const cx = (t1.clientX + t2.clientX) / 2;
-          const cy = (t1.clientY + t2.clientY) / 2;
-          this.camera.zoomAt(cx, cy, factor);
-        }
-        this.touchDistance = dist;
-      }
-    }, { passive: false });
-
-    this.element.addEventListener('touchend', () => {
-      this.touchDistance = 0;
-    });
+  public destroy(): void {
+    this.cameraController.destroy();
   }
 }

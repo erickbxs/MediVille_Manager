@@ -24,6 +24,7 @@
 import { Container, Graphics, Text } from 'pixi.js';
 import { THEME } from './theme-config';
 import { drawBlock, drawBlockCentered, drawShadow } from './voxel';
+import { getUrbanGeometry } from '../core/urban-geometry';
 
 const WORLD_EXTENT = 2400;
 
@@ -67,17 +68,17 @@ export class CityEnvironment {
     this.staticLayer.clear();
     for (const label of this.labelsContainer.removeChildren()) label.destroy();
 
-    const tileSize = THEME.tileSize;
-    const gridW = gridSize * tileSize;
-    const gridH = gridSize * tileSize;
+    const geo = getUrbanGeometry(gridSize, THEME.tileSize);
+    const gridW = geo.hospitalBounds.widthPx;
+    const gridH = geo.hospitalBounds.heightPx;
 
-    const sidewalkY = gridH + 16;
-    const sidewalkH = 36;
-    const avenueY = sidewalkY + sidewalkH + 4;
-    const avenueH = 100;
-    const oppositeSidewalkY = avenueY + avenueH + 4;
+    const sidewalkY = geo.surroundings.sidewalkTopY;
+    const sidewalkH = geo.surroundings.sidewalkH;
+    const avenueY = geo.street.avenueY;
+    const avenueH = geo.street.avenueH;
+    const oppositeSidewalkY = geo.surroundings.oppositeSidewalkY;
 
-    this.ambulancePos = { x: -80, y: sidewalkY + 20 };
+    this.ambulancePos = { x: geo.stops.samuBayX + 50, y: geo.stops.samuBayY };
 
     this.drawWorldGround(gridW, gridH);
     this.drawNorthPark(gridW);

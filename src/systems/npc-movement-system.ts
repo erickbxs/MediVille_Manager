@@ -22,6 +22,7 @@ import type { RoomInstance } from '../entities/room';
 import { THEME } from '../render/theme-config';
 import type { AnimationState } from '../render/voxel-character';
 import { globalBus } from '../core/event-bus';
+import { getUrbanGeometry } from '../core/urban-geometry';
 
 export interface Waypoint {
   x: number;
@@ -73,6 +74,9 @@ const NAV = {
   SIDEWALK_CROSS_Y: 580,
   CROSSWALK_CENTER_X: 144,
   CROSSWALK_HALF_W: 30,
+  CROSSWALK_CURB_OFFSET_Y: 20,
+  CROSSWALK_DETECTION_DIST: 40,
+  DEFAULT_GRID_SIZE: 12,
 } as const;
 
 function getDoctorWaypoints(agent: NpcAgent, rooms: RoomInstance[]): Waypoint[] {
@@ -137,14 +141,16 @@ export class NpcMovementSystem {
     });
   }
 
-  public isAnyPatientCrossingCrosswalk(): boolean {
+  public isAnyPatientCrossingCrosswalk(gridSize = NAV.DEFAULT_GRID_SIZE): boolean {
+    const geo = getUrbanGeometry(gridSize);
     for (const agent of this.patientAgents.values()) {
-      if (agent.y > NAV.SIDEWALK_CROSS_Y && Math.abs(agent.x - NAV.CROSSWALK_CENTER_X) < NAV.CROSSWALK_HALF_W) {
+      if (agent.y > geo.street.curbY - NAV.CROSSWALK_CURB_OFFSET_Y && Math.abs(agent.x - geo.street.crosswalkX) < NAV.CROSSWALK_DETECTION_DIST) {
         return true;
       }
     }
     return false;
   }
+
 
   public update(state: GameState, deltaSec: number): void {
     if (state.speed === 0 || deltaSec <= 0) return;
@@ -249,7 +255,8 @@ export class NpcMovementSystem {
       };
     }
 
-    return { x: NAV.SPAWN_COL * tileSize, y: NAV.SPAWN_ROW * tileSize };
+    const geo = getUrbanGeometry(state.gridSize ?? NAV.DEFAULT_GRID_SIZE);
+    return { x: geo.stops.hospitalEntranceX, y: geo.stops.hospitalEntranceY };
   }
 
   private getWaypointsForStaff(agent: NpcAgent, state: GameState): Waypoint[] {
@@ -267,11 +274,12 @@ export class NpcMovementSystem {
       if (!currentStaffIds.has(id)) this.staffAgents.delete(id);
     }
 
+    const geo = getUrbanGeometry(state.gridSize ?? NAV.DEFAULT_GRID_SIZE);
     for (const [id, member] of state.staff.entries()) {
       if (!this.staffAgents.has(id)) {
         const role = member.roleId as NpcAgent['role'];
-        const startX = NAV.SPAWN_COL * THEME.tileSize;
-        const startY = NAV.SPAWN_ROW * THEME.tileSize;
+        const startX = geo.stops.hospitalEntranceX;
+        const startY = geo.stops.hospitalEntranceY;
         this.staffAgents.set(id, {
           id,
           role,
@@ -290,11 +298,12 @@ export class NpcMovementSystem {
   }
 
   private syncPatientAgents(state: GameState): void {
+    const geo = getUrbanGeometry(state.gridSize ?? NAV.DEFAULT_GRID_SIZE);
     for (const patient of state.patients.values()) {
       if (!this.patientAgents.has(patient.id) && patient.state !== 'abandoned' && patient.state !== 'treated') {
         const drop = this.disembarkedPatients.get(patient.id);
-        const startX = drop ? drop.x : NAV.SPAWN_COL * THEME.tileSize;
-        const startY = drop ? drop.y : NAV.SPAWN_ROW * THEME.tileSize;
+        const startX = drop ? drop.x : geo.stops.patientDropOffX;
+        const startY = drop ? drop.y : geo.surroundings.sidewalkTopY;
         this.disembarkedPatients.delete(patient.id);
 
         this.patientAgents.set(patient.id, {

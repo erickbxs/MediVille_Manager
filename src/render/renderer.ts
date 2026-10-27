@@ -214,4 +214,9 @@ export class HospitalRenderer {
     this.patientsView.render(state);
     this.ghostView.render(ghost.def, ghost.col, ghost.row, ghost.rotated, ghost.isValid, ghost.touchOffsetY ?? 0);
   }
+
+  public getPatientsView(): PatientsView {
+    return this.patientsView;
+  }
 }
+

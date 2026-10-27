@@ -16,6 +16,9 @@
  * Conecta-se com: src/render/city-environment.ts, src/render/urban-life-view.ts, src/render/renderer.ts, src/main.ts
  */
 
+import { getUrbanGeometry } from '../core/urban-geometry';
+import { globalBus } from '../core/event-bus';
+
 export type UrbanNpcRole = 'pedestrian' | 'jogger' | 'dog_walker' | 'bench_sitter' | 'bus_waiter' | 'kiosk_customer';
 
 export interface UrbanCitizen {
@@ -32,9 +35,6 @@ export interface UrbanCitizen {
   colorIndex: number;
 }
 
-const TILE_PX = 48;
-const SIDEWALK_BASE_OFFSET = 36;
-const OPPOSITE_SIDEWALK_OFFSET = 124;
 const FAMILY_WALKER_OFFSET = 4;
 const PARK_Y = -50;
 const JOGGER_2_Y_OFFSET = 20;
@@ -54,17 +54,25 @@ export class UrbanLifeSystem {
 
   constructor() {
     this.initCitizens(this.currentGridSize);
+    globalBus.on('map:expanded', ({ newGridSize }) => {
+      this.updateGridSize(newGridSize);
+    });
   }
 
   public updateGridSize(gridSize: number): void {
-    if (this.currentGridSize === gridSize) return;
     this.currentGridSize = gridSize;
-    const sidewalkY = gridSize * TILE_PX + SIDEWALK_BASE_OFFSET;
+    const geo = getUrbanGeometry(gridSize);
+    const sidewalkY = geo.surroundings.sidewalkTopY;
+    const oppositeSidewalkY = geo.surroundings.oppositeSidewalkY;
 
     for (const c of this.citizens) {
       if (c.role === 'pedestrian' || c.role === 'dog_walker' || c.role === 'bus_waiter' || c.role === 'kiosk_customer') {
+        const isOpposite = c.id.startsWith('c_opp');
         const offset = c.role === 'dog_walker' ? DOG_Y_OFFSET : (c.role === 'bus_waiter' ? BUS_Y_OFFSET : (c.role === 'kiosk_customer' ? KIOSK_Y_OFFSET : 0));
-        c.y = sidewalkY + offset;
+        c.y = (isOpposite ? oppositeSidewalkY : sidewalkY) + offset;
+      }
+      if (c.y >= geo.hospitalBounds.minY && c.y <= geo.hospitalBounds.maxY && c.x >= geo.hospitalBounds.minX && c.x <= geo.hospitalBounds.maxX) {
+        c.y = sidewalkY + DOG_Y_OFFSET;
       }
     }
   }
@@ -109,15 +117,17 @@ export class UrbanLifeSystem {
     ];
   }
 
-  private initCitizens(gridSize = 12): void {
-    const sidewalkY = gridSize * TILE_PX + SIDEWALK_BASE_OFFSET;
-    const oppositeSidewalkY = sidewalkY + OPPOSITE_SIDEWALK_OFFSET;
+  private initCitizens(gridSize = DEFAULT_INITIAL_GRID): void {
+    const geom = getUrbanGeometry(gridSize);
+    const sidewalkY = geom.surroundings.sidewalkTopY;
+    const oppositeSidewalkY = geom.surroundings.sidewalkBottomY;
 
     this.citizens = [
       ...this.buildFrontSidewalkCitizens(sidewalkY),
       ...this.buildSurroundingCitizens(sidewalkY, oppositeSidewalkY),
     ];
   }
+
 
   public reset(): void {
     this.citizens = [];

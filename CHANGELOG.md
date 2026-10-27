@@ -2,7 +2,30 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.1.0] - 2026-10-26
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+
+### Versão 2.1.0 — Sincronização Dinâmica de Carros/Ruas na Expansão do Mapa, Correção Matemática do Zoom de Pinça (Pinch-to-Zoom Focal) no Mobile, Painel de Inspeção de NPCs e Refinamento Geral
+- **PARTE 1: Sincronização Dinâmica de Carros, Ônibus, Ambulâncias e NPCs ao Expandir o Mapa (`src/core/urban-geometry.ts`, `src/systems/traffic-system.ts`, `src/systems/urban-life-system.ts` & `src/render/city-environment.ts`)**:
+  - Criada a fonte única de verdade geométrica urbana (`getUrbanGeometry(gridSize, tileSize)`), calculando com rigor matemático `hospitalBounds`, `street` (`roadCenterY`, `laneEastboundY`, `laneWestboundY`, `roadStartX`, `roadEndX`, `curbY`, `crosswalkX`), `stops` (`patientDropOffX`, `patientDropOffY`, `busStopX`, `busStopY`, `samuBayX`, `samuBayY`, `hospitalEntranceX`, `hospitalEntranceY`) e `surroundings` (`sidewalkTopY`, `sidewalkBottomY`, `parkingLotBounds`, `gardenBounds`, `backParkBounds`).
+  - Proibição de números mágicos fixos: `CityEnvironment`, `TrafficSystem`, `UrbanLifeSystem`, `NpcMovementSystem` e `ArrivalSystem` leem suas coordenadas exclusivamente de `getUrbanGeometry(state.gridSize, TILE_SIZE)`.
+  - Realinhamento instantâneo via evento `map:expanded`: ao expandir o mapa (`12x12` ➔ `16x16` ➔ `20x20` ➔ `24x24`), todos os veículos em trânsito têm seu `y` atualizado para as novas faixas, veículos estacionados e da baia do SAMU acompanham o novo lote, NPCs urbanos que caírem dentro de `hospitalBounds` são empurrados para as novas calçadas e waypoints de pacientes são realinhados para a nova calçada.
+- **PARTE 2: Correção Definitiva do Zoom com o Dedo (Pinch-to-Zoom Focal) e Câmera Mobile (`src/render/camera-controller.ts` & `src/input/canvas-input.ts`)**:
+  - Criado `CameraController` com rastreamento multi-touch via `Map<number, Point>` (`pointerdown`, `pointermove`, `pointerup`, `pointercancel`) e bloqueio preventivo de gestos nativos do iOS Safari (`gesturestart`, `gesturechange`).
+  - Implementada a função matemática pura `computeFocalPinchZoom`: calcula a coordenada do mundo sob o ponto médio dos dois dedos antes de alterar a escala (`world = (M - camera) / scale`), aplica a nova escala limitada entre `0.45` e `2.4`, e reposiciona o container cravando o ponto focal exatamente sob os dedos sem deriva (`camera = M - world * newScale`).
+  - Transição suave `2 ➔ 1` dedo com cooldown anti-salto de `80ms` (`PINCH_COOLDOWN_MS = 80`).
+  - Pausa automática do arrasto de salas durante pinça (`isPinching()`), inércia suave no pan de 1 dedo, limites elásticos adaptáveis ao tamanho do mapa e botões discretos de zoom `➕`, `➖` e `🎯` no canto inferior direito.
+- **PARTE 3: Painel de Inspeção ao Tocar em Pacientes e Funcionários (`src/ui/entity-inspector.ts` & `src/main.ts`)**:
+  - Implementado `EntityInspector` flutuante com design Apple, Tailwind CSS v4 e Dark Mode nativo.
+  - **Inspeção de Paciente**: Exibe nome, idade, avatar de gênero, barra de Paciência/Satisfação em tempo real, status no SUS, hipótese diagnóstica e botão direto **`🩺 Atender Agora`**.
+  - **Inspeção de Funcionário**: Exibe nome, cargo com ícone, qualificação em estrelas (1 a 5), salário diário, barra de Energia/Disposição (0 a 100%) e botão rápido **`☕ Enviar para Descanso`** (pausa de 30s na Sala de Descanso).
+- **PARTE 4: Suíte Completa de Testes Unitários Automatizados (`tests/traffic-expansion-pinch-and-inspector.test.ts`)**:
+  - 9 novos testes cobrindo geometria urbana progressiva (12, 16, 20 e 24), reposicionamento de tráfego, preservação de ponto focal em `computeFocalPinchZoom` e operações do `EntityInspector`. Total de 223 testes em 26 suítes passando 100%.
+
 ## [2.0.0] - 2026-10-26
+
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
 - Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
