@@ -246,6 +246,14 @@
     "mastered_toast": "Question mastered: {ref} ({count} total)",
     "tip_title": "How it works",
     "tip_text": "Each patient brings a past Revalida question. Right answer: the visit is billed. Wrong answer: the question comes back later for review. Build rooms to unlock new areas.",
-    "figure_zoom": "Zum Vergrößern tippen"
+    "figure_zoom": "Zum Vergrößern tippen",
+    "level_title": "Fragenniveau",
+    "level_facil": "Leicht",
+    "level_medio": "Mittel",
+    "level_dificil": "Schwer",
+    "eliminated": "gestrichen",
+    "level_facil_desc": "Easy: the wrong option closest to the right one is crossed out. Bills 50%.",
+    "level_medio_desc": "Medium: the most obviously wrong option is crossed out; the tricky one stays. Bills 75%.",
+    "level_dificil_desc": "Hard: all 4 options, as in the exam. Bills 100%."
   }
 }

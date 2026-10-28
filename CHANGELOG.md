@@ -2,6 +2,22 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [3.2.0] - 2026-10-28
+
+### Versão 3.2.0 — Níveis Fácil, Médio e Difícil no Modo Revalida (alternativas riscadas, sem alterar a prova)
+- **PARTE 1: Níveis de dificuldade (`src/systems/revalida-difficulty.ts` & `balance.json → revalida.difficulty`)**:
+  - **Fácil**: a alternativa errada mais parecida com a certa (a "pegadinha") aparece **riscada**; sobram a certa e duas erradas bem diferentes. Fatura 50% do atendimento.
+  - **Médio** (padrão): a alternativa errada mais óbvia aparece riscada; a pegadinha continua. Fatura 75%.
+  - **Difícil**: as 4 alternativas, igual à prova. Fatura 100%.
+  - Nada é inventado: o texto e a ordem A–D das questões do INEP continuam iguais; a alternativa riscada fica visível, tachada e sem poder ser escolhida (`submitClinicalDecision` recusa).
+  - "Parecença" calculada pela proporção de palavras em comum (4+ letras, sem acento) entre cada errada e a certa. Em alternativas de uma palavra só (ex.: nomes de doenças) não há palavras em comum, e a riscada passa a ser a primeira errada.
+  - O nível vale também para pacientes que já estavam na fila (aplicado ao abrir o atendimento).
+- **PARTE 2: Interface**:
+  - Configurações → **Nível das questões** (Fácil / Médio / Difícil), com explicação de cada nível; fica salvo no aparelho (`mediville_revalida_level`).
+  - Selo do nível no topo de cada questão; alternativa riscada com o rótulo "riscada". Textos nos 6 idiomas.
+- **PARTE 3: Testes Automatizados (Vitest)**:
+  - Nova suíte `tests/revalida-difficulty.test.ts` (6 testes): Difícil sem riscadas, Fácil risca a pegadinha e Médio a mais óbvia, texto/ordem intactos, 3 alternativas nas questões reais, riscada não pode ser escolhida, Fácil fatura menos. Total: **261 testes em 30 suítes, 100% aprovados**.
+
 ## [3.1.0] - 2026-10-28
 
 ### Versão 3.1.0 — Correção dos Itens Pendentes do Relatório de Teste (Modo Antigo, Metas, Alertas, Toque, Mapa e Configurações)

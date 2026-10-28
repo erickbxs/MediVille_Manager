@@ -22,11 +22,13 @@ import { PHARMACY_CATALOG, type RenameMedication } from '../core/config';
 import { buyMedicationBatch } from '../systems/economy-system';
 import { globalBus } from '../core/event-bus';
 import type { RevalidaCasePayload } from '../entities/revalida-question';
+import { getRevalidaDifficulty } from '../systems/revalida-difficulty';
 import { t } from '../i18n/i18n';
 import {
   areaLabel,
   escapeHtml,
   markAnsweredOptions,
+  renderLevelBadge,
   renderOptionButtons,
   renderReferenceLine,
   renderRevalidaFeedback,
@@ -162,7 +164,10 @@ export class DecisionModal {
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${escapeHtml(areaLabel(q.area))} · ${escapeHtml(payload.reference)}</p>
               </div>
             </div>
-            <span class="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-700 dark:text-sky-300">Revalida ${escapeHtml(q.editionLabel)}</span>
+            <div class="shrink-0 flex flex-col items-end gap-1">
+              <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-700 dark:text-sky-300">Revalida ${escapeHtml(q.editionLabel)}</span>
+              ${renderLevelBadge(getRevalidaDifficulty())}
+            </div>
           </div>
           <div class="p-5 overflow-y-auto space-y-4 text-sm flex-1 min-h-0">
             <div class="space-y-2 text-slate-800 dark:text-slate-100">${renderStem(q)}</div>

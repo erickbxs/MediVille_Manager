@@ -46,12 +46,27 @@ export function renderStem(q: RevalidaQuestion): string {
 export function renderOptionButtons(options: ConductOption[]): string {
   return options.map((opt) => {
     const key = opt.id.slice(-1);
+    if (opt.eliminated) return renderEliminatedOption(key, opt.text);
     return `
       <button data-conduct-id="${opt.id}" class="conduct-btn btn-interactive w-full min-h-[48px] text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-slate-700/80 transition-all text-sm text-slate-800 dark:text-slate-100 flex gap-3 items-start">
         <span class="shrink-0 w-7 h-7 rounded-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-extrabold text-xs">${key}</span>
         <span class="pt-0.5">${escapeHtml(opt.text)}</span>
       </button>`;
   }).join('');
+}
+
+/** Alternativa riscada pelo nível (Fácil/Médio): continua visível, com o texto original, mas não pode ser escolhida. */
+function renderEliminatedOption(key: string, text: string): string {
+  return `
+      <div aria-disabled="true" class="w-full min-h-[48px] p-3.5 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-sm text-slate-400 dark:text-slate-500 flex gap-3 items-start opacity-70">
+        <span class="shrink-0 w-7 h-7 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center font-extrabold text-xs line-through">${key}</span>
+        <span class="pt-0.5 line-through">${escapeHtml(text)}</span>
+        <span class="shrink-0 ml-auto text-[10px] font-bold uppercase no-underline">${escapeHtml(t('revalida.eliminated'))}</span>
+      </div>`;
+}
+
+export function renderLevelBadge(level: string): string {
+  return `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-300">${escapeHtml(t(`revalida.level_${level}`))}</span>`;
 }
 
 export function renderReferenceLine(payload: RevalidaCasePayload): string {

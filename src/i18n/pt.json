@@ -253,6 +253,14 @@
     "mastered_toast": "Questão dominada: {ref} ({count} no total)",
     "tip_title": "Como funciona",
     "tip_text": "Cada paciente traz uma questão antiga do Revalida. Acertou: o atendimento é faturado. Errou: a questão volta depois para revisão. Construa salas para liberar novas áreas.",
-    "figure_zoom": "Toque para ampliar a figura"
+    "figure_zoom": "Toque para ampliar a figura",
+    "level_title": "Nível das questões",
+    "level_facil": "Fácil",
+    "level_medio": "Médio",
+    "level_dificil": "Difícil",
+    "eliminated": "riscada",
+    "level_facil_desc": "Fácil: a alternativa errada mais parecida com a certa vem riscada; sobram a certa e duas bem diferentes. Fatura 50%.",
+    "level_medio_desc": "Médio: a alternativa errada mais óbvia vem riscada; a \"pegadinha\" continua. Fatura 75%.",
+    "level_dificil_desc": "Difícil: as 4 alternativas, igual à prova. Fatura 100%."
   }
 }

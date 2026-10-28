@@ -12,7 +12,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Multiplicadores e tempos de consulta provêm de balance.json e do sistema de fadiga em staff-fatigue-system.ts.
  *
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts, src/systems/revalida-system.ts,
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts, src/systems/revalida-system.ts, src/systems/revalida-difficulty.ts,
  *          src/systems/satisfaction-system.ts, src/systems/staff-fatigue-system.ts
  * Conecta-se com: src/core/simulation.ts, src/ui/decision-modal.ts
  */
@@ -30,6 +30,7 @@ import { deductStaffEnergyOnConsultation } from './staff-fatigue-system';
 import { orderQueueByManchester } from './triage-system';
 import { executeExamWorkflow } from './exam-routing-system';
 import { isCalmModeFlag } from './revalida-system';
+import { getDifficultyRewardMultiplier } from './revalida-difficulty';
 
 const AUTO_TREATMENT_BASE_SEC = 3.5;
 const AUTO_TREATMENT_MIN_SEC = 1.5;
@@ -275,7 +276,9 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): { 
     baseRevenue += BALANCE.sectors.helipadReward ?? DEFAULT_HELIPAD_REWARD;
   }
 
-  const result = calculatePatientConsultationRevenue(state, baseRevenue);
+  // Modo Revalida: níveis mais fáceis faturam menos (balance.json → revalida.difficulty).
+  const levelMultiplier = patient.clinicalCase.definition.revalida ? getDifficultyRewardMultiplier() : 1;
+  const result = calculatePatientConsultationRevenue(state, Math.round(baseRevenue * levelMultiplier));
   state.cash += result.amount;
   state.stats.treatedCount += 1;
   executeExamWorkflow(state, patient);

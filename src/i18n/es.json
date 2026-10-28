@@ -253,6 +253,14 @@
     "mastered_toast": "Pregunta dominada: {ref} ({count} en total)",
     "tip_title": "Cómo funciona",
     "tip_text": "Cada paciente trae una pregunta antigua del Revalida. Si aciertas, la atención se factura. Si fallas, la pregunta vuelve después para repaso. Construye salas para liberar nuevas áreas.",
-    "figure_zoom": "Toca para ampliar la figura"
+    "figure_zoom": "Toca para ampliar la figura",
+    "level_title": "Nivel de las preguntas",
+    "level_facil": "Fácil",
+    "level_medio": "Medio",
+    "level_dificil": "Difícil",
+    "eliminated": "tachada",
+    "level_facil_desc": "Fácil: se tacha la alternativa incorrecta más parecida a la correcta. Factura 50%.",
+    "level_medio_desc": "Medio: se tacha la alternativa incorrecta más obvia; la trampa se mantiene. Factura 75%.",
+    "level_dificil_desc": "Difícil: las 4 alternativas, igual que en el examen. Factura 100%."
   }
 }

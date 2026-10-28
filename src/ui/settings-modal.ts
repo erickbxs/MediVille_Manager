@@ -12,11 +12,13 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O volume é transmitido para musicSystem.setVolume(). Os termos legais abrem via LegalModal.
  *
- * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts,, src/core/sound-system.ts
+ * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts,, src/core/sound-system.ts, src/systems/revalida-difficulty.ts, src/systems/revalida-system.ts
  *          src/services/ranking-service.ts, src/core/music-system.ts, src/i18n/i18n.ts, src/ui/legal-modal.ts
  * Conecta-se com: src/ui/hud.ts, src/main.ts
  */
 
+import { getRevalidaDifficulty, setRevalidaDifficulty } from '../systems/revalida-difficulty';
+import { isRevalidaActive } from '../systems/revalida-system';
 import { soundSystem } from '../core/sound-system';
 import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
@@ -45,6 +47,18 @@ export function applySavedFontScale(scale?: FontScale): void {
 }
 
 const REDUCE_MOTION_KEY = 'mediville_reduce_motion';
+const REVALIDA_LEVEL_KEY = 'mediville_revalida_level';
+const LEVELS = ['facil', 'medio', 'dificil'] as const;
+
+/** Aplica o nível do Modo Revalida salvo no aparelho (Fácil, Médio ou Difícil). */
+export function applySavedRevalidaLevel(): void {
+  try {
+    const saved = localStorage.getItem(REVALIDA_LEVEL_KEY);
+    if (saved) setRevalidaDifficulty(saved);
+  } catch {
+    // Sem armazenamento: usa o nível padrão do balance.json
+  }
+}
 
 function prefersReducedMotion(): boolean {
   const saved = localStorage.getItem(REDUCE_MOTION_KEY);
@@ -128,6 +142,8 @@ export class SettingsModal {
             </div>
           </div>
 
+          ${isRevalidaActive() ? this.renderLevelPicker() : ''}
+
           <!-- Acessibilidade e Tamanho da Fonte -->
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
             <span class="text-xs font-bold text-slate-700 dark:text-slate-200 block">🔤 ${t('settings.fontSize') || 'Tamanho da Fonte'}</span>
@@ -189,6 +205,13 @@ export class SettingsModal {
       this.container.innerHTML = '';
       this.simulation.resumeFromModal();
     });
+
+    this.container.querySelectorAll<HTMLButtonElement>('.btn-revalida-level').forEach((btn) => btn.addEventListener('click', () => {
+      const level = btn.dataset.level ?? 'medio';
+      setRevalidaDifficulty(level);
+      try { localStorage.setItem(REVALIDA_LEVEL_KEY, level); } catch { /* sem armazenamento */ }
+      this.open();
+    }));
 
     document.getElementById('input-sfx-volume')?.addEventListener('input', (e) => {
       const val = parseInt((e.target as HTMLInputElement).value, 10);
@@ -283,6 +306,18 @@ export class SettingsModal {
         window.location.reload();
       }
     });
+  }
+
+  private renderLevelPicker(): string {
+    const current = getRevalidaDifficulty();
+    const buttons = LEVELS.map((lv) => `
+      <button data-level="${lv}" class="btn-revalida-level min-h-[44px] p-2 rounded-xl border ${lv === current ? 'bg-violet-600 text-white border-violet-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}">${t(`revalida.level_${lv}`)}</button>`).join('');
+    return `
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200 block">🎚️ ${t('revalida.level_title')}</span>
+            <div class="grid grid-cols-3 gap-1.5 text-xs font-bold">${buttons}</div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">${t(`revalida.level_${current}_desc`)}</p>
+          </div>`;
   }
 
   private showStatus(msg: string, success: boolean): void {

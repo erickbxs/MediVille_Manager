@@ -172,6 +172,19 @@ export interface RevalidaCalmModeConfig {
   hideManagementDock: boolean;
 }
 
+export type RevalidaDifficulty = 'facil' | 'medio' | 'dificil';
+
+export interface RevalidaDifficultyLevel {
+  /** Qual alternativa errada riscar: a mais parecida com a certa (tricky), a menos parecida (obvious) ou nenhuma. */
+  eliminate: 'tricky' | 'obvious' | 'none';
+  rewardMultiplier: number;
+}
+
+export interface RevalidaDifficultyConfig {
+  default: RevalidaDifficulty;
+  levels: Record<RevalidaDifficulty, RevalidaDifficultyLevel>;
+}
+
 export interface RevalidaBalanceConfig {
   enabled: boolean;
   questionsUrl: string;
@@ -181,6 +194,7 @@ export interface RevalidaBalanceConfig {
   arrivalIntervalSec: number;
   maxWaitingPatients: number;
   advisorMaxSuggestions: number;
+  difficulty: RevalidaDifficultyConfig;
   reviewEveryNthPatient: number;
   wrongReputationPenalty: number;
   correctReputationGain: number;

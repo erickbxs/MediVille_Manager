@@ -11,7 +11,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Para adicionar ou alterar pesos de casos, edite src/data/cases.json. Para validar a distribuição e não-repetição, execute tests/cases-and-mobile.test.ts.
  *
- * Importa: src/core/config.ts, src/entities/clinical-case.ts, src/entities/patient.ts, src/state/game-state.ts, src/systems/revalida-system.ts
+ * Importa: src/core/config.ts, src/entities/clinical-case.ts, src/entities/patient.ts, src/state/game-state.ts, src/systems/revalida-system.ts, src/systems/revalida-difficulty.ts
  * Conecta-se com: src/systems/arrival-system.ts, src/core/simulation.ts
  */
 
@@ -19,6 +19,7 @@ import { BALANCE, CASES_CATALOG, NAMES_CATALOG, type ClinicalCaseDefinition } fr
 import type { ConductOption, PatientCase } from '../entities/clinical-case';
 import type { PatientInstance } from '../entities/patient';
 import type { GameState } from '../state/game-state';
+import { applyDifficulty } from './revalida-difficulty';
 import { buildRevalidaCaseDefinition, inferRevalidaPatientGender, isRevalidaActive, pickRevalidaQuestion } from './revalida-system';
 
 let lastGeneratedCaseId: string | undefined;
@@ -117,7 +118,7 @@ export function selectWeightedCase(
 /** Alternativas da questão do Revalida na ordem oficial (A–D), sem embaralhar. */
 function buildRevalidaOptions(def: ClinicalCaseDefinition): ConductOption[] {
   const q = def.revalida!.question;
-  return q.options.map((o) => ({ id: `${q.id}-${o.key}`, text: o.text, isCorrect: o.key === q.answer }));
+  return applyDifficulty(q.options.map((o) => ({ id: `${q.id}-${o.key}`, text: o.text, isCorrect: o.key === q.answer })));
 }
 
 function selectCaseDefinition(

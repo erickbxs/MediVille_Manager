@@ -22,6 +22,7 @@ import { updateEventSystem } from '../systems/event-system';
 import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems/staff-system';
 import { goalsSystem } from '../systems/goals-system';
 import { registerRevalidaAnswer, isRevalidaActive } from '../systems/revalida-system';
+import { applyDifficulty } from '../systems/revalida-difficulty';
 
 export class HospitalSimulation {
   public state: GameState;
@@ -90,6 +91,10 @@ export class HospitalSimulation {
     if (!patient) return null;
     if (patient.state === 'ready_for_treatment' || patient.state === 'needs_decision') {
       patient.state = 'needs_decision';
+      // O nível escolhido vale também para quem já estava na fila.
+      if (patient.clinicalCase.definition.revalida && !patient.clinicalCase.decisionMade) {
+        patient.clinicalCase.conductOptions = applyDifficulty(patient.clinicalCase.conductOptions);
+      }
       return patient;
     }
     return null;
@@ -150,7 +155,7 @@ export class HospitalSimulation {
     if (!patient || (patient.state !== 'needs_decision' && patient.state !== 'ready_for_treatment')) return false;
 
     const chosen = patient.clinicalCase.conductOptions.find((c) => c.id === conductId);
-    if (!chosen) return false;
+    if (!chosen || chosen.eliminated) return false;
 
     patient.clinicalCase.chosenConductId = conductId;
     patient.clinicalCase.decisionMade = true;

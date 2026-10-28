@@ -233,6 +233,14 @@
     "arrivalIntervalSec": 16,
     "maxWaitingPatients": 3,
     "advisorMaxSuggestions": 1,
+    "difficulty": {
+      "default": "medio",
+      "levels": {
+        "facil": { "eliminate": "tricky", "rewardMultiplier": 0.5 },
+        "medio": { "eliminate": "obvious", "rewardMultiplier": 0.75 },
+        "dificil": { "eliminate": "none", "rewardMultiplier": 1 }
+      }
+    },
     "reviewEveryNthPatient": 4,
     "wrongReputationPenalty": 1,
     "correctReputationGain": 1,

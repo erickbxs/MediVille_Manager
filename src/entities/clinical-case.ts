@@ -14,6 +14,8 @@ export interface ConductOption {
   text: string;
   isCorrect: boolean;
   whyWrong?: string;
+  /** Modo Revalida, níveis Fácil/Médio: alternativa errada riscada (aparece, mas não pode ser escolhida). */
+  eliminated?: boolean;
 }
 
 export interface PatientCase {
