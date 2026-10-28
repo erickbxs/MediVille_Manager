@@ -212,7 +212,7 @@ describe('PARTE 2: Matemática de Zoom Focal de Pinça (computeFocalPinchZoom)',
     expect(worldYAfter).toBeCloseTo(expectedWorldY, 5);
   });
 
-  it('respeita os limites mínimos (0.45) e máximos (2.4) de zoom', () => {
+  it('respeita os limites mínimos (0.3, para ver o bairro) e máximos (2.4) de zoom', () => {
     const cameraPos = { x: 0, y: 0 };
     const midpoint = { x: 200, y: 200 };
 
@@ -226,7 +226,7 @@ describe('PARTE 2: Matemática de Zoom Focal de Pinça (computeFocalPinchZoom)',
       cameraX: cameraPos.x,
       cameraY: cameraPos.y,
     });
-    expect(minZoomResult.newScale).toBe(0.45);
+    expect(minZoomResult.newScale).toBe(0.3);
 
     // Tentar zoom in extremo (fator 10x: de 200px para 2000px)
     const maxZoomResult = computeFocalPinchZoom({

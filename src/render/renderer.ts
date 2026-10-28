@@ -14,7 +14,7 @@
  * Para mudar a ordem de profundidade, ajuste LAYER_Z. As animações médicas são tratadas em MedicalAnimationsView
  * e os efeitos de clima em WeatherView.
  *
- * Importa: pixi.js, src/core/config.ts, src/render/camera.ts, src/render/grid-view.ts,
+ * Importa: pixi.js, src/core/config.ts, src/render/camera.ts, src/render/grid-view.ts,, src/render/neighborhood-view.ts
  *          src/render/room-renderer-3d.ts, src/render/patients-view.ts, src/render/ghost-view.ts,
  *          src/render/city-environment.ts, src/render/day-lighting-view.ts, src/render/environment-state.ts,
  *          src/render/medical-animations.ts, src/render/weather-view.ts
@@ -42,6 +42,7 @@ import { urbanLifeSystem } from '../systems/urban-life-system';
 import { MedicalAnimationsView } from './medical-animations';
 import { WeatherView } from './weather-view';
 import { HeatmapOverlay } from './heatmap-overlay';
+import { NeighborhoodView } from './neighborhood-view';
 import type { ExpansionTier } from '../systems/map-expansion-system';
 
 export interface GhostState {
@@ -59,6 +60,7 @@ export interface HospitalRendererCallbacks {
 
 const LAYER_Z = {
   city: 0,
+  neighborhood: 1,
   urban: 3,
   traffic: 5,
   grid: 10,
@@ -91,6 +93,7 @@ export class HospitalRenderer {
   private weatherView!: WeatherView;
   private trafficView!: TrafficView;
   private urbanLifeView!: UrbanLifeView;
+  private neighborhoodView!: NeighborhoodView;
   private patientsView!: PatientsView;
   private ghostView!: GhostView;
   private lastTime = performance.now();
@@ -130,6 +133,7 @@ export class HospitalRenderer {
       this.camera.setGridSize(newGridSize);
       this.gridView.updateSize(newGridSize);
       this.cityEnv.updateGridSize(newGridSize);
+      this.neighborhoodView.updateGridSize(newGridSize);
       urbanLifeSystem.updateGridSize(newGridSize);
       this.camera.fitMapToScreen();
     });
@@ -150,6 +154,7 @@ export class HospitalRenderer {
 
   private createLayers(): void {
     this.cityEnv = new CityEnvironment();
+    this.neighborhoodView = new NeighborhoodView();
     this.urbanLifeView = new UrbanLifeView();
     this.trafficView = new TrafficView();
     this.gridView = new GridView();
@@ -166,7 +171,7 @@ export class HospitalRenderer {
 
     this.setupLayerIndices();
     this.world.addChild(
-      this.cityEnv.container, this.urbanLifeView.container, this.trafficView.container,
+      this.cityEnv.container, this.neighborhoodView.container, this.urbanLifeView.container, this.trafficView.container,
       this.gridView.container, this.expansionHandles.container, this.roomsView.container,
       this.medicalAnimView.container, this.lightingView.container, this.weatherView.container,
       this.patientsView.container, this.heatmapOverlay.container, this.ghostView.container,
@@ -176,6 +181,7 @@ export class HospitalRenderer {
   private setupLayerIndices(): void {
     this.world.sortableChildren = true;
     this.cityEnv.container.zIndex = LAYER_Z.city;
+    this.neighborhoodView.container.zIndex = LAYER_Z.neighborhood;
     this.urbanLifeView.container.zIndex = LAYER_Z.urban;
     this.trafficView.container.zIndex = LAYER_Z.traffic;
     this.gridView.container.zIndex = LAYER_Z.grid;
@@ -216,6 +222,7 @@ export class HospitalRenderer {
 
     this.cityEnv.update(isAmbulanceAlertActive(state.activeEvents), now);
     this.urbanLifeView.render(urbanLifeSystem, now / 1000);
+    this.neighborhoodView.update(now / 1000, isNight, state.speed === 0);
     this.trafficView.render(trafficSystem.vehicles, state.dayTimeSec, isNight);
     this.roomsView.render(rooms, selectedRoomId, stockRatio);
     this.medicalAnimView.render(rooms, state.patients, now / 1000);

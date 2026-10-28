@@ -44,7 +44,8 @@ export interface FocalZoomResult {
   newMidpoint: Point;
 }
 
-export const MIN_CAMERA_ZOOM = 0.45;
+/** Zoom mínimo baixo o bastante para ver o bairro inteiro em volta do hospital. */
+export const MIN_CAMERA_ZOOM = 0.3;
 export const MAX_CAMERA_ZOOM = 2.4;
 export const PINCH_COOLDOWN_MS = 80;
 const BUTTON_ZOOM_STEP = 1.25;

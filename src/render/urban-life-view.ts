@@ -90,6 +90,8 @@ export class UrbanLifeView {
           gender: c.colorIndex % 2 === 0 ? 'female' : 'male',
           skinToneIndex: c.colorIndex,
           hairColorIndex: (c.colorIndex + 2) % 6,
+          hairStyleIndex: c.colorIndex % 4,
+          clothesColorIndex: (c.colorIndex * 7) % 12,
         });
         this.characters.set(c.id, char);
         this.container.addChild(char.container);

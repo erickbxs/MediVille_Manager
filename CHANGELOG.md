@@ -2,6 +2,22 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [3.3.0] - 2026-10-28
+
+### Versão 3.3.0 — Cidade Viva: Bairro com Ruas, Quarteirões, Moradores, Carros e Personagens Mais Variados
+- **PARTE 1: Bairro ao redor do hospital (`src/render/neighborhood-layout.ts` & `src/render/neighborhood-view.ts`)**:
+  - 4 ruas verticais e 2 horizontais novas (além da avenida) formando 8 quarteirões ao redor do lote do hospital, com calçadas, faixa amarela central, faixas de pedestre nos cruzamentos e postes.
+  - Cerca de 100 construções geradas de forma fixa (o bairro é sempre o mesmo): casas coloridas com telhado, prédios de apartamentos, jardins com árvores e pontos especiais — **Escola Municipal** (bandeira), **Igreja** (torre, cruz e vitrais), **Mercado** e **Padaria** (toldos listrados), **Praça da Matriz** (coreto e árvores) e **Campo do Bairro** (com crianças jogando bola).
+  - **Vida**: 12 carros circulando nas ruas novas pela mão direita; 28 moradores (14 em telas pequenas) caminhando pelas calçadas com pausas, de várias idades (crianças, adultos e idosos).
+  - **Noite**: janelas acendem e os postes ganham brilho.
+  - É só ambientação: não altera a simulação (pacientes, trânsito da avenida e pedestres antigos continuam iguais). O bairro se reorganiza quando o lote é expandido.
+- **PARTE 2: Personagens mais variados (`src/render/character-3d.ts`)**:
+  - Cor da roupa separada do tom de pele (antes todo mundo com a mesma pele usava a mesma roupa): 12 cores de camisa, 5 de calça.
+  - 4 estilos de cabelo: curto, raspado, boné colorido e cacheado/black power; 8 cores de cabelo (inclui ruivo e grisalho). Vale para moradores, pedestres e pacientes.
+- **PARTE 3: Câmera**: zoom mínimo de 0,45 para 0,3 (botões ➖ e pinça), para ver o bairro inteiro.
+- **PARTE 4: Testes Automatizados (Vitest)**:
+  - Nova suíte `tests/neighborhood-layout.test.ts` (4 testes): bairro completo, nenhuma construção sobre ruas, hospital ou avenida (lotes 12, 16 e 24), carros sobre o asfalto e geração determinística. Total: **265 testes em 31 suítes, 100% aprovados**.
+
 ## [3.2.0] - 2026-10-28
 
 ### Versão 3.2.0 — Níveis Fácil, Médio e Difícil no Modo Revalida (alternativas riscadas, sem alterar a prova)

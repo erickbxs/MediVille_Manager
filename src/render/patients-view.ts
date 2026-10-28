@@ -153,6 +153,9 @@ export class PatientsView {
         gender: charIndex % 2 === 0 ? 'female' : 'male',
         skinToneIndex: charIndex % 6,
         hairColorIndex: charIndex % 5,
+        hairStyleIndex: charIndex % 4,
+        clothesColorIndex: (charIndex * 5) % 12,
+        pantsColorIndex: charIndex % 5,
         patienceRatio,
       });
       this.characterPool.set(id, char);

@@ -88,6 +88,9 @@ export function fitMapToViewport(
   });
 }
 
+/** Zoom mínimo pelos botões ➖ (deixa ver o bairro ao redor do hospital). */
+const MIN_BUTTON_ZOOM = 0.3;
+
 /** Espaço acima/abaixo do lote para as placas do mapa não ficarem atrás das barras. */
 const SIGN_CLEARANCE_PX = 48;
 
@@ -154,7 +157,7 @@ export class Camera {
 
   public zoomAt(screenX: number, screenY: number, factor: number): void {
     const prevZoom = this.zoom;
-    const minLimit = Math.min(0.55, (this.viewportWidth / (this.gridCols * THEME.tileSize)) * 0.95);
+    const minLimit = Math.min(MIN_BUTTON_ZOOM, (this.viewportWidth / (this.gridCols * THEME.tileSize)) * 0.95);
     const nextZoom = Math.max(minLimit, Math.min(2.0, prevZoom * factor));
     if (nextZoom === prevZoom) return;
 

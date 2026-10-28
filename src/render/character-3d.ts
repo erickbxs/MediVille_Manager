@@ -39,7 +39,11 @@ export interface Character3DConfig {
   gender: 'female' | 'male';
   skinToneIndex?: number;
   hairColorIndex?: number;
+  /** 0 curto, 1 raspado, 2 boné, 3 cacheado/black power (mulheres mantêm o cabelo longo nas laterais). */
   hairStyleIndex?: number;
+  /** Cor da roupa (antes vinha do tom de pele, e todo mundo com a mesma pele usava a mesma roupa). */
+  clothesColorIndex?: number;
+  pantsColorIndex?: number;
   patienceRatio?: number;
   inSpecializedRoom?: 'surgery' | 'icu' | 'normal';
   patientAgeGroup?: 'child' | 'adult' | 'elderly';
@@ -47,8 +51,10 @@ export interface Character3DConfig {
 }
 
 const SKIN_TONES = [0xffdfc4, 0xf0c8a0, 0xd4a373, 0xaa724b, 0x8c5332, 0x5a3825];
-const HAIR_COLORS = [0x1e293b, 0x451a03, 0xb45309, 0xf59e0b, 0x94a3b8, 0x334155];
-const CASUAL_CLOTHES = [0x3b82f6, 0xef4444, 0x10b981, 0x8b5cf6, 0xf59e0b, 0xec4899];
+const HAIR_COLORS = [0x1e293b, 0x451a03, 0xb45309, 0xf59e0b, 0x94a3b8, 0x334155, 0x9a3412, 0xe5e7eb];
+const CASUAL_CLOTHES = [0x3b82f6, 0xef4444, 0x10b981, 0x8b5cf6, 0xf59e0b, 0xec4899, 0x14b8a6, 0xf97316, 0x84cc16, 0xe11d48, 0x0ea5e9, 0xfafafa];
+const CASUAL_PANTS = [0x1e293b, 0x1d4ed8, 0x78716c, 0x0f172a, 0xa16207];
+const CAP_COLORS = [0xdc2626, 0x2563eb, 0x16a34a, 0xf59e0b];
 
 export class Character3D {
   public container = new Container();
@@ -211,7 +217,7 @@ export class Character3D {
   private drawPatientTorso(x: number, y: number, w: number, h: number, _skin: number, isElderly: boolean): void {
     const shirtColor = isElderly
       ? 0x64748b
-      : CASUAL_CLOTHES[(this.config.skinToneIndex ?? 0) % CASUAL_CLOTHES.length]!;
+      : CASUAL_CLOTHES[(this.config.clothesColorIndex ?? this.config.skinToneIndex ?? 0) % CASUAL_CLOTHES.length]!;
     this.drawCapsule3D(x, y, w, h, shirtColor);
   }
 
@@ -265,9 +271,7 @@ export class Character3D {
     this.g.circle(0, y, r).fill({ color: skin });
     this.g.ellipse(-1.2, y - 1.5, 2.2, 1.6).fill({ color: shadeColor(skin, 1.3), alpha: 0.45 });
 
-    // Volume do cabelo em camadas 3D (formas preenchidas sem stroke espúrio)
-    this.g.ellipse(0, y - r * 0.45, r + 0.6, r * 0.8).fill({ color: hair });
-    this.g.ellipse(0, y - r * 0.7, r * 0.85, 2.4).fill({ color: hair });
+    this.drawHairStyle(y, r, hair);
     if (this.config.gender === 'female') {
       this.g.roundRect(-r - 0.8, y - 1, 1.8, 6.5, 1).fill({ color: hair });
       this.g.roundRect(r - 1.0, y - 1, 1.8, 6.5, 1).fill({ color: hair });
@@ -281,6 +285,29 @@ export class Character3D {
       this.g.roundRect(-3.5, y + 1, 7, 3.8, 1.5).fill({ color: 0x93c5fd });
       this.g.rect(-3.2, y + 2, 6.4, 0.8).fill({ color: 0x60a5fa, alpha: 0.6 });
     }
+  }
+
+  /** Estilos de cabelo para dar variedade aos moradores e pacientes. */
+  private drawHairStyle(y: number, r: number, hair: number): void {
+    const style = (this.config.hairStyleIndex ?? 0) % 4;
+    if (style === 1) {
+      this.g.ellipse(0, y - r * 0.6, r * 0.9, r * 0.45).fill({ color: hair, alpha: 0.55 });
+      return;
+    }
+    if (style === 2) {
+      const cap = CAP_COLORS[(this.config.clothesColorIndex ?? 0) % CAP_COLORS.length]!;
+      this.g.ellipse(0, y - r * 0.5, r + 0.6, r * 0.75).fill({ color: cap });
+      const visor = this.facing === 'left' ? -1 : 1;
+      this.g.roundRect(visor > 0 ? 1 : -r - 2.5, y - r * 0.35, r + 1.5, 1.8, 0.8).fill({ color: shadeColor(cap, 0.75) });
+      return;
+    }
+    if (style === 3) {
+      this.g.circle(0, y - r * 0.55, r + 1.8).fill({ color: hair });
+      this.g.circle(-r * 0.6, y - r * 0.9, r * 0.6).fill({ color: shadeColor(hair, 1.15) });
+      return;
+    }
+    this.g.ellipse(0, y - r * 0.45, r + 0.6, r * 0.8).fill({ color: hair });
+    this.g.ellipse(0, y - r * 0.7, r * 0.85, 2.4).fill({ color: hair });
   }
 
   private drawEyes(y: number, timeSec: number): void {
@@ -314,7 +341,7 @@ export class Character3D {
       case 'tech': return 0x1e3a8a;
       case 'janitor': return 0x334155;
       case 'manager': return 0x020617;
-      default: return 0x1e293b;
+      default: return CASUAL_PANTS[(this.config.pantsColorIndex ?? 0) % CASUAL_PANTS.length]!;
     }
   }
 
@@ -327,7 +354,7 @@ export class Character3D {
       case 'manager': return 0x0f172a;
       case 'pharmacist': return 0xf1f5f9;
       case 'receptionist': return 0xd97706;
-      default: return CASUAL_CLOTHES[(this.config.skinToneIndex ?? 0) % CASUAL_CLOTHES.length]!;
+      default: return CASUAL_CLOTHES[(this.config.clothesColorIndex ?? this.config.skinToneIndex ?? 0) % CASUAL_CLOTHES.length]!;
     }
   }
 
