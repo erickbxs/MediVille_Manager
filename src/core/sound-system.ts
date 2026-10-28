@@ -19,6 +19,8 @@
 import { globalBus } from './event-bus';
 
 const MUTE_STORAGE_KEY = 'mediville_sound_muted';
+const SFX_VOLUME_STORAGE_KEY = 'mediville_sfx_volume';
+const DEFAULT_SFX_VOLUME = 1;
 
 const NOTE_C5 = 523.25;
 const NOTE_E5 = 659.25;
@@ -54,6 +56,8 @@ const SOUND_PARAMS = {
 export class SoundSystem {
   private ctx: AudioContext | null = null;
   private muted = false;
+  private volume = DEFAULT_SFX_VOLUME;
+  private master: GainNode | null = null;
 
   constructor() {
     this.initMuteState();
@@ -63,6 +67,8 @@ export class SoundSystem {
   private initMuteState(): void {
     if (typeof localStorage !== 'undefined') {
       this.muted = localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
+      const rawVolume = localStorage.getItem(SFX_VOLUME_STORAGE_KEY);
+      if (rawVolume !== null && Number.isFinite(Number(rawVolume))) this.volume = Number(rawVolume);
     }
   }
 
@@ -82,6 +88,26 @@ export class SoundSystem {
       void this.ctx.resume();
     }
     return this.ctx;
+  }
+
+  /** Volume dos efeitos sonoros (0 a 1), separado do volume da música. */
+  public getVolume(): number {
+    return this.volume;
+  }
+
+  public setVolume(value: number): void {
+    this.volume = Math.max(0, Math.min(1, value));
+    if (this.master) this.master.gain.value = this.volume;
+    if (typeof localStorage !== 'undefined') localStorage.setItem(SFX_VOLUME_STORAGE_KEY, String(this.volume));
+  }
+
+  private output(ctx: AudioContext): AudioNode {
+    if (!this.master) {
+      this.master = ctx.createGain();
+      this.master.gain.value = this.volume;
+      this.master.connect(ctx.destination);
+    }
+    return this.master;
   }
 
   public isMuted(): boolean {
@@ -120,7 +146,7 @@ export class SoundSystem {
     gain.gain.exponentialRampToValueAtTime(SOUND_PARAMS.GAIN_MIN, now + SOUND_PARAMS.CLICK_TIME_SEC);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output(ctx));
     osc.start(now);
     osc.stop(now + SOUND_PARAMS.CLICK_DURATION_SEC);
   }
@@ -140,7 +166,7 @@ export class SoundSystem {
       gain.gain.exponentialRampToValueAtTime(SOUND_PARAMS.GAIN_MIN, startTime + SOUND_PARAMS.SUCCESS_FADE_SEC);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.output(ctx));
       osc.start(startTime);
       osc.stop(startTime + SOUND_PARAMS.SUCCESS_DURATION_SEC);
     });
@@ -161,7 +187,7 @@ export class SoundSystem {
     gain.gain.exponentialRampToValueAtTime(SOUND_PARAMS.GAIN_MIN, now + SOUND_PARAMS.BUILD_TIME_SEC);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output(ctx));
     osc.start(now);
     osc.stop(now + SOUND_PARAMS.BUILD_DURATION_SEC);
   }
@@ -181,7 +207,7 @@ export class SoundSystem {
       gain.gain.exponentialRampToValueAtTime(SOUND_PARAMS.GAIN_MIN, startTime + SOUND_PARAMS.ALERT_FADE_SEC);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.output(ctx));
       osc.start(startTime);
       osc.stop(startTime + SOUND_PARAMS.ALERT_DURATION_SEC);
     });

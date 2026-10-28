@@ -138,7 +138,8 @@ export function createInitialGameState(unitChoice?: 'ubs' | 'upa' | 'clinica' | 
     arrivalTimerSec: BALANCE.arrival.baseIntervalSec * BALANCE.arrival.initialProgress,
     staff: buildStarterStaffMap(),
     activeEvents: [],
-    eventTimerSec: BALANCE.events.firstEventDelaySec,
+    // O contador sobe até intervalBetweenEventsSec; começar negativo garante o atraso real do 1º evento.
+    eventTimerSec: BALANCE.events.intervalBetweenEventsSec - BALANCE.events.firstEventDelaySec,
     pharmacyStock: buildStarterPharmacyStock(),
     finances: buildInitialFinances(),
     ...buildInitialEconomyState(unitChoice),

@@ -88,6 +88,23 @@ export function fitMapToViewport(
   });
 }
 
+/** Espaço acima/abaixo do lote para as placas do mapa não ficarem atrás das barras. */
+const SIGN_CLEARANCE_PX = 48;
+
+/**
+ * Mede a altura real da barra do topo (HUD) e da barra inferior (dock) quando estão visíveis.
+ * Antes o enquadramento usava 48 px fixos e as placas acima do lote ficavam atrás do HUD.
+ */
+function measureUiMargins(): { top?: number; bottom?: number } {
+  if (typeof document === 'undefined') return {};
+  const hud = document.getElementById('hud-container')?.getBoundingClientRect();
+  const dock = document.getElementById('build-menu-container')?.getBoundingClientRect();
+  return {
+    top: hud && hud.bottom > 0 ? hud.bottom + SIGN_CLEARANCE_PX : undefined,
+    bottom: dock && dock.height > 0 ? window.innerHeight - dock.top + SIGN_CLEARANCE_PX : undefined,
+  };
+}
+
 export class Camera {
   public x = 0;
   public y = 0;
@@ -147,9 +164,10 @@ export class Camera {
   }
 
   public fitMapToScreen(options?: FitMapOptions): FitMapResult {
+    const ui = measureUiMargins();
     const result = fitMapToViewport(this.viewportWidth, this.viewportHeight, {
-      topHeight: options?.topMargin,
-      bottomHeight: options?.bottomMargin,
+      topHeight: options?.topMargin ?? ui.top,
+      bottomHeight: options?.bottomMargin ?? ui.bottom,
       sidePadding: options?.sidePadding,
       gridCols: options?.gridCols ?? this.gridCols,
       gridRows: options?.gridRows ?? this.gridRows,

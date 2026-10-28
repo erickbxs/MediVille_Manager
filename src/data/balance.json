@@ -112,7 +112,7 @@
   },
   "events": {
     "intervalBetweenEventsSec": 75,
-    "firstEventDelaySec": 30,
+    "firstEventDelaySec": 180,
     "maxActiveEvents": 1
   },
   "sigtap": {

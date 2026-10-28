@@ -2,6 +2,34 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [3.1.0] - 2026-10-28
+
+### Versão 3.1.0 — Correção dos Itens Pendentes do Relatório de Teste (Modo Antigo, Metas, Alertas, Toque, Mapa e Configurações)
+- **PARTE 1: Casos clínicos antigos (`src/ui/decision-modal.ts`, `src/ui/encyclopedia-modal.ts` & `src/ui/entity-inspector.ts`)**:
+  - **Título não entrega mais o tratamento**: `displayCaseName()` remove o parêntese que repete palavras da conduta correta ("Hipocalemia Moderada a Grave (Reposição de Cloreto de Potássio)" → "Hipocalemia Moderada a Grave"). Aplicado em 39 dos 350 casos, no atendimento e no painel do paciente. Siglas e sinônimos ("PAC", "Catapora") continuam.
+  - **Remédio sem relação com o caso**: `findCaseMedication()` só mostra um remédio da farmácia quando a conduta correta o cita; senão o quadro some. Antes caía em "Soro nasal" na hipocalemia (a palavra "cloreto" do nome do caso batia com "Cloreto de Sódio") e em "Paracetamol" na acidose.
+  - **Filtro "IST" da Enciclopédia misturado**: palavra-chave passa a valer só no início de palavra (`startsAnyWord`). "ist" casava dentro de "cistite", "autista" e "sistêmico".
+  - Botão antes da resposta passa a dizer "Responder depois" (o paciente continua na fila).
+- **PARTE 2: Metas (`src/systems/goals-system.ts`)**:
+  - **Novas metas de estudo no Modo Revalida**: Primeiros Plantões (10 acertos), Estudo Constante (50), Maratona de Estudos (150), Revisão em Dia (fila de revisão zerada após 20 respostas), Mira Certeira (70% de acerto com 30+ respostas), Clínico Versátil (3 áreas liberadas) e Prova Completa (5 áreas).
+  - "Fila Zero no SUS" agora exige pelo menos 10 atendimentos (antes era concluída no primeiro paciente).
+  - Títulos e descrições sempre vêm da definição atual (`mergeSavedGoals`), mantendo só o "concluída" salvo. Rótulo "Em andamento" → "A conquistar"; "Metas SUS" → "Metas".
+- **PARTE 3: Alertas e primeiros dias (`src/ui/advisor-view.ts` & `src/core/new-game.ts`)**:
+  - Um alerta por vez, com botão "+N alertas" para ver os outros (antes até 3 cartões cobriam o mapa no celular).
+  - Os alertas eram redesenhados a cada fração de segundo, o que fazia toques falharem; agora só redesenham quando mudam.
+  - **Desastre no dia 1**: o contador do primeiro evento começava em `firstEventDelaySec` e subia até o intervalo (75 s), então o primeiro evento vinha aos 45 s. Agora começa em `intervalo − atraso`, e `firstEventDelaySec` = 180 s (3 dias de jogo) vale de verdade.
+- **PARTE 4: Toque, mapa e configurações**:
+  - Botões do topo (pausa, 1x/2x/3x, música, som, mapa, detalhes) com 40 px de altura (antes 32) e botões dos alertas com 40 px; tudo cabe em 375 px.
+  - **Placas do mapa atrás da barra do topo**: o enquadramento media 48 px fixos; agora mede a altura real do topo e da barra inferior (`measureUiMargins` em `src/render/camera.ts`), inclusive no botão 🎯.
+  - **Volume dos Efeitos** separado do volume da música (`soundSystem.setVolume`, salvo no aparelho).
+  - **Reduzir animações** nas Configurações (também segue a preferência do sistema operacional).
+  - Sexo do paciente no Modo Revalida também lido por "um/uma paciente" e por termos anatômicos (antes um caso de testículo podia virar paciente mulher).
+- **PARTE 5: Testes Automatizados (Vitest)**:
+  - Nova suíte `tests/report-pending-fixes.test.ts` (6 testes): categorias da Enciclopédia, título sem tratamento em todos os 350 casos, remédio relacionado à conduta, "Fila Zero" e atraso do primeiro evento. Total: **255 testes em 29 suítes, 100% aprovados**.
+- **Não alterado nesta versão**:
+  - Zoom do navegador com dois dedos continua desligado, porque o gesto de pinça é usado para dar zoom no mapa; para leitura, use Configurações → Tamanho da Fonte.
+  - No modo antigo, a resposta certa ainda tende a ser a alternativa mais longa; corrigir exige reescrever cerca de 700 alternativas dos 350 casos. O Modo Revalida não tem esse problema.
+
 ## [3.0.0] - 2026-10-28
 
 ### Versão 3.0.0 — Modo Revalida (questões oficiais do INEP 2020–2026), Estudo Leve sem Pressão, Banco de Questões e Correção dos Erros do Relatório de Teste da v2.2.0

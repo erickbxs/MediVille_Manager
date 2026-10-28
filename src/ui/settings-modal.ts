@@ -12,11 +12,12 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O volume é transmitido para musicSystem.setVolume(). Os termos legais abrem via LegalModal.
  *
- * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts,
+ * Importa: src/core/simulation.ts, src/systems/save-system.ts, src/systems/player-profile.ts,, src/core/sound-system.ts
  *          src/services/ranking-service.ts, src/core/music-system.ts, src/i18n/i18n.ts, src/ui/legal-modal.ts
  * Conecta-se com: src/ui/hud.ts, src/main.ts
  */
 
+import { soundSystem } from '../core/sound-system';
 import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
 import { getPlayerProfile } from '../systems/player-profile';
@@ -43,6 +44,21 @@ export function applySavedFontScale(scale?: FontScale): void {
   }
 }
 
+const REDUCE_MOTION_KEY = 'mediville_reduce_motion';
+
+function prefersReducedMotion(): boolean {
+  const saved = localStorage.getItem(REDUCE_MOTION_KEY);
+  if (saved !== null) return saved === 'true';
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Reduz animações da interface (pulsos, deslizes) para quem se incomoda com movimento. */
+export function applySavedReduceMotion(value?: boolean): void {
+  const on = value ?? prefersReducedMotion();
+  if (on) document.documentElement.setAttribute('data-reduce-motion', 'true');
+  else document.documentElement.removeAttribute('data-reduce-motion');
+}
+
 export class SettingsModal {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
@@ -62,6 +78,8 @@ export class SettingsModal {
     const currentScale = getSavedFontScale();
     const currentLang = getLocale();
     const currentVol = Math.round(musicSystem.getVolume() * 100);
+    const sfxVol = Math.round(soundSystem.getVolume() * 100);
+    const reduceMotion = prefersReducedMotion();
 
     this.container.innerHTML = `
       <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -88,6 +106,19 @@ export class SettingsModal {
             </div>
             <input type="range" id="input-music-volume" min="0" max="100" value="${currentVol}" class="w-full accent-sky-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg" />
           </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="input-sfx-volume" class="text-xs font-bold text-slate-700 dark:text-slate-200">🔔 ${t('settings.sfx_volume')}</label>
+              <span id="sfx-vol-label" class="text-xs font-extrabold text-sky-600 dark:text-sky-400 tabular-nums">${sfxVol}%</span>
+            </div>
+            <input type="range" id="input-sfx-volume" min="0" max="100" value="${sfxVol}" class="w-full accent-sky-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+          </div>
+
+          <label class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-3 min-h-[48px] cursor-pointer">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">🧘 ${t('settings.reduce_motion')}</span>
+            <input type="checkbox" id="input-reduce-motion" ${reduceMotion ? 'checked' : ''} class="w-5 h-5 accent-sky-500" />
+          </label>
 
           <!-- Seleção de Idioma Reativa -->
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2">
@@ -157,6 +188,19 @@ export class SettingsModal {
     document.getElementById('btn-close-settings')?.addEventListener('click', () => {
       this.container.innerHTML = '';
       this.simulation.resumeFromModal();
+    });
+
+    document.getElementById('input-sfx-volume')?.addEventListener('input', (e) => {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      soundSystem.setVolume(val / 100);
+      soundSystem.playClick();
+      const label = document.getElementById('sfx-vol-label');
+      if (label) label.textContent = `${val}%`;
+    });
+    document.getElementById('input-reduce-motion')?.addEventListener('change', (e) => {
+      const on = (e.target as HTMLInputElement).checked;
+      localStorage.setItem(REDUCE_MOTION_KEY, String(on));
+      applySavedReduceMotion(on);
     });
 
     const volSlider = document.getElementById('input-music-volume') as HTMLInputElement | null;

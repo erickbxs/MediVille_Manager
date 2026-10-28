@@ -97,6 +97,8 @@ describe('Modo Revalida — seleção de questões e paciente', () => {
     expect(extractPatientAge('Lactente de 4 meses é levado')).toBe(0);
     expect(inferRevalidaPatientGender('Mulher de 30 anos, gestante')).toBe('female');
     expect(inferRevalidaPatientGender('Homem de 62 anos')).toBe('male');
+    expect(inferRevalidaPatientGender('Um paciente com 20 anos, com aumento de hemiescroto direito')).toBe('male');
+    expect(inferRevalidaPatientGender('Paciente de 30 anos com atraso menstrual')).toBe('female');
   });
 
   it('formata a referência com edição e número', () => {

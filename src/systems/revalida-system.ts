@@ -111,14 +111,20 @@ export function extractPatientAge(stem: string): number | null {
 
 const MAX_PLAUSIBLE_AGE = 119;
 const GENDER_SCAN_CHARS = 160;
-const FEMALE_WORDS = /\b(mulher|menina|gestante|primigesta|secundigesta|tercigesta|puérpera|idosa|adolescente do sexo feminino|lactente do sexo feminino|paciente do sexo feminino)\b/;
-const MALE_WORDS = /\b(homem|menino|idoso|adolescente do sexo masculino|lactente do sexo masculino|paciente do sexo masculino)\b/;
+const FEMALE_WORDS = /\b(mulher|menina|gestante|primigesta|secundigesta|tercigesta|multípara|nulípara|puérpera|lactante|idosa|uma paciente|uma adolescente|uma criança do sexo feminino|sexo feminino)\b/;
+const MALE_WORDS = /\b(homem|menino|idoso|um paciente|um adolescente|sexo masculino)\b/;
+// Sem \b porque "útero" começa com letra acentuada (o \b do JavaScript não reconhece).
+const FEMALE_ANATOMY = /(?<![a-zà-ú])(útero|uterin[oa]|ovári[oa]s?|vagina[l]?|menstrua[a-zà-ú]*|gravidez|gestação)(?![a-zà-ú])/;
+const MALE_ANATOMY = /\b(escroto|escrotal|hemiescroto|testículos?|próstata|prostátic[oa]|pênis|peniana|glande)\b/;
 
-/** Sexo do paciente conforme o início do enunciado ("Mulher de 30 anos", "Homem de 62 anos"). */
+/** Sexo do paciente conforme o enunciado ("Mulher de 30 anos", "Um paciente... testículo"). */
 export function inferRevalidaPatientGender(stem: string): 'female' | 'male' | null {
   const start = stem.slice(0, GENDER_SCAN_CHARS).toLowerCase();
   if (FEMALE_WORDS.test(start)) return 'female';
   if (MALE_WORDS.test(start)) return 'male';
+  const full = stem.toLowerCase();
+  if (MALE_ANATOMY.test(full)) return 'male';
+  if (FEMALE_ANATOMY.test(full)) return 'female';
   return null;
 }
 

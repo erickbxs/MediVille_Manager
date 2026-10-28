@@ -45,6 +45,27 @@ export function findRelevantMedication(conductText: string, caseName = ''): Rena
   return PHARMACY_CATALOG.medications[0]!;
 }
 
+/**
+ * Remédio do estoque citado na conduta correta (pelo identificador, ex.: "paracetamol", "amoxicilina").
+ * Retorna null quando a conduta não usa nada da farmácia — antes caía em um remédio sem relação
+ * (ex.: "Soro nasal" na hipocalemia, porque "cloreto" aparecia no nome do caso).
+ */
+export function findCaseMedication(conductText: string): RenameMedication | null {
+  const norm = conductText.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return PHARMACY_CATALOG.medications.find((med) => norm.includes(med.id.split('-')[0] ?? med.id)) ?? null;
+}
+
+const MIN_SHARED_WORD = 5;
+
+/** Nome do caso sem o parêntese que entrega o tratamento ("Hipocalemia (Reposição de Cloreto de Potássio)" → "Hipocalemia"). */
+export function displayCaseName(name: string, conductText: string): string {
+  const conductWords = new Set(conductText.toLowerCase().split(/[^a-zà-ú]+/).filter((w) => w.length >= MIN_SHARED_WORD));
+  return name.replace(/\s*\(([^)]*)\)/g, (full, inner: string) => {
+    const words = inner.toLowerCase().split(/[^a-zà-ú]+/).filter((w) => w.length >= MIN_SHARED_WORD);
+    return words.some((w) => conductWords.has(w)) ? '' : full;
+  }).trim();
+}
+
 export class DecisionModal {
   private container: HTMLElement;
   private simulation: HospitalSimulation;
@@ -65,8 +86,9 @@ export class DecisionModal {
       this.openRevalida(patient, def.revalida);
       return;
     }
-    const med = findRelevantMedication(def.suggestedConduct.text, def.name);
-    const stock = this.simulation.state.pharmacyStock[med.id] ?? 0;
+    const med = findCaseMedication(def.suggestedConduct.text);
+    const stock = med ? this.simulation.state.pharmacyStock[med.id] ?? 0 : 0;
+    const caseName = displayCaseName(def.name, def.suggestedConduct.text);
 
     const optionsHtml = pCase.conductOptions.map((opt) => `
       <button data-conduct-id="${opt.id}" class="conduct-btn btn-interactive w-full min-h-[48px] text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-slate-700/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-100 active:scale-[0.99]">
@@ -83,7 +105,7 @@ export class DecisionModal {
               <div class="w-10 h-10 rounded-2xl bg-sky-500/15 flex items-center justify-center text-xl">🩺</div>
               <div>
                 <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">${patient.name} (${patient.age} anos)</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Quadro: ${def.name} • ${def.area}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Quadro: ${caseName} • ${def.area}</p>
               </div>
             </div>
             <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">Pendente Revisão</span>
@@ -103,7 +125,7 @@ export class DecisionModal {
 
             <!-- Lei de Tesler: Status do medicamento RENAME e compra com 1 clique -->
             <div id="med-stock-container">
-              ${this.renderMedStockBanner(med, stock)}
+              ${med ? this.renderMedStockBanner(med, stock) : ''}
             </div>
 
             <div>
@@ -116,14 +138,14 @@ export class DecisionModal {
 
           <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end gap-2">
             <button id="btn-close-modal" class="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-xl text-sm font-bold bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:opacity-90 active:scale-95 transition-all">
-              Concluir Atendimento
+              ${t('revalida.answer_later')}
             </button>
           </div>
         </div>
       </div>
     `;
     this.bindOptionClicks();
-    this.bindQuickBuyMed(med);
+    if (med) this.bindQuickBuyMed(med);
   }
 
   /** Modo Revalida: o paciente traz uma questão oficial do INEP (texto sem alterações + referência). */

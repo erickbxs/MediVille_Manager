@@ -86,7 +86,7 @@ export class HospitalHUD {
         </div>
 
         <!-- Cápsula Direita: Dia, Turno, Controles de Tempo e Ações Rápidas -->
-        <div class="h-11 sm:h-12 px-2 sm:px-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1 text-xs font-bold shrink-0 ml-auto sm:ml-0">
+        <div class="h-11 sm:h-12 px-1 sm:px-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-0.5 sm:gap-1 text-xs font-bold shrink-0 ml-auto sm:ml-0 max-w-full overflow-x-auto">
           <span id="hud-clock-pill" class="tabular-nums px-2 py-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-extrabold flex items-center gap-1">
             <span id="hud-day-shift">☀️</span>
             <span>Dia 1</span>
@@ -94,25 +94,25 @@ export class HospitalHUD {
 
           <!-- Grupo Conectado de Velocidade -->
           <div class="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl">
-            <button id="btn-quick-pause" title="Pausar / Retomar" class="min-w-[32px] min-h-[32px] rounded-lg flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">⏸️</button>
-            <button id="btn-1x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">1x</button>
-            <button id="btn-2x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">2x</button>
-            <button id="btn-3x" class="min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-[11px]">3x</button>
+            <button id="btn-quick-pause" title="Pausar / Retomar" class="min-w-[34px] sm:min-w-[40px] min-h-[40px] rounded-lg flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">⏸️</button>
+            <button id="btn-1x" class="min-w-[30px] sm:min-w-[36px] min-h-[40px] px-1.5 rounded-lg font-bold text-[11px]">1x</button>
+            <button id="btn-2x" class="min-w-[30px] sm:min-w-[36px] min-h-[40px] px-1.5 rounded-lg font-bold text-[11px]">2x</button>
+            <button id="btn-3x" class="min-w-[30px] sm:min-w-[36px] min-h-[40px] px-1.5 rounded-lg font-bold text-[11px]">3x</button>
           </div>
 
           <!-- Ações Rápidas -->
-          <button id="btn-topbar-expand-map" title="${t('map.expand') || 'Expandir Mapa (+4x4)'}" class="min-h-[32px] px-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 flex items-center gap-1 text-[11px] font-black active:scale-95 shadow-sm">
+          <button id="btn-topbar-expand-map" title="${t('map.expand') || 'Expandir Mapa (+4x4)'}" class="min-h-[40px] px-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 flex items-center gap-1 text-[11px] font-black active:scale-95 shadow-sm">
             <span>📐</span>
             <span class="hidden md:inline">+Mapa</span>
           </button>
-          <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[32px] min-h-[32px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
+          <button id="btn-toggle-music" title="${t('music.on') || 'Ligar / Desligar Música'}" class="relative min-w-[34px] sm:min-w-[40px] min-h-[40px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
             <span id="btn-toggle-music-icon">${musicSystem.isMuted() ? '🔇' : '🎵'}</span>
             <span id="btn-toggle-music-indicator" class="${musicSystem.isMuted() ? 'hidden' : ''} absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           </button>
-          <button id="btn-toggle-sound" title="Ligar / Desligar Som" class="min-w-[32px] min-h-[32px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
+          <button id="btn-toggle-sound" title="Ligar / Desligar Som" class="min-w-[34px] sm:min-w-[40px] min-h-[40px] rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-xs">
             ${soundSystem.isMuted() ? '🔇' : '🔊'}
           </button>
-          <button id="btn-toggle-details" title="Detalhes do Hospital" class="min-h-[32px] px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 text-[11px] font-bold active:scale-95">
+          <button id="btn-toggle-details" title="Detalhes do Hospital" class="min-h-[40px] px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 text-[11px] font-bold active:scale-95">
             <span>▾</span>
           </button>
         </div>
@@ -251,8 +251,8 @@ export class HospitalHUD {
       const btn = document.getElementById(id);
       if (!btn) continue;
       btn.className = speed === btnSpeed
-        ? 'min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-extrabold bg-sky-500 text-white shadow-sm text-[11px]'
-        : 'min-w-[28px] min-h-[32px] px-1.5 rounded-lg font-bold text-slate-500 hover:text-slate-800 text-[11px]';
+        ? 'min-w-[30px] sm:min-w-[36px] min-h-[40px] px-1.5 rounded-lg font-extrabold bg-sky-500 text-white shadow-sm text-[11px]'
+        : 'min-w-[30px] sm:min-w-[36px] min-h-[40px] px-1.5 rounded-lg font-bold text-slate-500 hover:text-slate-800 text-[11px]';
     }
   }
 

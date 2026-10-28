@@ -60,12 +60,22 @@ export function normalizeText(str: string): string {
 
 export function caseMatchesCategory(c: ClinicalCaseDefinition, cat: CategoryOption): boolean {
   if (cat.id === 'all') return true;
-  const area = normalizeText(c.area);
-  const name = normalizeText(c.name);
-  return cat.keywords.some((kw) => {
-    const normKw = normalizeText(kw);
-    return area.includes(normKw) || name.includes(normKw);
-  });
+  const text = `${normalizeText(c.area)} ${normalizeText(c.name)}`;
+  return cat.keywords.some((kw) => startsAnyWord(text, normalizeText(kw)));
+}
+
+/**
+ * Palavra-chave só conta no início de uma palavra. Antes "ist" casava dentro de
+ * "cistite", "autista" e "sistêmico", e o filtro IST mostrava casos sem relação.
+ */
+export function startsAnyWord(text: string, keyword: string): boolean {
+  let index = text.indexOf(keyword);
+  while (index !== -1) {
+    const before = index === 0 ? ' ' : text.charAt(index - 1);
+    if (!/[a-z0-9]/.test(before)) return true;
+    index = text.indexOf(keyword, index + 1);
+  }
+  return false;
 }
 
 export function caseMatchesSearch(c: ClinicalCaseDefinition, query: string): boolean {

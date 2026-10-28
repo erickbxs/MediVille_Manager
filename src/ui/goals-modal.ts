@@ -38,7 +38,7 @@ export class GoalsModal {
               <div>
                 <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-50">Metas & Marcos do SUS</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  ${completedCount} de ${goals.length} metas de gestão alcançadas
+                  ${completedCount} de ${goals.length} metas alcançadas
                 </p>
               </div>
             </div>
@@ -58,7 +58,7 @@ export class GoalsModal {
                 <div class="text-right shrink-0">
                   <span class="block font-extrabold text-xs text-emerald-600 dark:text-emerald-400">+R$ ${g.rewardCash.toLocaleString('pt-BR')}</span>
                   <span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${g.completed ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'}">
-                    ${g.completed ? 'Concluída' : 'Em andamento'}
+                    ${g.completed ? 'Concluída' : 'A conquistar'}
                   </span>
                 </div>
               </div>

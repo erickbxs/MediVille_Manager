@@ -122,7 +122,9 @@
     "queueDelay": "接待台积压严重，建议增加诊室。",
     "pharmacyMissing": "缺少药房，患者无法取药。",
     "waitingFull": "候诊区即将满载。",
-    "cashLow": "警告：流动资金极低！"
+    "cashLow": "警告：流动资金极低！",
+    "show_more": "+{n} 条提示",
+    "show_less": "收起"
   },
   "defeat": {
     "imminentBankruptcy": "破产危机预警",
@@ -165,7 +167,9 @@
     "resetGame": "重置并新建医院",
     "lgpdExport": "导出个人数据",
     "lgpdDelete": "删除数据",
-    "autoSaveTip": "游戏在每日结束时会自动保存进度。"
+    "autoSaveTip": "游戏在每日结束时会自动保存进度。",
+    "sfx_volume": "音效音量",
+    "reduce_motion": "减少动画"
   },
   "dock": {
     "build": "建设",

@@ -122,7 +122,9 @@
     "queueDelay": "Warteschlange am Empfang wächst.",
     "pharmacyMissing": "Fehlende Apotheke.",
     "waitingFull": "Wartezimmer fast voll.",
-    "cashLow": "Kritischer Kassenstand !"
+    "cashLow": "Kritischer Kassenstand !",
+    "show_more": "+{n} Hinweise",
+    "show_less": "Weniger anzeigen"
   },
   "defeat": {
     "imminentBankruptcy": "Drohende Insolvenz",
@@ -165,7 +167,9 @@
     "resetGame": "Spiel zurücksetzen",
     "lgpdExport": "Daten exportieren",
     "lgpdDelete": "Konto löschen",
-    "autoSaveTip": "Automatisches tägliches Speichern."
+    "autoSaveTip": "Automatisches tägliches Speichern.",
+    "sfx_volume": "Effektlautstärke",
+    "reduce_motion": "Animationen reduzieren"
   },
   "dock": {
     "build": "Bau",

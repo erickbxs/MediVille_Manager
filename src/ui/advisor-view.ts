@@ -10,10 +10,11 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * As condições dos alertas são calculadas em src/systems/advisor-system.ts.
  *
- * Importa: src/systems/advisor-system.ts, src/state/game-state.ts
+ * Importa: src/systems/advisor-system.ts, src/state/game-state.ts, src/i18n/i18n.ts
  * Conecta-se com: src/main.ts, src/ui/build-menu.ts
  */
 
+import { t } from '../i18n/i18n';
 import {
   getAdvisorAlerts,
   dismissAdvisorAlert,
@@ -33,6 +34,8 @@ export class AdvisorView {
   private container: HTMLElement;
   private callbacks?: AdvisorViewCallbacks;
   private lastState?: GameState;
+  private expanded = false;
+  private renderedKey = '';
 
   constructor(container: HTMLElement, callbacks?: AdvisorViewCallbacks) {
     this.container = container;
@@ -43,16 +46,29 @@ export class AdvisorView {
   public update(state: GameState): void {
     this.lastState = state;
     const alerts = getAdvisorAlerts(state);
+    // Só redesenha quando os alertas mudam (antes recriava os botões a cada tick e o toque falhava).
+    const key = `${this.expanded}|${alerts.map((a) => a.id).join(',')}`;
+    if (key === this.renderedKey) return;
+    this.renderedKey = key;
     if (alerts.length === 0) {
       this.container.innerHTML = '';
       return;
     }
 
+    // Um alerta por vez para não cobrir o mapa; os demais ficam atrás de "+N alertas".
+    const visible = this.expanded ? alerts : alerts.slice(0, 1);
     this.container.innerHTML = `
       <div class="pointer-events-auto flex flex-col gap-2.5 max-w-xs sm:max-w-sm">
-        ${alerts.map((a) => this.renderAlertCard(a)).join('')}
+        ${visible.map((a) => this.renderAlertCard(a)).join('')}
+        ${this.renderToggle(alerts.length)}
       </div>
     `;
+  }
+
+  private renderToggle(total: number): string {
+    if (total <= 1) return '';
+    const label = this.expanded ? t('advisor.show_less') : t('advisor.show_more', { n: total - 1 });
+    return `<button data-action="toggle" class="self-end min-h-[40px] px-3 rounded-full bg-slate-900/80 text-white text-[11px] font-bold shadow-md">${label}</button>`;
   }
 
   private renderAlertCard(alert: AdvisorAlert): string {
@@ -73,16 +89,16 @@ export class AdvisorView {
             <span>${icon}</span>
             <span>${alert.title || alert.actionHint}</span>
           </div>
-          <button data-action="dismiss" data-alert-id="${alert.id}" title="Ignorar alerta" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold px-1">
+          <button data-action="dismiss" data-alert-id="${alert.id}" title="Ignorar alerta" aria-label="Ignorar alerta" class="-m-2 w-10 h-10 shrink-0 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold">
             ✕
           </button>
         </div>
         <p class="text-slate-600 dark:text-slate-300 mt-1 leading-snug">${alert.message}</p>
         <div class="flex items-center justify-end gap-1.5 mt-2.5 pt-2 border-t border-slate-200/50 dark:border-slate-800/60">
-          <button data-action="snooze" data-alert-id="${alert.id}" class="px-2.5 py-1 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-all">
+          <button data-action="snooze" data-alert-id="${alert.id}" class="min-h-[40px] px-3 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-all">
             Adiar
           </button>
-          <button data-action="resolve" data-alert-id="${alert.id}" data-action-type="${alert.actionType}" data-target-room="${alert.targetRoomType ?? ''}" class="px-3 py-1 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-[11px] shadow-sm active:scale-95 transition-all">
+          <button data-action="resolve" data-alert-id="${alert.id}" data-action-type="${alert.actionType}" data-target-room="${alert.targetRoomType ?? ''}" class="min-h-[40px] px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-[11px] shadow-sm active:scale-95 transition-all">
             ${alert.actionHint}
           </button>
         </div>
@@ -96,22 +112,31 @@ export class AdvisorView {
       if (!target) return;
 
       const action = target.dataset.action;
+      if (action === 'toggle') {
+        this.expanded = !this.expanded;
+        this.renderedKey = '';
+        if (this.lastState) this.update(this.lastState);
+        return;
+      }
       const alertId = target.dataset.alertId;
       if (!alertId) return;
 
       if (action === 'dismiss') {
         if (this.lastState) dismissAdvisorAlert(this.lastState, alertId);
         this.callbacks?.onDismiss?.(alertId);
+        this.renderedKey = '';
         if (this.lastState) this.update(this.lastState);
       } else if (action === 'snooze') {
         if (this.lastState) snoozeAdvisorAlert(this.lastState, alertId);
         this.callbacks?.onSnooze?.(alertId);
+        this.renderedKey = '';
         if (this.lastState) this.update(this.lastState);
       } else if (action === 'resolve') {
         const actionType = target.dataset.actionType as AlertActionType;
         const targetRoom = target.dataset.targetRoom;
         if (this.lastState) dismissAdvisorAlert(this.lastState, alertId);
         this.callbacks?.onResolve?.(actionType, targetRoom);
+        this.renderedKey = '';
         if (this.lastState) this.update(this.lastState);
       }
     });

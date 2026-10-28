@@ -129,7 +129,9 @@
     "queueDelay": "Queue is building up at reception. Consider opening more offices.",
     "pharmacyMissing": "Patients leaving without a dispensary to fulfill prescriptions.",
     "waitingFull": "Waiting room capacity is almost full.",
-    "cashLow": "Warning: Critical budget! Monitor daily facility upkeep."
+    "cashLow": "Warning: Critical budget! Monitor daily facility upkeep.",
+    "show_more": "+{n} alerts",
+    "show_less": "Show less"
   },
   "defeat": {
     "imminentBankruptcy": "Imminent Bankruptcy Risk",
@@ -172,7 +174,9 @@
     "resetGame": "Restart New Hospital",
     "lgpdExport": "Export My Data (JSON)",
     "lgpdDelete": "Delete Account and Data",
-    "autoSaveTip": "The game also saves your progress automatically at the end of each day."
+    "autoSaveTip": "The game also saves your progress automatically at the end of each day.",
+    "sfx_volume": "Sound Effects Volume",
+    "reduce_motion": "Reduce motion"
   },
   "dock": {
     "build": "Build",

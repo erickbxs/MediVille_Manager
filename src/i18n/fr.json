@@ -122,7 +122,9 @@
     "queueDelay": "File d'attente saturée.",
     "pharmacyMissing": "Manque de pharmacie.",
     "waitingFull": "Salle d'attente comble.",
-    "cashLow": "Trésorerie critique !"
+    "cashLow": "Trésorerie critique !",
+    "show_more": "+{n} alertes",
+    "show_less": "Afficher moins"
   },
   "defeat": {
     "imminentBankruptcy": "Faillite Imminente",
@@ -165,7 +167,9 @@
     "resetGame": "Réinitialiser",
     "lgpdExport": "Exporter Données",
     "lgpdDelete": "Supprimer Compte",
-    "autoSaveTip": "Sauvegarde auto quotidienne."
+    "autoSaveTip": "Sauvegarde auto quotidienne.",
+    "sfx_volume": "Volume des effets",
+    "reduce_motion": "Réduire les animations"
   },
   "dock": {
     "build": "Travaux",

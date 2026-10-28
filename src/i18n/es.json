@@ -129,7 +129,9 @@
     "queueDelay": "Fila acumulada en recepción. Considere abrir más consultorios.",
     "pharmacyMissing": "Pacientes saliendo sin farmacia para dispensación de medicamentos.",
     "waitingFull": "Capacidad de la sala de espera casi al límite.",
-    "cashLow": "Alerta: ¡Caja crítica! Monitoree los costos diarios."
+    "cashLow": "Alerta: ¡Caja crítica! Monitoree los costos diarios.",
+    "show_more": "+{n} alertas",
+    "show_less": "Mostrar menos"
   },
   "defeat": {
     "imminentBankruptcy": "Riesgo Inminente de Quiebra",
@@ -172,7 +174,9 @@
     "resetGame": "Reiniciar Nuevo Hospital",
     "lgpdExport": "Exportar Mis Datos (JSON)",
     "lgpdDelete": "Eliminar Cuenta y Datos",
-    "autoSaveTip": "El juego también guarda su progreso automáticamente al final de cada día."
+    "autoSaveTip": "El juego también guarda su progreso automáticamente al final de cada día.",
+    "sfx_volume": "Volumen de Efectos",
+    "reduce_motion": "Reducir animaciones"
   },
   "dock": {
     "build": "Obras",

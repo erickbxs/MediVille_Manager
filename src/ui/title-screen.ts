@@ -135,7 +135,7 @@ export class TitleScreen {
 
             <div class="grid grid-cols-2 gap-2 pt-1">
               <button id="btn-menu-goals" class="min-h-[44px] px-3 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 transition-all">
-                🎯 Metas SUS
+                🎯 Metas
               </button>
               <button id="btn-menu-settings" class="min-h-[44px] px-3 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 transition-all">
                 ⚙️ ${t('menu.options') || 'Ajustes'}

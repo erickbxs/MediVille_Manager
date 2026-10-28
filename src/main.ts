@@ -39,7 +39,7 @@ import { GoalsModal } from './ui/goals-modal';
 import { trafficSystem } from './systems/traffic-system';
 import { soundSystem } from './core/sound-system';
 import { musicSystem } from './core/music-system';
-import { SettingsModal, applySavedFontScale } from './ui/settings-modal';
+import { SettingsModal, applySavedFontScale, applySavedReduceMotion } from './ui/settings-modal';
 import { AgeGateModal } from './ui/age-gate-modal';
 import { loadGameState, saveGameState, clearSavedGame } from './systems/save-system';
 import { isAgeVerificationRequired } from './systems/player-profile';
@@ -727,6 +727,7 @@ if ('serviceWorker' in navigator) {
 }
 
 applySavedFontScale();
+applySavedReduceMotion();
 Promise.all([initI18n(), loadRevalidaBank()]).then(() => {
   const app = new MediVilleApp();
   app.start().catch((err: unknown) => {

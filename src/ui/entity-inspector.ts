@@ -12,10 +12,11 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Utilize inspectPatient(patient, onAction) ou inspectStaff(staff, onAction). O painel é fechado via close().
  *
- * Importa: src/entities/patient.ts, src/entities/staff.ts, src/systems/staff-fatigue-system.ts
+ * Importa: src/entities/patient.ts, src/entities/staff.ts, src/systems/staff-fatigue-system.ts, src/ui/decision-modal.ts
  * Conecta-se com: src/main.ts, src/ui/decision-modal.ts, tests/traffic-expansion-pinch-and-inspector.test.ts
  */
 
+import { displayCaseName } from './decision-modal';
 import type { PatientInstance } from '../entities/patient';
 import type { StaffMember } from '../entities/staff';
 import { getStaffEnergy } from '../systems/staff-fatigue-system';
@@ -134,7 +135,7 @@ export class EntityInspector {
 
           <div class="p-2 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100/60 dark:border-blue-900/40">
             <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">Hipótese Diagnóstica</span>
-            <p class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${patient.clinicalCase.definition.name}</p>
+            <p class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${displayCaseName(patient.clinicalCase.definition.name, patient.clinicalCase.definition.suggestedConduct.text)}</p>
           </div>
 
           ${patient.examCompleted ? `
