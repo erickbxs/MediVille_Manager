@@ -86,6 +86,8 @@ function buildInitialNegotiationState() {
     governmentNegotiationCooldownDays: 0,
     governmentGrantBonusMultiplier: 0,
     dismissedAdvisorAlertIds: [],
+    revalidaReviewIds: [] as string[],
+    revalidaPatientCounter: 0,
   };
 }
 

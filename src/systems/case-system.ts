@@ -11,13 +11,15 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Para adicionar ou alterar pesos de casos, edite src/data/cases.json. Para validar a distribuição e não-repetição, execute tests/cases-and-mobile.test.ts.
  *
- * Importa: src/core/config.ts, src/entities/clinical-case.ts, src/entities/patient.ts
+ * Importa: src/core/config.ts, src/entities/clinical-case.ts, src/entities/patient.ts, src/state/game-state.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/systems/arrival-system.ts, src/core/simulation.ts
  */
 
 import { BALANCE, CASES_CATALOG, NAMES_CATALOG, type ClinicalCaseDefinition } from '../core/config';
 import type { ConductOption, PatientCase } from '../entities/clinical-case';
 import type { PatientInstance } from '../entities/patient';
+import type { GameState } from '../state/game-state';
+import { buildRevalidaCaseDefinition, inferRevalidaPatientGender, isRevalidaActive, pickRevalidaQuestion } from './revalida-system';
 
 let lastGeneratedCaseId: string | undefined;
 
@@ -112,17 +114,39 @@ export function selectWeightedCase(
   return pool[pool.length - 1]!;
 }
 
+/** Alternativas da questão do Revalida na ordem oficial (A–D), sem embaralhar. */
+function buildRevalidaOptions(def: ClinicalCaseDefinition): ConductOption[] {
+  const q = def.revalida!.question;
+  return q.options.map((o) => ({ id: `${q.id}-${o.key}`, text: o.text, isCorrect: o.key === q.answer }));
+}
+
+function selectCaseDefinition(
+  overrideLastId: string | undefined,
+  masteredCaseIds: string[] | undefined,
+  hospitalLevel: string | undefined,
+  state: GameState | undefined
+): ClinicalCaseDefinition {
+  const question = state && isRevalidaActive() ? pickRevalidaQuestion(state) : undefined;
+  if (question) return buildRevalidaCaseDefinition(question);
+  const pool = hospitalLevel ? filterCasesForUnit(CASES_CATALOG.cases, hospitalLevel) : CASES_CATALOG.cases;
+  return selectWeightedCase(pool, overrideLastId ?? lastGeneratedCaseId, masteredCaseIds, hospitalLevel);
+}
+
+/** Casos clínicos antigos: só sorteia casos compatíveis com o porte da unidade (UBS não recebe caso de UTI). */
+export function filterCasesForUnit(cases: ClinicalCaseDefinition[], hospitalLevel: string): ClinicalCaseDefinition[] {
+  const level = hospitalLevel.toLowerCase();
+  const allowed = level === 'hospital' ? ['ubs', 'upa', 'hospital'] : level === 'upa' ? ['ubs', 'upa'] : ['ubs'];
+  const matching = cases.filter((c) => allowed.some((u) => c.typicalUnit.toLowerCase().includes(u)));
+  return matching.length > 0 ? matching : cases;
+}
+
 export function generatePatientCase(
   overrideLastId?: string,
   masteredCaseIds?: string[],
-  hospitalLevel?: string
+  hospitalLevel?: string,
+  state?: GameState
 ): PatientCase {
-  const def = selectWeightedCase(
-    CASES_CATALOG.cases,
-    overrideLastId ?? lastGeneratedCaseId,
-    masteredCaseIds,
-    hospitalLevel
-  );
+  const def = selectCaseDefinition(overrideLastId, masteredCaseIds, hospitalLevel, state);
   lastGeneratedCaseId = def.id;
 
   const intensity = getRandomItem(BALANCE.queue.intensityLevels);
@@ -135,7 +159,7 @@ export function generatePatientCase(
     definition: def,
     intensityId: intensity.id,
     comorbidity,
-    conductOptions: buildConductOptions(def),
+    conductOptions: def.revalida ? buildRevalidaOptions(def) : buildConductOptions(def),
     chosenConductId: null,
     decisionMade: false,
     isDecisionCorrect: false,
@@ -143,14 +167,20 @@ export function generatePatientCase(
   };
 }
 
+/** No Modo Revalida, o sexo do paciente acompanha o enunciado ("Mulher de 30 anos", "Homem de 62 anos"). */
+function inferGender(def: ClinicalCaseDefinition): 'female' | 'male' | null {
+  return def.revalida ? inferRevalidaPatientGender(def.revalida.question.stem) : null;
+}
+
 export function createPatient(
   id: string,
   masteredCaseIds?: string[],
-  hospitalLevel?: string
+  hospitalLevel?: string,
+  state?: GameState
 ): PatientInstance {
-  const gender = Math.random() < BALANCE.population.femaleChance ? 'female' : 'male';
+  const pCase = generatePatientCase(undefined, masteredCaseIds, hospitalLevel, state);
+  const gender = inferGender(pCase.definition) ?? (Math.random() < BALANCE.population.femaleChance ? 'female' : 'male');
   const name = generatePatientName(gender);
-  const pCase = generatePatientCase(undefined, masteredCaseIds, hospitalLevel);
   const minAge = pCase.definition.ageRange.min;
   const maxAge = pCase.definition.ageRange.max;
   const age = Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;

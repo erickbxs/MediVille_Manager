@@ -11,7 +11,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O catálogo de condutas provém de src/data/cases.json e a verificação de estoque utiliza findRelevantMedication e buyMedicationBatch.
  *
- * Importa: src/entities/patient.ts, src/core/simulation.ts, src/systems/consultation-system.ts, src/core/config.ts, src/systems/economy-system.ts, src/core/event-bus.ts
+ * Importa: src/entities/patient.ts, src/core/simulation.ts, src/systems/consultation-system.ts, src/core/config.ts, src/systems/economy-system.ts, src/core/event-bus.ts, src/entities/revalida-question.ts, src/i18n/i18n.ts, src/ui/revalida-question-view.ts
  * Conecta-se com: src/main.ts, tests/ux-20-laws-and-aesthetics.test.ts
  */
 
@@ -21,6 +21,17 @@ import { getNextPendingDecision, finishPatientDecision } from '../systems/consul
 import { PHARMACY_CATALOG, type RenameMedication } from '../core/config';
 import { buyMedicationBatch } from '../systems/economy-system';
 import { globalBus } from '../core/event-bus';
+import type { RevalidaCasePayload } from '../entities/revalida-question';
+import { t } from '../i18n/i18n';
+import {
+  areaLabel,
+  escapeHtml,
+  markAnsweredOptions,
+  renderOptionButtons,
+  renderReferenceLine,
+  renderRevalidaFeedback,
+  renderStem,
+} from './revalida-question-view';
 
 export function findRelevantMedication(conductText: string, caseName = ''): RenameMedication {
   const norm = (conductText + ' ' + caseName).toLowerCase();
@@ -50,6 +61,10 @@ export class DecisionModal {
     this.currentPatient = patient;
     const pCase = patient.clinicalCase;
     const def = pCase.definition;
+    if (def.revalida) {
+      this.openRevalida(patient, def.revalida);
+      return;
+    }
     const med = findRelevantMedication(def.suggestedConduct.text, def.name);
     const stock = this.simulation.state.pharmacyStock[med.id] ?? 0;
 
@@ -111,6 +126,39 @@ export class DecisionModal {
     this.bindQuickBuyMed(med);
   }
 
+  /** Modo Revalida: o paciente traz uma questão oficial do INEP (texto sem alterações + referência). */
+  private openRevalida(patient: PatientInstance, payload: RevalidaCasePayload): void {
+    const q = payload.question;
+    this.container.innerHTML = `
+      <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="revalida-q-title">
+        <div class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90dvh]">
+          <div class="flex items-center justify-between gap-3 p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-800/95">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 shrink-0 rounded-2xl bg-sky-500/15 flex items-center justify-center text-xl">🩺</div>
+              <div class="min-w-0">
+                <h3 id="revalida-q-title" class="font-extrabold text-base text-slate-900 dark:text-slate-50 truncate">${escapeHtml(patient.name)}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${escapeHtml(areaLabel(q.area))} · ${escapeHtml(payload.reference)}</p>
+              </div>
+            </div>
+            <span class="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-700 dark:text-sky-300">Revalida ${escapeHtml(q.editionLabel)}</span>
+          </div>
+          <div class="p-5 overflow-y-auto space-y-4 text-sm flex-1 min-h-0">
+            <div class="space-y-2 text-slate-800 dark:text-slate-100">${renderStem(q)}</div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 block">${escapeHtml(t('revalida.select_answer'))}</span>
+              <div id="options-container" class="space-y-2.5">${renderOptionButtons(patient.clinicalCase.conductOptions)}</div>
+            </div>
+            <div id="feedback-box" class="hidden"></div>
+            ${renderReferenceLine(payload)}
+          </div>
+          <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex flex-wrap justify-end gap-2">
+            <button id="btn-close-modal" class="min-h-[44px] px-5 py-2.5 rounded-xl text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 active:scale-95 transition-all">${escapeHtml(t('revalida.answer_later'))}</button>
+          </div>
+        </div>
+      </div>`;
+    this.bindOptionClicks();
+  }
+
   private renderMedStockBanner(med: RenameMedication, currentStock: number): string {
     const inStock = currentStock > 0;
     const bannerBg = inStock
@@ -153,7 +201,8 @@ export class DecisionModal {
   }
 
   private close(): void {
-    if (this.currentPatient) {
+    // Fechar sem responder mantém o paciente na fila de decisões (antes ele ficava preso no consultório).
+    if (this.currentPatient?.clinicalCase.decisionMade) {
       finishPatientDecision(this.simulation.state, this.currentPatient.id);
     }
     globalBus.emit('music:ducking_changed', { isDucking: false });
@@ -179,8 +228,23 @@ export class DecisionModal {
     closeBtn?.addEventListener('click', () => this.close());
   }
 
+  private showRevalidaFeedback(box: HTMLElement, payload: RevalidaCasePayload): void {
+    const pCase = this.currentPatient!.clinicalCase;
+    const chosenId = pCase.chosenConductId ?? '';
+    box.className = '';
+    box.innerHTML = renderRevalidaFeedback(payload, chosenId.slice(-1), pCase.isDecisionCorrect);
+    markAnsweredOptions(this.container, pCase.conductOptions, chosenId);
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    this.renderFooterActions();
+  }
+
   private showFeedback(box: HTMLElement | null): void {
     if (!box || !this.currentPatient) return;
+    const payload = this.currentPatient.clinicalCase.definition.revalida;
+    if (payload) {
+      this.showRevalidaFeedback(box, payload);
+      return;
+    }
     const isCorrect = this.currentPatient.clinicalCase.isDecisionCorrect;
     const text = this.currentPatient.clinicalCase.feedbackText;
 

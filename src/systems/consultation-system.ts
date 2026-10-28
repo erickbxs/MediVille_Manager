@@ -12,7 +12,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Multiplicadores e tempos de consulta provêm de balance.json e do sistema de fadiga em staff-fatigue-system.ts.
  *
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts,
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/entities/room.ts, src/state/game-state.ts, src/systems/revalida-system.ts,
  *          src/systems/satisfaction-system.ts, src/systems/staff-fatigue-system.ts
  * Conecta-se com: src/core/simulation.ts, src/ui/decision-modal.ts
  */
@@ -29,6 +29,7 @@ import { checkHospitalProgression } from './progression-system';
 import { deductStaffEnergyOnConsultation } from './staff-fatigue-system';
 import { orderQueueByManchester } from './triage-system';
 import { executeExamWorkflow } from './exam-routing-system';
+import { isCalmModeFlag } from './revalida-system';
 
 const AUTO_TREATMENT_BASE_SEC = 3.5;
 const AUTO_TREATMENT_MIN_SEC = 1.5;
@@ -173,7 +174,7 @@ function progressConsultation(state: GameState, deltaSec: number): void {
       const skillFactor = 1 - BALANCE.consultation.skillReductionPerLevel * (doctorSkill - 1);
       patient.waitTimeSec += deltaSec * (BALANCE.consultation.waitingPatienceFactor * skillFactor);
 
-      if (patient.waitTimeSec >= patient.patienceSec) {
+      if (patient.waitTimeSec >= patient.patienceSec && !isCalmModeFlag('disableAbandonment')) {
         handleConsultationAbandonment(state, patient);
       }
     } else if (patient.state === 'in_consultation') {
@@ -283,9 +284,26 @@ function processDischargeRevenue(state: GameState, patient: PatientInstance): { 
   return result;
 }
 
-export function dischargePatient(state: GameState, patientId: string, isAuto = false): void {
+/** Conduta errada: o paciente sai sem faturamento (antes o erro era pago igual ao acerto). */
+function dischargeWithoutRevenue(state: GameState, patient: PatientInstance): void {
+  finishPatientDecision(state, patient.id);
+  const { col, row } = releasePatientRoom(state, patient);
+  patient.state = 'treated';
+  patient.satisfaction = BALANCE.satisfaction.abandonedSatisfaction;
+  state.stats.treatedCount += 1;
+  checkHospitalProgression(state);
+  globalBus.emit('patient:treated', { patientId: patient.id, satisfaction: patient.satisfaction, revenue: 0 });
+  globalBus.emit('patient:consultation_completed', { patientId: patient.id });
+  globalBus.emit('feedback:gain_float', { text: '✖ R$ 0', col, row });
+}
+
+export function dischargePatient(state: GameState, patientId: string, isAuto = false, rewarded = true): void {
   const patient = state.patients.get(patientId);
   if (!patient) return;
+  if (!rewarded) {
+    dischargeWithoutRevenue(state, patient);
+    return;
+  }
 
   finishPatientDecision(state, patient.id);
   const { col, row } = releasePatientRoom(state, patient);

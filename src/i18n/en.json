@@ -35,9 +35,10 @@
     "newHospital": "New Hospital",
     "continue": "Continue Game",
     "options": "Settings",
-    "leaderboard": "Leaderboard",
+    "leaderboard": "My Records",
     "encyclopedia": "Medical Compendium",
-    "suspendAudio": "Mute / Audio"
+    "suspendAudio": "Mute / Audio",
+    "questions": "Question Bank"
   },
   "room": {
     "reception": "Central Reception",
@@ -84,7 +85,9 @@
     "blood_bank": "Blood Bank",
     "blood_bank_short": "Blood",
     "helipad": "Emergency Helipad",
-    "helipad_short": "Helipad"
+    "helipad_short": "Helipad",
+    "build": "Build",
+    "move": "Move"
   },
   "roles": {
     "doctor": "General Physician",
@@ -144,13 +147,18 @@
     "mainMenu": "Main Menu"
   },
   "leaderboard": {
-    "title": "Hospital Management Leaderboard",
-    "subtitle": "Top Healthcare Directors & Public Health Administrators",
+    "title": "My Records",
+    "subtitle": "Your best runs, saved on this device",
     "position": "Rank",
     "player": "Director",
     "score": "Score",
     "guestModeNote": "Guest Mode (< 13 years): Your score is saved strictly on this device.",
-    "localSaveNotice": "Score successfully recorded locally!"
+    "localSaveNotice": "Score successfully recorded locally!",
+    "empty": "No records yet. Finish a game to see it here.",
+    "unit_private_clinic": "Clinic",
+    "unit_ubs": "Primary care",
+    "unit_upa": "Urgent care",
+    "unit_hospital": "Hospital"
   },
   "settings": {
     "title": "Settings & Accessibility",
@@ -172,7 +180,9 @@
     "staff": "Staff",
     "pharmacy": "Pharmacy",
     "finances": "Finances",
-    "recenter": "Center"
+    "recenter": "Center",
+    "encyclopedia": "Encyclopedia",
+    "questions": "Questions"
   },
   "music": {
     "on": "Music On",
@@ -181,7 +191,7 @@
   },
   "legal": {
     "title": "Terms of Use & Privacy LGPD/GDPR",
-    "susNotice": "Educational Notice: MediVille Manager is an educational simulation about healthcare systems. It does not replace professional medical advice or emergency care."
+    "susNotice": "Educational notice: independent project, not affiliated with the Brazilian Ministry of Health or INEP. Not a substitute for medical care. In emergencies, call 192 (SAMU)."
   },
   "map": {
     "expand": "Expand Map",
@@ -197,5 +207,48 @@
     "sus": "SUS — Brazilian Unified Health System (Universal public healthcare)",
     "ubs": "UBS — Primary Health Center (Basic and preventive care)",
     "upa": "UPA 24h — 24-Hour Emergency Care Center (Urgent care)"
+  },
+  "build": {
+    "invalid_space": "Space taken or outside the lot"
+  },
+  "revalida": {
+    "area": {
+      "clinica_medica": "Internal Medicine",
+      "cirurgia": "Surgery",
+      "ginecologia_obstetricia": "Obstetrics and Gynecology",
+      "pediatria": "Pediatrics",
+      "medicina_familia_comunidade": "Family and Public Health"
+    },
+    "figure_alt": "Figure from exam question {n}",
+    "reference_label": "Source",
+    "license_note": "Official INEP question, reproduced without changes (CC BY-ND 3.0 license, gov.br). Questions are in Portuguese.",
+    "preliminary_key": "Preliminary answer key: INEP did not publish a final key for this edition.",
+    "select_answer": "Choose an answer:",
+    "answer_later": "Answer later",
+    "correct": "Correct!",
+    "wrong": "Incorrect",
+    "your_answer": "Your answer",
+    "answer_official": "Official key (INEP)",
+    "review_note": "This question will come back later for review. This visit was not billed.",
+    "comment_title": "Comment",
+    "comment_pending": "Comment coming soon. For now, check the official key above.",
+    "bank_title": "Revalida Question Bank",
+    "bank_subtitle": "{total} official INEP questions (2020 to 2026)",
+    "stat_mastered": "Mastered",
+    "stat_review": "To review",
+    "stat_new": "New",
+    "filter_all": "All",
+    "search_placeholder": "Search by word, edition or number…",
+    "locked_area": "Build the \"{room}\" room to receive patients from this area.",
+    "unlocked_area": "Area unlocked in your hospital",
+    "empty": "No questions match this filter.",
+    "status_mastered": "Mastered",
+    "status_review": "Review",
+    "status_new": "New",
+    "show_more": "Show more",
+    "mastered_toast": "Question mastered: {ref} ({count} total)",
+    "tip_title": "How it works",
+    "tip_text": "Each patient brings a past Revalida question. Right answer: the visit is billed. Wrong answer: the question comes back later for review. Build rooms to unlock new areas.",
+    "figure_zoom": "Tap to enlarge the figure"
   }
 }

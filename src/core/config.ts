@@ -3,7 +3,7 @@
  * O que faz: Exporta constantes tipadas contendo os dados de balanceamento, salas, nomes e casos clínicos carregados dos arquivos JSON.
  * Para que foi criado: Eliminar números mágicos espalhados pelo código e centralizar o acesso aos dados em tempo de compilação.
  * Como modificar/debugar: Modifique diretamente os arquivos em src/data/*. Se um campo faltar, o compilador TypeScript apontará aqui.
- * Importa: src/core/config-types.ts, src/data/balance.json, src/data/rooms.json, src/data/cases.json, src/data/names.json
+ * Importa: src/core/config-types.ts, src/entities/revalida-question.ts, src/data/balance.json, src/data/rooms.json, src/data/cases.json, src/data/names.json
  * Conecta-se com: src/core/simulation.ts, src/systems/*, src/state/game-state.ts
  */
 
@@ -18,6 +18,7 @@ import sigtapRaw from '../data/sigtap.json';
 import pharmacyRaw from '../data/pharmacy.json';
 import tutorialRaw from '../data/tutorial.json';
 import type { SigtapCatalog, PharmacyCatalog, RenameMedication, SigtapProcedure, TutorialCatalog, TutorialTip } from './config-types';
+import type { RevalidaCasePayload } from '../entities/revalida-question';
 export type { RenameMedication, SigtapProcedure, TutorialTip };
 
 export const BALANCE: GameBalanceConfig = balanceRaw as unknown as GameBalanceConfig;
@@ -67,6 +68,8 @@ export interface ClinicalCaseDefinition {
   version: string;
   reviewedOn: string;
   reviewStatus: string;
+  /** Presente apenas no Modo Revalida: o "caso" do paciente é uma questão oficial do INEP. */
+  revalida?: RevalidaCasePayload;
 }
 
 export interface CasesCatalog {

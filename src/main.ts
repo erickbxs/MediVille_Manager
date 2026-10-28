@@ -10,7 +10,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Para adicionar novas integrações de entrada ou eventos globais, configure listeners em setupEventSubscriptions ou trate cliques em handleGridClick.
  *
- * Importa: src/core/*, src/render/*, src/ui/*, src/input/*, src/systems/*
+ * Importa: src/core/*, src/render/*, src/ui/*, src/input/*, src/systems/*, src/services/revalida-bank.ts, src/i18n/i18n.ts
  * Conecta-se com: index.html
  */
 
@@ -48,7 +48,10 @@ import { GameOverModal } from './ui/game-over-modal';
 import { DefeatWarningModal } from './ui/defeat-warning-modal';
 import { RankingModal } from './ui/ranking-modal';
 import { executeEmergencyTransferRescue } from './systems/defeat-system';
-import { initI18n } from './i18n/i18n';
+import { initI18n, t } from './i18n/i18n';
+import { loadRevalidaBank } from './services/revalida-bank';
+import { isRevalidaActive } from './systems/revalida-system';
+import { RevalidaBankModal } from './ui/revalida-bank-modal';
 import { BuildController } from './ui/build-controller';
 import { expandMap } from './systems/map-expansion-system';
 import { NotificationCenter } from './ui/notification-center';
@@ -71,6 +74,7 @@ class MediVilleApp {
   private roomContextMenu!: RoomContextMenu;
   private titleScreen!: TitleScreen;
   private encyclopediaModal!: EncyclopediaModal;
+  private revalidaBankModal!: RevalidaBankModal;
   private goalsModal!: GoalsModal;
   private decisionModal!: DecisionModal;
   private settingsModal!: SettingsModal;
@@ -105,6 +109,7 @@ class MediVilleApp {
     this.setupBuildMenu();
     this.setupInput(canvasContainer);
     this.setupEventSubscriptions();
+    this.setupEscapeToClose();
 
     globalErrorBoundary.attach(this.simulation);
 
@@ -121,18 +126,37 @@ class MediVilleApp {
     uiRoot?.classList.add('hidden');
 
     this.encyclopediaModal = new EncyclopediaModal(modalContainer);
+    this.revalidaBankModal = new RevalidaBankModal(modalContainer, () => this.simulation.state);
     this.goalsModal = new GoalsModal(modalContainer);
     this.titleScreen = new TitleScreen(document.getElementById('title-screen-container')!, {
       onContinue: () => this.startPlaying(),
       onNewGame: (choice: HospitalTypeChoice) => {
         clearSavedGame();
-        this.simulation = new HospitalSimulation(choice);
+        this.simulation.resetTo(choice);
+        saveGameState(this.simulation.state);
+        this.hud.update(this.simulation.state);
         this.startPlaying();
       },
-      onOpenEncyclopedia: () => this.encyclopediaModal.open(),
+      onOpenEncyclopedia: () => this.openKnowledgeBase(),
       onOpenGoals: () => this.goalsModal.open(),
       onOpenSettings: () => this.settingsModal.open(),
       onOpenRanking: () => this.rankingModal.open(),
+    });
+  }
+
+  /** Modo Revalida abre o Banco de Questões; sem o banco, abre a Enciclopédia antiga. */
+  private openKnowledgeBase(): void {
+    if (isRevalidaActive()) this.revalidaBankModal.open();
+    else this.encyclopediaModal.open();
+  }
+
+  /** Esc fecha a janela aberta (procura o botão de fechar "✕" mais recente). */
+  private setupEscapeToClose(): void {
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const closers = Array.from(document.querySelectorAll<HTMLButtonElement>('#modal-container button, #title-screen-container button'))
+        .filter((b) => b.textContent?.trim() === '✕' && b.offsetParent !== null);
+      closers[closers.length - 1]?.click();
     });
   }
 
@@ -143,7 +167,7 @@ class MediVilleApp {
     musicSystem.start();
     this.simulation.setSpeed(1);
     this.renderer.recenter();
-    triggerTutorialTip(this.simulation.state, 'game_start');
+    triggerTutorialTip(this.simulation.state, isRevalidaActive() ? 'revalida_start' : 'game_start');
   }
 
   private handleBuildConfirm(col: number, row: number, rotated: boolean, def: RoomDefinition, isMove: boolean, movingRoomId: string | null): void {
@@ -204,7 +228,7 @@ class MediVilleApp {
       onOpenStaff: () => this.staffModal.open(),
       onOpenPharmacy: () => this.pharmacyModal.open(),
       onOpenFinances: () => this.financesModal.open(),
-      onOpenEncyclopedia: () => this.encyclopediaModal.open(),
+      onOpenEncyclopedia: () => this.openKnowledgeBase(),
       onExpandMap: () => this.handleDirectMapExpansion(),
       getState: () => this.simulation.state,
     });
@@ -271,7 +295,9 @@ class MediVilleApp {
     globalBus.on('protocol:mastered', (payload) => {
       soundSystem.playSuccess();
       this.notificationCenter.pushToast(
-        `🏆 Protocolo Dominado: ${payload.diseaseName} (${payload.totalMastered} dominados)`,
+        isRevalidaActive()
+          ? `🏆 ${t('revalida.mastered_toast', { ref: payload.diseaseName, count: payload.totalMastered })}`
+          : `🏆 Protocolo Dominado: ${payload.diseaseName} (${payload.totalMastered} dominados)`,
         'success',
         '⭐'
       );
@@ -343,7 +369,7 @@ class MediVilleApp {
         onRequestGrant: () => requestEmergencyGrant(this.simulation.state),
         onOpenPendingCase: () => this.openNextPendingCase(),
         onOpenSettings: () => this.settingsModal.open(),
-        onOpenEncyclopedia: () => this.encyclopediaModal.open(),
+        onOpenEncyclopedia: () => this.openKnowledgeBase(),
         onOpenGoals: () => this.goalsModal.open(),
         onOpenExpandMap: () => this.handleDirectMapExpansion(),
       }
@@ -684,7 +710,9 @@ class MediVilleApp {
       soundSystem.playSuccess();
       this.showToast(`🏆 Meta Concluída: ${goal.title} (+R$ ${rewardCash.toLocaleString('pt-BR')})`);
     });
-    globalBus.on('encyclopedia:case_unlocked', () => this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!'));
+    globalBus.on('encyclopedia:case_unlocked', () => {
+      if (!isRevalidaActive()) this.showToast('📖 Novo Caso Registrado na Enciclopédia SUS!');
+    });
     globalBus.on('save:restored_from_backup', () => this.showToast('🛡️ Save principal restaurado com sucesso a partir do backup!'));
     globalBus.on('toast:show', ({ text }) => this.showToast(text));
 
@@ -699,7 +727,7 @@ if ('serviceWorker' in navigator) {
 }
 
 applySavedFontScale();
-initI18n().then(() => {
+Promise.all([initI18n(), loadRevalidaBank()]).then(() => {
   const app = new MediVilleApp();
   app.start().catch((err: unknown) => {
     console.error('[MediVille] Falha ao iniciar aplicação:', err);

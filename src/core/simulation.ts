@@ -21,6 +21,7 @@ import { placeRoom as sysPlaceRoom, removeRoom as sysRemoveRoom, moveRoom as sys
 import { updateEventSystem } from '../systems/event-system';
 import { hireStaff as sysHireStaff, fireStaff as sysFireStaff } from '../systems/staff-system';
 import { goalsSystem } from '../systems/goals-system';
+import { registerRevalidaAnswer, isRevalidaActive } from '../systems/revalida-system';
 
 export class HospitalSimulation {
   public state: GameState;
@@ -32,6 +33,17 @@ export class HospitalSimulation {
     } else {
       this.state = initialStateOrChoice ?? createInitialGameState();
     }
+  }
+
+  /**
+   * Substitui a partida atual por uma nova sem trocar o objeto da simulação.
+   * HUD, modais e o GameLoop guardam referência a esta instância; trocar a instância
+   * deixava a tela presa à partida antiga (bug do "hospital novo parado").
+   */
+  public resetTo(choice: 'ubs' | 'upa' | 'clinica' | 'hospital'): void {
+    this.modalPauseSpeed = null;
+    this.state = createInitialGameState(choice);
+    globalBus.emit('state:changed', undefined);
   }
 
   public step(deltaSec: number): void {
@@ -126,6 +138,7 @@ export class HospitalSimulation {
       diseaseName,
       totalMastered: count,
     });
+    if (isRevalidaActive()) return;
     globalBus.emit('advisor:alert', {
       id: `protocol_${caseDefId}`,
       message: `🏆 Novo Protocolo Instituído: ${diseaseName}! Próximos casos serão atendidos automaticamente pela equipe (${count}/100)`,
@@ -144,9 +157,11 @@ export class HospitalSimulation {
     patient.clinicalCase.isDecisionCorrect = chosen.isCorrect;
     patient.clinicalCase.feedbackText = chosen.isCorrect
       ? patient.clinicalCase.definition.explanation
-      : (chosen.whyWrong || 'Conduta não recomendada para este quadro clínico.');
+      : (chosen.whyWrong || patient.clinicalCase.definition.explanation || 'Conduta não recomendada para este quadro clínico.');
 
     this.state.stats.totalDecisions += 1;
+    const revalida = patient.clinicalCase.definition.revalida;
+    if (revalida) registerRevalidaAnswer(this.state, revalida.question.id, chosen.isCorrect);
     if (chosen.isCorrect) {
       this.state.stats.correctDecisions += 1;
       goalsSystem.unlockCase(patient.clinicalCase.definition.id);
@@ -155,7 +170,7 @@ export class HospitalSimulation {
       patient.errorsCount += 1;
     }
 
-    dischargePatient(this.state, patient.id);
+    dischargePatient(this.state, patient.id, false, chosen.isCorrect);
     goalsSystem.checkGoals(this.state);
     if (this.state.activeDecisionPatientId === patient.id) {
       this.state.activeDecisionPatientId = null;

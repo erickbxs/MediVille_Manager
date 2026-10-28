@@ -77,5 +77,9 @@ export interface GameState {
   governmentNegotiationCooldownDays: number;
   governmentGrantBonusMultiplier: number;
   dismissedAdvisorAlertIds: string[];
+  /** Modo Revalida: questões erradas aguardando revisão (em ordem de chegada). */
+  revalidaReviewIds: string[];
+  /** Modo Revalida: contador de pacientes para intercalar revisões. */
+  revalidaPatientCounter?: number;
 }
 

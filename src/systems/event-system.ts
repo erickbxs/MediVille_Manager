@@ -3,13 +3,14 @@
  * O que faz: Simula o disparo de eventos dinâmicos (acidentes, surtos, crises e sazonais) e aplica seus efeitos no fluxo do hospital.
  * Para que foi criado: Implementar o Prompt 8 do GDD com os 12 eventos oficiais e duração em tempo real.
  * Como modificar/debugar: Ajuste intervalBetweenEventsSec em src/data/balance.json ou adicione novos eventos em events.json.
- * Importa: src/core/config.ts, src/entities/event.ts, src/state/game-state.ts, src/core/event-bus.ts
+ * Importa: src/core/config.ts, src/entities/event.ts, src/state/game-state.ts, src/core/event-bus.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/core/simulation.ts, src/systems/arrival-system.ts, src/ui/event-banner.ts
  */
 
 import { BALANCE, EVENTS_CATALOG } from '../core/config';
 import type { ActiveEvent } from '../entities/event';
 import type { GameState } from '../state/game-state';
+import { isCalmModeFlag } from './revalida-system';
 import { globalBus } from '../core/event-bus';
 
 function spawnRandomEvent(state: GameState): void {
@@ -38,7 +39,8 @@ function spawnRandomEvent(state: GameState): void {
 
 export function updateEventSystem(state: GameState, deltaSec: number): void {
   state.eventTimerSec += deltaSec;
-  if (state.eventTimerSec >= BALANCE.events.intervalBetweenEventsSec) {
+  const eventsAllowed = !isCalmModeFlag('disableRandomEvents');
+  if (eventsAllowed && state.eventTimerSec >= BALANCE.events.intervalBetweenEventsSec) {
     state.eventTimerSec = 0;
     spawnRandomEvent(state);
   }

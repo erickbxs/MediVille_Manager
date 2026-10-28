@@ -20,7 +20,6 @@
 import type { HospitalSimulation } from '../core/simulation';
 import { saveGameState, exportSaveJson, importSaveJson, clearSavedGame } from '../systems/save-system';
 import { getPlayerProfile } from '../systems/player-profile';
-import { RankingService } from '../services/ranking-service';
 import { musicSystem } from '../core/music-system';
 import { getLocale, setLanguage, t, type SupportedLocale } from '../i18n/i18n';
 import { LegalModal } from './legal-modal';
@@ -140,12 +139,12 @@ export class SettingsModal {
 
   private renderLangButtons(current: SupportedLocale): string {
     const list: Array<{ code: SupportedLocale; label: string }> = [
-      { code: 'pt', label: '🇧🇷 PT' },
-      { code: 'en', label: '🇺🇸 EN' },
-      { code: 'es', label: '🇪🇸 ES' },
-      { code: 'fr', label: '🇫🇷 FR' },
-      { code: 'de', label: '🇩🇪 DE' },
-      { code: 'zh', label: '🇨🇳 中文' },
+      { code: 'pt', label: 'Português' },
+      { code: 'en', label: 'English' },
+      { code: 'es', label: 'Español' },
+      { code: 'fr', label: 'Français' },
+      { code: 'de', label: 'Deutsch' },
+      { code: 'zh', label: '中文' },
     ];
     return list.map((item) => `
       <button data-lang="${item.code}" class="btn-lang-choice min-w-0 truncate px-2 py-2 rounded-xl border text-center transition-all ${item.code === current ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'}">
@@ -235,8 +234,8 @@ export class SettingsModal {
 
     document.getElementById('btn-reset-game')?.addEventListener('click', () => {
       if (confirm('Tem certeza de que deseja apagar o progresso deste hospital?')) {
+        // Apaga só a partida; mantém idioma e a verificação de idade (antes pedia o ano de nascimento de novo).
         clearSavedGame();
-        RankingService.deleteUserAccountAndData();
         window.location.reload();
       }
     });

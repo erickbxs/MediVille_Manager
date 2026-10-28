@@ -24,7 +24,8 @@
       "src/utils/formulas.ts",
       "src/systems/staff-fatigue-system.ts",
       "tests/formulas.test.ts",
-      "tests/simulation.test.ts"
+      "tests/simulation.test.ts",
+      "src/systems/revalida-system.ts"
     ]
   },
   "time": {
@@ -216,6 +217,34 @@
     "tiredSpeedPenalty": 0.25,
     "breakDurationSec": 8,
     "coffeeBoostCost": 500
+  },
+  "revalida": {
+    "enabled": true,
+    "questionsUrl": "/revalida/questions.json",
+    "commentsUrl": "/revalida/comments.json",
+    "imageBasePath": "/revalida/img/",
+    "areaRooms": {
+      "clinica_medica": "consultation",
+      "medicina_familia_comunidade": "vaccination",
+      "pediatria": "observation",
+      "cirurgia": "emergency_room",
+      "ginecologia_obstetricia": "maternity"
+    },
+    "arrivalIntervalSec": 16,
+    "maxWaitingPatients": 3,
+    "advisorMaxSuggestions": 1,
+    "reviewEveryNthPatient": 4,
+    "wrongReputationPenalty": 1,
+    "correctReputationGain": 1,
+    "reputationCap": 100,
+    "defaultPatientAge": { "min": 18, "max": 80 },
+    "calmMode": {
+      "disableAbandonment": true,
+      "disableBusWaves": true,
+      "disableHelipad": true,
+      "disableRandomEvents": true,
+      "disableDefeat": true,
+      "hideManagementDock": true
+    }
   }
 }
-

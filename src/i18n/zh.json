@@ -28,9 +28,10 @@
     "newHospital": "新建医院",
     "continue": "继续游戏",
     "options": "设置",
-    "leaderboard": "全球排行",
+    "leaderboard": "我的记录",
     "encyclopedia": "医学典籍",
-    "suspendAudio": "声音设置"
+    "suspendAudio": "声音设置",
+    "questions": "题库"
   },
   "room": {
     "reception": "中央接待大厅",
@@ -77,7 +78,9 @@
     "upkeep": "每日维护",
     "capacity": "容纳人数",
     "remove": "拆除售出",
-    "refund": "退款"
+    "refund": "退款",
+    "build": "建造",
+    "move": "移动"
   },
   "roles": {
     "doctor": "主治医师",
@@ -137,13 +140,18 @@
     "mainMenu": "主菜单"
   },
   "leaderboard": {
-    "title": "全球医院经营排行",
-    "subtitle": "优秀医疗机构管理者榜单",
+    "title": "My Records",
+    "subtitle": "Your best runs, saved on this device",
     "position": "名次",
     "player": "院长",
     "score": "积分",
     "guestModeNote": "访客模式（本地存储）",
-    "localSaveNotice": "成绩已成功保存在本地！"
+    "localSaveNotice": "成绩已成功保存在本地！",
+    "empty": "No records yet. Finish a game to see it here.",
+    "unit_private_clinic": "Clinic",
+    "unit_ubs": "Primary care",
+    "unit_upa": "Urgent care",
+    "unit_hospital": "Hospital"
   },
   "settings": {
     "title": "系统设置与无障碍",
@@ -165,7 +173,9 @@
     "staff": "员工",
     "pharmacy": "药房",
     "finances": "财务",
-    "recenter": "居中"
+    "recenter": "居中",
+    "encyclopedia": "百科",
+    "questions": "题库"
   },
   "music": {
     "on": "开启音乐",
@@ -190,5 +200,48 @@
     "sus": "SUS — 巴西全民统一医疗系统 (Sistema Único de Saúde)",
     "ubs": "UBS — 基层社区卫生站 (Unidade Básica de Saúde)",
     "upa": "UPA 24h — 24小时急诊医疗中心 (Unidade de Pronto Atendimento)"
+  },
+  "build": {
+    "invalid_space": "Space taken or outside the lot"
+  },
+  "revalida": {
+    "area": {
+      "clinica_medica": "内科",
+      "cirurgia": "外科",
+      "ginecologia_obstetricia": "妇产科",
+      "pediatria": "儿科",
+      "medicina_familia_comunidade": "家庭医学与公共卫生"
+    },
+    "figure_alt": "Figure from exam question {n}",
+    "reference_label": "Source",
+    "license_note": "Official INEP question, reproduced without changes (CC BY-ND 3.0 license, gov.br). Questions are in Portuguese.",
+    "preliminary_key": "Preliminary answer key: INEP did not publish a final key for this edition.",
+    "select_answer": "请选择答案：",
+    "answer_later": "稍后作答",
+    "correct": "回答正确！",
+    "wrong": "回答错误",
+    "your_answer": "Your answer",
+    "answer_official": "Official key (INEP)",
+    "review_note": "This question will come back later for review. This visit was not billed.",
+    "comment_title": "Comment",
+    "comment_pending": "Comment coming soon. For now, check the official key above.",
+    "bank_title": "Revalida 题库",
+    "bank_subtitle": "{total} official INEP questions (2020 to 2026)",
+    "stat_mastered": "Mastered",
+    "stat_review": "To review",
+    "stat_new": "New",
+    "filter_all": "All",
+    "search_placeholder": "Search by word, edition or number…",
+    "locked_area": "Build the \"{room}\" room to receive patients from this area.",
+    "unlocked_area": "Area unlocked in your hospital",
+    "empty": "No questions match this filter.",
+    "status_mastered": "Mastered",
+    "status_review": "Review",
+    "status_new": "New",
+    "show_more": "Show more",
+    "mastered_toast": "Question mastered: {ref} ({count} total)",
+    "tip_title": "How it works",
+    "tip_text": "Each patient brings a past Revalida question. Right answer: the visit is billed. Wrong answer: the question comes back later for review. Build rooms to unlock new areas.",
+    "figure_zoom": "点击放大图片"
   }
 }

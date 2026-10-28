@@ -248,7 +248,8 @@ describe('Prompt 24 — Fluxo Físico de Exames Complementares (Lab / Raio-X)', 
   });
 
   it('gera recomendação do Conselheiro para construir Lab/Raio-X se houver demanda', () => {
-    const state: GameState = createInitialGameState();
+    // Lab e Raio-X só existem a partir da UPA; a UBS não deve receber essa sugestão (v3.0.0).
+    const state: GameState = createInitialGameState('upa');
     const patientMod = createMockPatient('p_demand', 'Moderada');
     patientMod.clinicalCase.definition = {
       id: 'case_trauma2',

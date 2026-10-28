@@ -10,12 +10,13 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Adicione ou ajuste heurísticas de detecção de gargalos nas funções auxiliares check*.
  *
- * Importa: src/core/config.ts, src/state/game-state.ts
+ * Importa: src/core/config.ts, src/state/game-state.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/ui/advisor-view.ts, tests/sectors-and-negotiation.test.ts
  */
 
 import { BALANCE } from '../core/config';
 import type { GameState } from '../state/game-state';
+import { isRevalidaActive } from './revalida-system';
 import { checkExamRoomAdvice } from './exam-routing-system';
 
 export type AlertUrgency = 'high' | 'medium' | 'low';
@@ -170,16 +171,20 @@ export function snoozeAdvisorAlert(state: GameState, alertId: string): void {
 
 export function getAdvisorAlerts(state: GameState): AdvisorAlert[] {
   const alerts: AdvisorAlert[] = [];
-  const max = BALANCE.advisor.maxSuggestions;
+  const revalida = isRevalidaActive();
+  const max = revalida ? BALANCE.revalida.advisorMaxSuggestions : BALANCE.advisor.maxSuggestions;
 
   checkBasicBottlenecks(state, alerts);
-  checkPharmacyBottlenecks(state, alerts);
-  checkSevereCases(state, alerts);
-  checkDiagnosticCases(state, alerts);
+  if (!revalida) {
+    checkPharmacyBottlenecks(state, alerts);
+    checkSevereCases(state, alerts);
+    checkDiagnosticCases(state, alerts);
+  }
   checkStaffAndExpansion(state, alerts);
 
   const dismissed = state.dismissedAdvisorAlertIds ?? [];
-  const activeAlerts = alerts.filter((a) => !dismissed.includes(a.id));
+  // Só sugere construir salas já liberadas no porte atual (antes sugeria UTI/Raio-X numa UBS).
+  const activeAlerts = alerts.filter((a) => !dismissed.includes(a.id) && (a.actionType !== 'build_room' || !a.targetRoomType || state.unlockedRoomIds.includes(a.targetRoomType)));
 
   activeAlerts.sort((a, b) => URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency]);
   return activeAlerts.slice(0, max);

@@ -70,6 +70,8 @@ export interface SerializedGameState {
   governmentNegotiationCooldownDays?: number;
   governmentGrantBonusMultiplier?: number;
   dismissedAdvisorAlertIds?: string[];
+  revalidaReviewIds?: string[];
+  revalidaPatientCounter?: number;
   unitType?: 'ubs' | 'upa' | 'hospital' | 'private_clinic';
   privateConsultationFee?: number;
   activeContracts?: string[];
@@ -109,6 +111,8 @@ function serializeProgressState(state: GameState) {
     governmentNegotiationCooldownDays: state.governmentNegotiationCooldownDays ?? 0,
     governmentGrantBonusMultiplier: state.governmentGrantBonusMultiplier ?? 0,
     dismissedAdvisorAlertIds: [...(state.dismissedAdvisorAlertIds ?? [])],
+    revalidaReviewIds: [...(state.revalidaReviewIds ?? [])],
+    revalidaPatientCounter: state.revalidaPatientCounter ?? 0,
   };
 }
 
@@ -217,6 +221,8 @@ function restoreNegotiationState(data: SerializedGameState) {
     governmentNegotiationCooldownDays: data.governmentNegotiationCooldownDays ?? 0,
     governmentGrantBonusMultiplier: data.governmentGrantBonusMultiplier ?? 0,
     dismissedAdvisorAlertIds: data.dismissedAdvisorAlertIds ? [...data.dismissedAdvisorAlertIds] : [],
+    revalidaReviewIds: data.revalidaReviewIds ? [...data.revalidaReviewIds] : [],
+    revalidaPatientCounter: data.revalidaPatientCounter ?? 0,
   };
 }
 

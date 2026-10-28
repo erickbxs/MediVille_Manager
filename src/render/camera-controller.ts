@@ -225,7 +225,7 @@ export class CameraController {
 
     const container = document.createElement('div');
     container.id = 'camera-zoom-controls';
-    container.className = 'fixed bottom-20 right-4 z-40 flex flex-col gap-2 select-none pointer-events-auto';
+    container.className = 'fixed bottom-20 right-4 z-30 flex flex-col gap-2 select-none pointer-events-auto';
 
     const btnStyle = 'w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 shadow-lg flex items-center justify-center font-bold text-lg active:scale-95 transition-transform backdrop-blur-md';
 

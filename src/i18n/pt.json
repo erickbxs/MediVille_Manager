@@ -35,9 +35,10 @@
     "newHospital": "Novo Hospital",
     "continue": "Continuar Partida",
     "options": "Configurações",
-    "leaderboard": "Ranking Global",
+    "leaderboard": "Meus Recordes",
     "encyclopedia": "Enciclopédia Médica",
-    "suspendAudio": "Silenciar / Áudio"
+    "suspendAudio": "Silenciar / Áudio",
+    "questions": "Banco de Questões"
   },
   "room": {
     "reception": "Recepção Central",
@@ -81,10 +82,12 @@
     "maternity_short": "Maternidade",
     "trauma_center": "Centro de Trauma",
     "trauma_center_short": "Trauma",
-    "blood_bank": "Banco de Sangre",
+    "blood_bank": "Banco de Sangue",
     "blood_bank_short": "Sangue",
     "helipad": "Heliponto Aeromédico",
-    "helipad_short": "Heliponto"
+    "helipad_short": "Heliponto",
+    "build": "Construir",
+    "move": "Mover"
   },
   "roles": {
     "doctor": "Médico(a) Clínico",
@@ -144,13 +147,18 @@
     "mainMenu": "Menu Principal"
   },
   "leaderboard": {
-    "title": "Ranking de Gestão Hospitalar",
-    "subtitle": "Melhores gestores do Sistema Único de Saúde (SUS)",
+    "title": "Meus Recordes",
+    "subtitle": "Suas melhores partidas, salvas neste aparelho",
     "position": "Posição",
     "player": "Gestor(a)",
     "score": "Pontuação",
     "guestModeNote": "Modo Convidado (< 13 anos): Seus dados ficam salvos apenas no dispositivo.",
-    "localSaveNotice": "Pontuação salva com sucesso localmente!"
+    "localSaveNotice": "Pontuação salva com sucesso localmente!",
+    "empty": "Você ainda não tem recordes. Termine uma partida para aparecer aqui.",
+    "unit_private_clinic": "Clínica",
+    "unit_ubs": "UBS",
+    "unit_upa": "UPA",
+    "unit_hospital": "Hospital"
   },
   "settings": {
     "title": "Configurações & Acessibilidade",
@@ -172,7 +180,9 @@
     "staff": "Equipe",
     "pharmacy": "Farmácia",
     "finances": "Finanças",
-    "recenter": "Centro"
+    "recenter": "Centro",
+    "encyclopedia": "Enciclopédia",
+    "questions": "Questões"
   },
   "music": {
     "on": "Música Ligada",
@@ -181,7 +191,7 @@
   },
   "legal": {
     "title": "Termos de Uso & Privacidade LGPD/GDPR",
-    "susNotice": "Aviso Educativo: O MediVille Manager é uma simulação educacional e lúdica sobre o SUS. Não substitui consultas médicas profissionais nem atendimento emergencial."
+    "susNotice": "Aviso educativo: projeto independente, sem vínculo com o Ministério da Saúde ou com o INEP. Não substitui consulta médica nem atendimento de emergência. Em emergências, ligue 192 (SAMU)."
   },
   "map": {
     "expand": "Expandir Terreno",
@@ -197,5 +207,48 @@
     "sus": "SUS — Sistema Único de Saúde (Saúde pública universal do Brasil)",
     "ubs": "UBS — Unidade Básica de Saúde (Atenção primária e preventiva)",
     "upa": "UPA 24h — Unidade de Pronto Atendimento (Urgência e emergência)"
+  },
+  "build": {
+    "invalid_space": "Espaço ocupado ou fora do terreno"
+  },
+  "revalida": {
+    "area": {
+      "clinica_medica": "Clínica Médica",
+      "cirurgia": "Cirurgia",
+      "ginecologia_obstetricia": "Ginecologia e Obstetrícia",
+      "pediatria": "Pediatria",
+      "medicina_familia_comunidade": "Medicina de Família e Saúde Coletiva"
+    },
+    "figure_alt": "Figura da questão {n} da prova",
+    "reference_label": "Fonte",
+    "license_note": "Questão oficial do INEP, reproduzida sem alterações (licença CC BY-ND 3.0, gov.br).",
+    "preliminary_key": "Gabarito preliminar: o INEP não publicou gabarito definitivo desta edição.",
+    "select_answer": "Escolha uma alternativa:",
+    "answer_later": "Responder depois",
+    "correct": "Resposta correta!",
+    "wrong": "Resposta incorreta",
+    "your_answer": "Sua resposta",
+    "answer_official": "Gabarito oficial (INEP)",
+    "review_note": "Esta questão volta mais tarde para revisão. Este atendimento não foi faturado.",
+    "comment_title": "Comentário",
+    "comment_pending": "Comentário em preparação. Por enquanto, confira o gabarito oficial acima.",
+    "bank_title": "Banco de Questões do Revalida",
+    "bank_subtitle": "{total} questões oficiais do INEP (2020 a 2026)",
+    "stat_mastered": "Dominadas",
+    "stat_review": "Para revisar",
+    "stat_new": "Novas",
+    "filter_all": "Todas",
+    "search_placeholder": "Buscar por palavra, edição ou número…",
+    "locked_area": "Construa a sala \"{room}\" para receber pacientes desta área.",
+    "unlocked_area": "Área liberada no seu hospital",
+    "empty": "Nenhuma questão encontrada com esse filtro.",
+    "status_mastered": "Dominada",
+    "status_review": "Revisar",
+    "status_new": "Nova",
+    "show_more": "Mostrar mais",
+    "mastered_toast": "Questão dominada: {ref} ({count} no total)",
+    "tip_title": "Como funciona",
+    "tip_text": "Cada paciente traz uma questão antiga do Revalida. Acertou: o atendimento é faturado. Errou: a questão volta depois para revisão. Construa salas para liberar novas áreas.",
+    "figure_zoom": "Toque para ampliar a figura"
   }
 }

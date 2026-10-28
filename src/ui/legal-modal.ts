@@ -33,22 +33,22 @@ interface LegalContent {
 const LEGAL_TEXTS: Record<'pt' | 'es' | 'en', LegalContent> = {
   pt: {
     title: 'Termos de Uso & Privacidade (LGPD / GDPR)',
-    susTitle: 'Aviso Educativo e Institucional (SUS / Ministério da Saúde)',
+    susTitle: 'Aviso Educativo (projeto independente)',
     susNotice:
-      'O MediVille Manager é uma obra interativa de entretenimento e educação sobre os princípios do Sistema Único de Saúde (SUS). O simulador NÃO constitui serviço médico, telemedicina ou recomendação clínica para casos reais. Em situações de urgência ou emergência médica, ligue para o SAMU (192) ou procure a Unidade de Pronto Atendimento mais próxima.',
+      'O MediVille Manager é um projeto independente de entretenimento e estudo, sem vínculo com o Ministério da Saúde, o SUS ou o INEP. O simulador NÃO constitui serviço médico, telemedicina ou recomendação clínica para casos reais. Em situações de urgência ou emergência médica, ligue para o SAMU (192) ou procure a Unidade de Pronto Atendimento mais próxima.',
     privacyTitle: 'Política de Privacidade e Dados Locais',
     privacyText:
       'Respeitamos integralmente a sua privacidade segundo a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018). Seus dados de progresso e estatísticas de jogo são armazenados prioritariamente no armazenamento local do seu navegador (LocalStorage / IndexedDB). Não comercializamos nem compartilhamos informações com terceiros para fins publicitários.',
     termsTitle: 'Termos de Uso',
     termsText:
-      'Ao utilizar o MediVille Manager, você concorda com o uso estritamente lúdico, educacional e acadêmico da plataforma. As diretrizes clínicas, tabelas SIGTAP e protocolos RENAME foram adaptados com base em documentos públicos do Ministério da Saúde para fins de gamificação.',
+      'Ao utilizar o MediVille Manager, você concorda com o uso estritamente lúdico, educacional e acadêmico da plataforma. As diretrizes clínicas, tabelas SIGTAP e protocolos RENAME foram adaptados com base em documentos públicos do Ministério da Saúde para fins de gamificação. As questões do Modo Revalida são provas oficiais do INEP (gov.br/inep), reproduzidas sem alterações e com a fonte indicada, conforme a licença Creative Commons Atribuição-SemDerivações 3.0. Os comentários das questões são escritos com ajuda de inteligência artificial e podem conter erros; o gabarito oficial do INEP é sempre a referência.',
     closeBtn: 'Entendido / Fechar',
   },
   es: {
     title: 'Términos de Uso y Privacidad (RGPD / LGPD)',
-    susTitle: 'Aviso Educativo e Institucional (SUS / Ministério da Saúde)',
+    susTitle: 'Aviso educativo (proyecto independiente)',
     susNotice:
-      'MediVille Manager es un simulador educativo sobre salud pública y principios del SUS. NO constituye asesoramiento médico ni atención de emergencia. En caso de emergencia real, acuda al centro de salud más cercano.',
+      'MediVille Manager es un proyecto independiente, sin vínculo con el Ministerio de Salud de Brasil ni con el INEP. Es un simulador educativo sobre salud pública y principios del SUS. NO constituye asesoramiento médico ni atención de emergencia. En caso de emergencia real, acuda al centro de salud más cercano.',
     privacyTitle: 'Política de Privacidad y Datos Locales',
     privacyText:
       'Tus datos de partida se almacenan exclusivamente en el navegador o dispositivo del usuario. Cumplimos con el RGPD y no compartimos datos con terceros.',

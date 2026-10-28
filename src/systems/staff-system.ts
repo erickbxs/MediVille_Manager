@@ -12,12 +12,21 @@ import { calculateStaffDailySalary, type StaffMember } from '../entities/staff';
 import type { GameState } from '../state/game-state';
 import { globalBus } from '../core/event-bus';
 
-function generateStaffName(): string {
+const TITLE_BY_ROLE: Record<string, string> = {
+  doctor: 'Dr(a).',
+  nurse: 'Enf.',
+  pharmacist: 'Farm.',
+  tech: 'Téc.',
+};
+
+/** Título conforme a profissão (antes toda a equipe era chamada de "Dr(a).", inclusive enfermagem). */
+function generateStaffName(roleId: string): string {
   const isFemale = Math.random() < BALANCE.population.femaleChance;
   const firstPool = isFemale ? NAMES_CATALOG.pools.female : NAMES_CATALOG.pools.male;
   const first = firstPool[Math.floor(Math.random() * firstPool.length)]!;
   const last = NAMES_CATALOG.pools.lastNames[Math.floor(Math.random() * NAMES_CATALOG.pools.lastNames.length)]!;
-  return `Dr(a). ${first} ${last}`;
+  const title = TITLE_BY_ROLE[roleId];
+  return title ? `${title} ${first} ${last}` : `${first} ${last}`;
 }
 
 export function createStaffMember(roleId: string, customSkill?: number): StaffMember | null {
@@ -33,7 +42,7 @@ export function createStaffMember(roleId: string, customSkill?: number): StaffMe
   const id = `staff_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
   return {
     id,
-    name: generateStaffName(),
+    name: generateStaffName(roleId),
     roleId,
     role,
     skill,

@@ -118,7 +118,7 @@ export async function setLanguage(lang: SupportedLocale): Promise<void> {
 
   if (typeof document !== 'undefined') {
     if (document.documentElement) {
-      document.documentElement.lang = lang;
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
     }
     if (document.body?.style) {
       if (lang === 'zh') {

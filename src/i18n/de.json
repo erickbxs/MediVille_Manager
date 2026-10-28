@@ -28,9 +28,10 @@
     "newHospital": "Neues Krankenhaus",
     "continue": "Weiter",
     "options": "Einstellungen",
-    "leaderboard": "Globale Bestenliste",
+    "leaderboard": "Meine Rekorde",
     "encyclopedia": "Medizinisches Lexikon",
-    "suspendAudio": "Audio"
+    "suspendAudio": "Audio",
+    "questions": "Fragenkatalog"
   },
   "room": {
     "reception": "Zentraler Empfang",
@@ -77,7 +78,9 @@
     "upkeep": "Unterhalt/Tag",
     "capacity": "Kapazität",
     "remove": "Verkaufen",
-    "refund": "Erstattung"
+    "refund": "Erstattung",
+    "build": "Bauen",
+    "move": "Verschieben"
   },
   "roles": {
     "doctor": "Facharzt für Allgemeinmedizin",
@@ -137,13 +140,18 @@
     "mainMenu": "Hauptmenü"
   },
   "leaderboard": {
-    "title": "Klinik-Rangliste",
-    "subtitle": "Beste Krankenhausmanager",
+    "title": "My Records",
+    "subtitle": "Your best runs, saved on this device",
     "position": "Rang",
     "player": "Manager",
     "score": "Punkte",
     "guestModeNote": "Gastmodus aktiv",
-    "localSaveNotice": "Erfolgreich lokal gespeichert !"
+    "localSaveNotice": "Erfolgreich lokal gespeichert !",
+    "empty": "No records yet. Finish a game to see it here.",
+    "unit_private_clinic": "Clinic",
+    "unit_ubs": "Primary care",
+    "unit_upa": "Urgent care",
+    "unit_hospital": "Hospital"
   },
   "settings": {
     "title": "Einstellungen",
@@ -165,7 +173,9 @@
     "staff": "Team",
     "pharmacy": "Apotheke",
     "finances": "Finanzen",
-    "recenter": "Zentrieren"
+    "recenter": "Zentrieren",
+    "encyclopedia": "Enzyklopädie",
+    "questions": "Fragen"
   },
   "music": {
     "on": "Musik An",
@@ -190,5 +200,48 @@
     "sus": "SUS — Brasilianisches Einheitliches Gesundheitssystem (Universelle Gesundheitsversorgung)",
     "ubs": "UBS — Primäres Gesundheitszentrum (Basis- und Präventivversorgung)",
     "upa": "UPA 24h — 24-Stunden-Notfallstation (Akutversorgung)"
+  },
+  "build": {
+    "invalid_space": "Space taken or outside the lot"
+  },
+  "revalida": {
+    "area": {
+      "clinica_medica": "Innere Medizin",
+      "cirurgia": "Chirurgie",
+      "ginecologia_obstetricia": "Gynäkologie und Geburtshilfe",
+      "pediatria": "Pädiatrie",
+      "medicina_familia_comunidade": "Allgemeinmedizin und Public Health"
+    },
+    "figure_alt": "Figure from exam question {n}",
+    "reference_label": "Source",
+    "license_note": "Official INEP question, reproduced without changes (CC BY-ND 3.0 license, gov.br). Questions are in Portuguese.",
+    "preliminary_key": "Preliminary answer key: INEP did not publish a final key for this edition.",
+    "select_answer": "Wähle eine Antwort:",
+    "answer_later": "Später antworten",
+    "correct": "Richtig!",
+    "wrong": "Falsch",
+    "your_answer": "Your answer",
+    "answer_official": "Official key (INEP)",
+    "review_note": "This question will come back later for review. This visit was not billed.",
+    "comment_title": "Comment",
+    "comment_pending": "Comment coming soon. For now, check the official key above.",
+    "bank_title": "Revalida-Fragenkatalog",
+    "bank_subtitle": "{total} official INEP questions (2020 to 2026)",
+    "stat_mastered": "Mastered",
+    "stat_review": "To review",
+    "stat_new": "New",
+    "filter_all": "All",
+    "search_placeholder": "Search by word, edition or number…",
+    "locked_area": "Build the \"{room}\" room to receive patients from this area.",
+    "unlocked_area": "Area unlocked in your hospital",
+    "empty": "No questions match this filter.",
+    "status_mastered": "Mastered",
+    "status_review": "Review",
+    "status_new": "New",
+    "show_more": "Show more",
+    "mastered_toast": "Question mastered: {ref} ({count} total)",
+    "tip_title": "How it works",
+    "tip_text": "Each patient brings a past Revalida question. Right answer: the visit is billed. Wrong answer: the question comes back later for review. Build rooms to unlock new areas.",
+    "figure_zoom": "Zum Vergrößern tippen"
   }
 }

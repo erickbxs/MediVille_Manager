@@ -13,7 +13,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Rótulos e cartões são gerados em renderRoomsHtml() usando getRoomShortName() e t(). A rolagem horizontal é gerida por horizontal-scroll.ts.
  *
- * Importa: src/core/config.ts, src/ui/horizontal-scroll.ts, src/i18n/i18n.ts, src/core/event-bus.ts
+ * Importa: src/core/config.ts, src/ui/horizontal-scroll.ts, src/i18n/i18n.ts, src/core/event-bus.ts, src/systems/map-expansion-system.ts, src/state/game-state.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/main.ts, src/ui/hud.ts, src/render/room-renderer-3d.ts
  */
 
@@ -23,6 +23,7 @@ import { getRoomShortName, t } from '../i18n/i18n';
 import { globalBus } from '../core/event-bus';
 import { getNextExpansion } from '../systems/map-expansion-system';
 import type { GameState } from '../state/game-state';
+import { isCalmModeFlag, isRevalidaActive } from '../systems/revalida-system';
 
 export type RoomCategory = 'all' | 'base' | 'clinical' | 'diagnostics' | 'complex';
 
@@ -210,15 +211,17 @@ export class BuildMenu {
     const vonRestorffClass = this.pendingCasesCount > 0
       ? 'ring-2 ring-emerald-500 shadow-lg shadow-emerald-500/30 animate-pulse bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-400/50'
       : 'text-emerald-600 dark:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+    const hideMgmt = isCalmModeFlag('hideManagementDock') ? 'hidden' : '';
+    const knowledgeLabel = isRevalidaActive() ? t('dock.questions') : t('dock.encyclopedia');
 
     return `
-      <nav aria-label="Ações Principais" class="h-14 px-3 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-2xl border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-2 text-slate-700 dark:text-slate-200">
+      <nav aria-label="Ações Principais" class="h-14 px-3 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-2xl border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-2 text-slate-700 dark:text-slate-200 max-w-[calc(100vw-16px)] overflow-x-auto overflow-y-hidden">
         <!-- Esquerda: Ações Mais Frequentes (Posição Serial) -->
-        <button id="btn-dock-build" title="Abrir menu de obras" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-build" title="Abrir menu de obras" class="shrink-0 min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">🏗️</span>
           <span class="text-[10px]">${t('dock.build') || 'Obras'}</span>
         </button>
-        <button id="btn-dock-atender" title="Atender paciente pronto" class="relative min-w-[52px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center active:scale-95 transition-all ${vonRestorffClass}">
+        <button id="btn-dock-atender" title="Atender paciente pronto" class="shrink-0 relative min-w-[52px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center active:scale-95 transition-all ${vonRestorffClass}">
           <span class="text-base">🩺</span>
           <span class="text-[10px]">${t('dock.treat') || 'Atender'}</span>
           <span id="dock-atender-badge" class="${this.pendingCasesCount > 0 ? '' : 'hidden'} absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-black animate-pulse shadow-md">${this.pendingCasesCount}</span>
@@ -227,28 +230,28 @@ export class BuildMenu {
         <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 my-auto"></div>
 
         <!-- Meio: Gestão e Conhecimento -->
-        <button id="btn-dock-staff" title="Equipe médica e salários" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-staff" title="Equipe médica e salários" class="${hideMgmt} shrink-0 min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">👥</span>
           <span class="text-[10px]">${t('dock.staff') || 'Equipe'}</span>
         </button>
-        <button id="btn-dock-pharmacy" title="Farmácia RENAME" class="relative min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-pharmacy" title="Farmácia RENAME" class="${hideMgmt} shrink-0 relative min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">💊</span>
           <span class="text-[10px]">${t('dock.pharmacy') || 'Farmácia'}</span>
           <span id="dock-pharmacy-alert" class="${this.hasPharmacyAlert ? '' : 'hidden'} absolute top-1 right-2 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
         </button>
-        <button id="btn-dock-encyclopedia" title="Enciclopédia SUS" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-encyclopedia" title="${knowledgeLabel}" class="shrink-0 min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">📖</span>
-          <span class="text-[10px]">${t('dock.encyclopedia') || 'Enciclopédia'}</span>
+          <span class="text-[10px]">${knowledgeLabel}</span>
         </button>
 
-        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 my-auto"></div>
+        <div class="${hideMgmt} w-px h-6 bg-slate-200 dark:bg-slate-700 my-auto"></div>
 
         <!-- Direita: Finanças e Navegação -->
-        <button id="btn-dock-finances" title="Finanças SIGTAP" class="min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
+        <button id="btn-dock-finances" title="Finanças SIGTAP" class="${hideMgmt} shrink-0 min-w-[48px] min-h-[44px] px-2.5 py-1.5 rounded-2xl font-extrabold text-xs flex flex-col items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all">
           <span class="text-base">💰</span>
           <span class="text-[10px]">${t('dock.finances') || 'Finanças'}</span>
         </button>
-        <button id="btn-recenter" title="Centralizar Mapa" class="min-w-[44px] min-h-[44px] rounded-2xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-sm">🎯</button>
+        <button id="btn-recenter" title="Centralizar Mapa" class="${hideMgmt} shrink-0 min-w-[44px] min-h-[44px] rounded-2xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-sm">🎯</button>
       </nav>
     `;
   }

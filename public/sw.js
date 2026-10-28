@@ -17,7 +17,7 @@
  * Conecta-se com: src/main.ts, package.json, scripts/sync-version.mjs, public/_headers
  */
 
-const CACHE_NAME = 'mediville-cache-v2.2.0';
+const CACHE_NAME = 'mediville-cache-v3.0.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

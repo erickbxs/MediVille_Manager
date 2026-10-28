@@ -97,7 +97,7 @@ export class EntityInspector {
     const manchester = getManchesterInfo(patient.manchesterPriority);
 
     this.container.innerHTML = `
-      <aside id="entity-inspector-panel" class="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200" aria-label="Painel de Inspeção">
+      <aside id="entity-inspector-panel" class="fixed bottom-24 left-4 right-20 sm:left-auto sm:right-24 sm:w-80 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200" aria-label="Painel de Inspeção">
         <div class="flex items-start justify-between gap-3 mb-3">
           <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl shrink-0">
@@ -163,7 +163,7 @@ export class EntityInspector {
     const stars = '⭐'.repeat(Math.max(1, Math.min(5, member.skill)));
 
     this.container.innerHTML = `
-      <aside id="entity-inspector-panel" class="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200" aria-label="Painel de Inspeção">
+      <aside id="entity-inspector-panel" class="fixed bottom-24 left-4 right-20 sm:left-auto sm:right-24 sm:w-80 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200" aria-label="Painel de Inspeção">
         <div class="flex items-start justify-between gap-3 mb-3">
           <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl shrink-0">

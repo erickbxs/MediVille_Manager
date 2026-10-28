@@ -160,6 +160,33 @@ export interface GameBalanceConfig {
     breakDurationSec: number;
     coffeeBoostCost: number;
   };
+  revalida: RevalidaBalanceConfig;
+}
+
+export interface RevalidaCalmModeConfig {
+  disableAbandonment: boolean;
+  disableBusWaves: boolean;
+  disableHelipad: boolean;
+  disableRandomEvents: boolean;
+  disableDefeat: boolean;
+  hideManagementDock: boolean;
+}
+
+export interface RevalidaBalanceConfig {
+  enabled: boolean;
+  questionsUrl: string;
+  commentsUrl: string;
+  imageBasePath: string;
+  areaRooms: Record<string, string>;
+  arrivalIntervalSec: number;
+  maxWaitingPatients: number;
+  advisorMaxSuggestions: number;
+  reviewEveryNthPatient: number;
+  wrongReputationPenalty: number;
+  correctReputationGain: number;
+  reputationCap: number;
+  defaultPatientAge: { min: number; max: number };
+  calmMode: RevalidaCalmModeConfig;
 }
 
 export interface MixedEconomyPlan {

@@ -2,6 +2,56 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [3.0.0] - 2026-10-28
+
+### Versão 3.0.0 — Modo Revalida (questões oficiais do INEP 2020–2026), Estudo Leve sem Pressão, Banco de Questões e Correção dos Erros do Relatório de Teste da v2.2.0
+- **PARTE 1: Banco de Questões Oficiais do Revalida (`public/revalida/questions.json`, `public/revalida/img/` & `scripts/revalida/`)**:
+  - Download das provas objetivas e gabaritos oficiais publicados pelo INEP em gov.br/inep (página "Provas e Gabaritos" do Revalida), acessados em 28/10/2026.
+  - **933 questões** de 10 edições: 2020, 2021, 2022/2, 2023/1, 2023/2, 2024/1, 2024/2, 2025/1, 2025/2 e 2026/1 (100 questões por prova, menos as anuladas).
+  - Texto reproduzido **sem alterações**, com a referência em cada questão no formato `Revalida/INEP 2025/1 — Questão 12`, conforme a licença Creative Commons Atribuição-SemDerivações 3.0 (CC BY-ND 3.0) do portal gov.br.
+  - **55 questões com figura** (ECG, partograma, radiografias, tabelas): a figura é recortada do PDF original em `.webp` e aparece no ponto exato do enunciado (marcador `[[FIG:n]]`), com opção de tocar para ampliar.
+  - Gabaritos conferidos: leitura automática do texto para 2021–2025/1 e transcrição visual para 2020, 2025/2 e 2026/1 (PDFs em imagem ou com fonte ilegível). 2025/2 considera a Nota do Inep (questão 10 anulada).
+  - **Excluídas**: 64 questões anuladas pelo INEP; 2 questões cuja figura não pôde ser recortada (`2022/2-Q56`, `2026/1-Q72`); a questão `2023/1-Q98` (alternativas não reconhecidas); e **toda a edição 2022/1** (PDF publicado com fonte embaralhada; precisaria de OCR). Lista registrada em `_meta.excluded`.
+  - Gabarito de **2020** é o **preliminar** (o INEP não publicou o definitivo): o jogo avisa isso na própria questão.
+  - Área de cada questão (Clínica Médica, Cirurgia, Ginecologia e Obstetrícia, Pediatria, Medicina de Família e Saúde Coletiva) atribuída automaticamente por palavras-chave — é uma aproximação.
+  - Pipeline reprodutível em `scripts/revalida/` (`extract.mjs`, `gabaritos.mjs`, `parse.mjs`) para incluir novas edições.
+  - Arquivo carregado sob demanda por `src/services/revalida-bank.ts` (fora do pacote JS principal; fica no cache do PWA). Pacote total: 3,86 MB de 5 MB.
+- **PARTE 2: Modo Revalida no jogo (`src/systems/revalida-system.ts`, `src/systems/case-system.ts`, `src/ui/decision-modal.ts` & `src/ui/revalida-question-view.ts`)**:
+  - Cada paciente que chega traz uma questão do Revalida; atender = responder. Alternativas na ordem oficial A–D (sem embaralhar). Nome, sexo e idade do paciente acompanham o enunciado ("Mulher de 61 anos…").
+  - Ao responder: ✅/❌, sua resposta, **gabarito oficial do INEP**, comentário e fonte. Alternativa correta destacada em verde e a escolhida errada em vermelho.
+  - **Acertou**: atendimento faturado, questão "dominada" e +1 de reputação. **Errou**: atendimento **não é faturado**, −1 de reputação e a questão entra na **fila de revisão** (`state.revalidaReviewIds`), voltando a cada 4 pacientes até ser acertada.
+  - **As salas liberam as áreas da prova** (`balance.json → revalida.areaRooms`): Consultório → Clínica Médica; Sala de Vacinação → Medicina de Família e Saúde Coletiva; Leitos de Observação (UPA) → Pediatria; Sala de Emergência (UPA) → Cirurgia; Maternidade (Hospital) → Ginecologia e Obstetrícia.
+  - "Responder depois" fecha a questão e mantém o paciente na fila (antes, fechar sem decidir prendia o paciente no consultório).
+  - Dica de boas-vindas própria do Modo Revalida (`tutorial.json → welcome_revalida`).
+  - Se o banco não carregar, o jogo volta automaticamente aos 350 casos clínicos antigos.
+- **PARTE 3: Estudo leve e sem pressão — gestão simplificada (`balance.json → revalida.calmMode`)**:
+  - Chegada calma: um paciente a cada 16 s, no máximo 3 aguardando; sem ondas de ônibus e sem helicóptero.
+  - Pacientes não desistem da fila; sem eventos aleatórios de desastre; sem derrota por caixa ou reputação.
+  - Barra inferior enxuta: **Obras, Atender e Questões** (Equipe, Farmácia e Finanças ficam ocultas). No máximo 1 alerta do conselheiro por vez.
+- **PARTE 4: Banco de Questões (`src/ui/revalida-bank-modal.ts`)** — substitui a Enciclopédia no Modo Revalida:
+  - Placar de **Dominadas / Para revisar / Novas**; filtros por área (com cadeado nas áreas ainda sem sala) e por edição; busca por palavra ou número; leitura completa de cada questão.
+  - O gabarito e o comentário só aparecem em questões já respondidas, para não estragar o estudo.
+  - Menu inicial mostra "📚 Banco de Questões" com o contador `dominadas/933`.
+- **PARTE 5: Comentários das questões (`public/revalida/comments.json`)**:
+  - Comentário curto e em linguagem simples para **todas as 97 questões válidas do Revalida 2025/1**. Demais edições mostram "Comentário em preparação" + gabarito oficial.
+  - Escritos com ajuda de inteligência artificial, **sem revisão médica** nesta versão; o aviso está nos Termos de Uso e o gabarito oficial do INEP é sempre a referência.
+- **PARTE 6: Correções do relatório de teste da v2.2.0**:
+  - **Crítico — Hospital novo parado**: ao criar um hospital, o jogo criava uma nova simulação mas o relógio, o HUD e os botões continuavam presos à partida antiga (pacientes não chegavam, caixa mostrava R$ 100k numa UBS, 2x/3x sem efeito). Agora `HospitalSimulation.resetTo()` troca a partida no mesmo objeto e o HUD é atualizado na hora.
+  - **Crítico — Botão "Obras" fora da tela no celular**: barra inferior agora cabe em 375 px (rolagem lateral, itens que não encolhem e menos botões no Modo Revalida).
+  - **Crítico — Erro pago como acerto**: conduta errada não fatura mais (`dischargePatient(..., rewarded = false)`), também no modo antigo.
+  - **Ranking "Global" falso**: removidos os 5 nomes fictícios e a chamada a `/api/leaderboard` (que não existia). Agora é "**Meus Recordes**", salvo no aparelho, com tela vazia explicativa e tipo de unidade traduzido (antes aparecia `PRIVATE_CLINIC`).
+  - **Conselheiro sugerindo salas bloqueadas** (ex.: "Construir UTI" numa UBS): só sugere salas já liberadas no porte atual.
+  - **Casos de UTI na UBS** (modo antigo): sorteio filtrado pelo porte da unidade (`filterCasesForUnit`).
+  - **Textos sem tradução**: adicionadas as chaves `dock.encyclopedia`, `room.build`, `room.move` e `build.invalid_space` nos 6 idiomas; "Banco de Sangre" → "Banco de Sangue" em português.
+  - **Sobreposições**: botões do mapa (zoom/termômetro) não ficam mais por cima do menu inicial e das janelas; painel do médico/paciente abre ao lado deles.
+  - **Aviso legal**: deixa claro que é projeto independente, sem vínculo com o Ministério da Saúde ou com o INEP (antes: "Aviso Educativo e Institucional (SUS / Ministério da Saúde)").
+  - **Polimento**: bandeiras trocadas por siglas/nomes (não aparecem no Windows); tecla **Esc** fecha janelas; enfermagem/farmácia/técnicos com título correto ("Enf.", "Farm.", "Téc.") em vez de "Dr(a)."; "Reiniciar Novo Hospital" não apaga mais a idade e o idioma; idioma da página `pt-BR`; "Crise Epiléptica Concussiva" → "Convulsiva".
+- **PARTE 7: Testes Automatizados (Vitest)**:
+  - Nova suíte `tests/revalida-mode-and-report-fixes.test.ts` (14 testes): integridade do banco (IDs únicos, A–D, gabarito válido, figuras existentes, comentários válidos), seleção por área liberada, idade/sexo do paciente, referência INEP, hospital novo, erro sem faturamento + fila de revisão, conselheiro e títulos da equipe.
+  - Ajustado o teste do conselheiro de exames para uma UPA (Lab e Raio-X não existem na UBS).
+  - Total: **249 testes em 28 suítes, 100% aprovados**.
+- **Pendências conhecidas**: comentários das outras 9 edições; edição 2022/1 (OCR); 3 questões com figura/alternativas não extraídas; provas de 2011–2017 (5 alternativas e protocolos antigos); metas ainda são as do modo antigo (ex.: "Fila Zero" é concluída no primeiro paciente).
+
 ## [2.2.0] - 2026-10-26
 ### Deploy Online
 - URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)

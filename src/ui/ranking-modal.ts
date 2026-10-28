@@ -11,12 +11,14 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O modal obtém dados via RankingService.fetchLeaderboard().
  *
- * Importa: src/services/ranking-service.ts, src/utils/nickname-filter.ts
+ * Importa: src/services/ranking-service.ts, src/utils/nickname-filter.ts, src/i18n/i18n.ts, src/ui/revalida-question-view.ts
  * Conecta-se com: src/ui/title-screen.ts, src/ui/game-over-modal.ts, src/main.ts
  */
 
 import { RankingService, type LeaderboardEntry } from '../services/ranking-service';
 import { canSubmitToGlobalRanking } from '../utils/nickname-filter';
+import { t } from '../i18n/i18n';
+import { escapeHtml } from './revalida-question-view';
 
 export class RankingModal {
   private container: HTMLElement;
@@ -33,15 +35,14 @@ export class RankingModal {
             <div class="flex items-center gap-3">
               <span class="text-3xl">🏆</span>
               <div>
-                <h3 class="text-lg font-black text-slate-900 dark:text-slate-50">Ranking de Gestão Hospitalar</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Melhores gestores do Sistema Único de Saúde (SUS)</p>
+                <h3 class="text-lg font-black text-slate-900 dark:text-slate-50">${t('leaderboard.title')}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${t('leaderboard.subtitle')}</p>
               </div>
             </div>
             <button id="btn-close-ranking" class="min-w-[44px] min-h-[44px] rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 font-bold text-lg">✕</button>
           </div>
 
           <div id="ranking-content-body" class="flex-1 min-h-0 overflow-y-auto py-4 space-y-2">
-            <div class="p-8 text-center text-xs text-slate-400 animate-pulse">Carregando posições...</div>
           </div>
         </div>
       </div>
@@ -77,14 +78,18 @@ export class RankingModal {
       return `${idx + 1}º`;
     };
 
+    if (entries.length === 0) {
+      body.innerHTML = `${this.renderBadge()}<p class="p-8 text-center text-sm text-slate-500">${t('leaderboard.empty')}</p>`;
+      return;
+    }
     const rowsHtml = entries.map((e, idx) => `
       <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <span class="w-8 text-center font-black text-sm text-slate-500 dark:text-slate-400">${getMedal(idx)}</span>
           <div>
             <div class="font-extrabold text-xs text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-              <span>${e.nickname}</span>
-              <span class="text-[9px] uppercase px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">${e.unitType}</span>
+              <span>${escapeHtml(e.nickname)}</span>
+              <span class="text-[9px] uppercase px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">${t(`leaderboard.unit_${e.unitType}`)}</span>
             </div>
             <div class="text-[10px] text-slate-400 mt-0.5">
               ${e.days} dias sobrevividos • ${e.patientsTreated} pacientes salvos

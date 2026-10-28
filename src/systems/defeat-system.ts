@@ -13,13 +13,14 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Ajuste os parâmetros de derrota em src/data/balance.json (defeat.graceDays, defeat.minCash, defeat.minReputation).
  *
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/systems/day-system.ts, src/ui/game-over-modal.ts, src/ui/defeat-warning-modal.ts
  */
 
 import { BALANCE } from '../core/config';
 import { globalBus } from '../core/event-bus';
 import type { GameState } from '../state/game-state';
+import { isCalmModeFlag } from './revalida-system';
 
 export interface DefeatWarningInfo {
   type: 'cash' | 'reputation';
@@ -137,6 +138,7 @@ function triggerDefeatWarningIfNeeded(state: GameState, cashDanger: boolean, rep
 }
 
 export function checkDefeatAndWarnings(state: GameState): boolean {
+  if (isCalmModeFlag('disableDefeat')) return false;
   const { graceDays } = BALANCE.defeat;
   const { cashDanger, repDanger } = evaluateCounters(state);
 

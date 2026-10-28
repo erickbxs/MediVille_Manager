@@ -12,13 +12,14 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * O intervalo básico provém de BALANCE.arrival.baseIntervalSec em balance.json e os multiplicadores em calculateArrivalInterval().
  *
- * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/case-system.ts, src/systems/event-system.ts
+ * Importa: src/core/config.ts, src/core/event-bus.ts, src/state/game-state.ts, src/systems/case-system.ts, src/systems/event-system.ts, src/systems/revalida-system.ts
  * Conecta-se com: src/core/simulation.ts, src/systems/queue-system.ts, src/systems/traffic-system.ts
  */
 
 import { BALANCE } from '../core/config';
 import type { GameState } from '../state/game-state';
 import { createPatient } from './case-system';
+import { isCalmModeFlag, isRevalidaActive } from './revalida-system';
 import { globalBus } from '../core/event-bus';
 import { getActiveArrivalMultiplier } from './event-system';
 import { calculateDemandMultiplier } from './economy-system';
@@ -87,6 +88,7 @@ export function calculateArrivalInterval(
 }
 
 export function checkHelipadArrival(state: GameState, deltaSec: number): void {
+  if (isCalmModeFlag('disableHelipad')) return;
   const hasHelipad = Array.from(state.rooms.values()).some((r) => r.typeId === 'helipad');
   if (!hasHelipad) return;
 
@@ -96,7 +98,7 @@ export function checkHelipadArrival(state: GameState, deltaSec: number): void {
   if (state.helipadTimerSec >= interval) {
     state.helipadTimerSec = 0;
     const patientId = `heli_pat_${Date.now()}`;
-    const patient = createPatient(patientId, state.masteredCaseIds, 'hospital');
+    const patient = createPatient(patientId, state.masteredCaseIds, 'hospital', state);
     patient.clinicalCase.definition.severity = 'Grave';
     patient.isHelipadEmergency = true;
     state.patients.set(patientId, patient);
@@ -116,6 +118,7 @@ function classifyPatientTriage(state: GameState, patient: PatientInstance): void
 }
 
 export function checkBusArrivalWave(state: GameState, deltaSec: number): void {
+  if (isCalmModeFlag('disableBusWaves')) return;
   state.busArrivalTimerSec = (state.busArrivalTimerSec ?? 0) + deltaSec;
   if (state.busArrivalTimerSec >= BUS_ARRIVAL_INTERVAL_SEC) {
     state.busArrivalTimerSec = 0;
@@ -123,7 +126,7 @@ export function checkBusArrivalWave(state: GameState, deltaSec: number): void {
     const count = BUS_MIN_PATIENTS + Math.floor(Math.random() * BUS_RANDOM_PATIENTS_RANGE);
     for (let i = 0; i < count; i++) {
       const patientId = `bus_pat_${Date.now()}_${i}`;
-      const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel);
+      const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel, state);
       classifyPatientTriage(state, patient);
       state.patients.set(patientId, patient);
       state.queueIds.push(patientId);
@@ -135,7 +138,28 @@ export function checkBusArrivalWave(state: GameState, deltaSec: number): void {
   }
 }
 
+/** Modo Revalida: chegada calma, um paciente por vez, sem lotar a fila. */
+function updateRevalidaArrival(state: GameState, deltaSec: number): void {
+  const waiting = state.queueIds.length + state.pendingDecisionPatientIds.length;
+  if (waiting >= BALANCE.revalida.maxWaitingPatients) return;
+  state.arrivalTimerSec += deltaSec;
+  if (state.arrivalTimerSec < BALANCE.revalida.arrivalIntervalSec) return;
+  state.arrivalTimerSec = 0;
+  const patientId = `pat_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel, state);
+  classifyPatientTriage(state, patient);
+  state.patients.set(patientId, patient);
+  state.queueIds.push(patientId);
+  patient.state = 'waiting';
+  globalBus.emit('patient:arrived', { patientId, name: patient.name });
+  globalBus.emit('patient:entered_queue', { patientId });
+}
+
 export function updateArrivalSystem(state: GameState, deltaSec: number): void {
+  if (isRevalidaActive()) {
+    updateRevalidaArrival(state, deltaSec);
+    return;
+  }
   const eventMult = getActiveArrivalMultiplier(state);
   const marketMult = calculateDemandMultiplier(state);
   const interval = calculateArrivalInterval(state.rooms.size, eventMult, marketMult, state.hospitalLevel, state.dayTimeSec);
@@ -144,7 +168,7 @@ export function updateArrivalSystem(state: GameState, deltaSec: number): void {
   if (state.arrivalTimerSec >= interval) {
     state.arrivalTimerSec -= interval;
     const patientId = `pat_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel);
+    const patient = createPatient(patientId, state.masteredCaseIds, state.hospitalLevel, state);
     classifyPatientTriage(state, patient);
 
     state.patients.set(patientId, patient);

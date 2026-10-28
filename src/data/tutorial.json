@@ -9,6 +9,12 @@
   },
   "tips": [
     {
+      "id": "welcome_revalida",
+      "trigger": "revalida_start",
+      "title": "Modo Revalida: estude atendendo!",
+      "message": "Cada paciente traz uma questão antiga do Revalida (INEP). Toque em Atender quando aparecer o número verde. Acertou: o atendimento é faturado e a questão fica dominada. Errou: ela volta depois para revisão. Construa a Sala de Vacinação para liberar Medicina de Família; Leitos e Emergência (UPA) liberam Pediatria e Cirurgia; a Maternidade (Hospital) libera Ginecologia e Obstetrícia."
+    },
+    {
       "id": "welcome_ubs",
       "trigger": "game_start",
       "title": "Bem-vindo à sua Unidade de Saúde!",

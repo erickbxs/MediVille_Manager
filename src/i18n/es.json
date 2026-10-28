@@ -35,9 +35,10 @@
     "newHospital": "Nuevo Hospital",
     "continue": "Continuar Partida",
     "options": "Ajustes",
-    "leaderboard": "Clasificación Global",
+    "leaderboard": "Mis Récords",
     "encyclopedia": "Enciclopedia Médica",
-    "suspendAudio": "Silenciar / Audio"
+    "suspendAudio": "Silenciar / Audio",
+    "questions": "Banco de Preguntas"
   },
   "room": {
     "reception": "Recepción Central",
@@ -84,7 +85,9 @@
     "blood_bank": "Banco de Sangre",
     "blood_bank_short": "Sangre",
     "helipad": "Helipuerto Médico",
-    "helipad_short": "Helipuerto"
+    "helipad_short": "Helipuerto",
+    "build": "Construir",
+    "move": "Mover"
   },
   "roles": {
     "doctor": "Médico(a) Clínico",
@@ -144,13 +147,18 @@
     "mainMenu": "Menú Principal"
   },
   "leaderboard": {
-    "title": "Clasificación de Gestión Hospitalaria",
-    "subtitle": "Mejores gestores de Salud Pública",
+    "title": "Mis Récords",
+    "subtitle": "Tus mejores partidas, guardadas en este dispositivo",
     "position": "Posición",
     "player": "Gestor(a)",
     "score": "Puntuación",
     "guestModeNote": "Modo Invitado (< 13 años): Sus datos se guardan únicamente en el dispositivo.",
-    "localSaveNotice": "¡Puntuación guardada localmente con éxito!"
+    "localSaveNotice": "¡Puntuación guardada localmente con éxito!",
+    "empty": "Aún no tienes récords. Termina una partida para verla aquí.",
+    "unit_private_clinic": "Clínica",
+    "unit_ubs": "UBS",
+    "unit_upa": "UPA",
+    "unit_hospital": "Hospital"
   },
   "settings": {
     "title": "Ajustes & Accesibilidad",
@@ -172,7 +180,9 @@
     "staff": "Personal",
     "pharmacy": "Farmacia",
     "finances": "Finanzas",
-    "recenter": "Centro"
+    "recenter": "Centro",
+    "encyclopedia": "Enciclopedia",
+    "questions": "Preguntas"
   },
   "music": {
     "on": "Música Activada",
@@ -181,7 +191,7 @@
   },
   "legal": {
     "title": "Términos de Uso y Privacidad LGPD/GDPR",
-    "susNotice": "Aviso Educativo: MediVille Manager es una simulación de gestión hospitalaria con fines educativos. No sustituye el asesoramiento médico profesional ni la atención de urgencia."
+    "susNotice": "Aviso educativo: proyecto independiente, sin vínculo con el Ministerio de Salud de Brasil ni con el INEP. No sustituye la consulta médica. En emergencias, llame al 192 (SAMU)."
   },
   "map": {
     "expand": "Ampliar Terreno",
@@ -197,5 +207,48 @@
     "sus": "SUS — Sistema Único de Salud (Sanidad pública universal de Brasil)",
     "ubs": "UBS — Unidad Básica de Salud (Atención primaria y preventiva)",
     "upa": "UPA 24h — Unidad de Pronta Atención (Urgencias y emergencias)"
+  },
+  "build": {
+    "invalid_space": "Espacio ocupado o fuera del terreno"
+  },
+  "revalida": {
+    "area": {
+      "clinica_medica": "Clínica Médica",
+      "cirurgia": "Cirugía",
+      "ginecologia_obstetricia": "Ginecología y Obstetricia",
+      "pediatria": "Pediatría",
+      "medicina_familia_comunidade": "Medicina Familiar y Salud Pública"
+    },
+    "figure_alt": "Figura de la pregunta {n} del examen",
+    "reference_label": "Fuente",
+    "license_note": "Pregunta oficial del INEP, reproducida sin cambios (licencia CC BY-ND 3.0, gov.br). Las preguntas están en portugués.",
+    "preliminary_key": "Respuesta preliminar: el INEP no publicó la respuesta definitiva de esta edición.",
+    "select_answer": "Elige una alternativa:",
+    "answer_later": "Responder después",
+    "correct": "¡Respuesta correcta!",
+    "wrong": "Respuesta incorrecta",
+    "your_answer": "Tu respuesta",
+    "answer_official": "Respuesta oficial (INEP)",
+    "review_note": "Esta pregunta volverá más tarde para repaso. Esta atención no fue facturada.",
+    "comment_title": "Comentario",
+    "comment_pending": "Comentario en preparación. Por ahora, revisa la respuesta oficial arriba.",
+    "bank_title": "Banco de Preguntas del Revalida",
+    "bank_subtitle": "{total} preguntas oficiales del INEP (2020 a 2026)",
+    "stat_mastered": "Dominadas",
+    "stat_review": "Para repasar",
+    "stat_new": "Nuevas",
+    "filter_all": "Todas",
+    "search_placeholder": "Buscar por palabra, edición o número…",
+    "locked_area": "Construye la sala \"{room}\" para recibir pacientes de esta área.",
+    "unlocked_area": "Área liberada en tu hospital",
+    "empty": "Ninguna pregunta coincide con este filtro.",
+    "status_mastered": "Dominada",
+    "status_review": "Repasar",
+    "status_new": "Nueva",
+    "show_more": "Mostrar más",
+    "mastered_toast": "Pregunta dominada: {ref} ({count} en total)",
+    "tip_title": "Cómo funciona",
+    "tip_text": "Cada paciente trae una pregunta antigua del Revalida. Si aciertas, la atención se factura. Si fallas, la pregunta vuelve después para repaso. Construye salas para liberar nuevas áreas.",
+    "figure_zoom": "Toca para ampliar la figura"
   }
 }

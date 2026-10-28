@@ -14,7 +14,7 @@
  * 3. Como modificar ou debugar esta parte do código caso ocorra algum problema?
  * Trate as ações nos callbacks de TitleScreenCallbacks. Os termos legais abrem via LegalModal.
  *
- * Importa: src/systems/save-system.ts, src/systems/goals-system.ts, src/core/sound-system.ts,
+ * Importa: src/systems/save-system.ts, src/systems/goals-system.ts, src/systems/revalida-system.ts, src/core/sound-system.ts,
  *          src/core/music-system.ts, src/i18n/i18n.ts, src/ui/legal-modal.ts, src/core/event-bus.ts
  * Conecta-se com: src/main.ts, src/ui/settings-modal.ts, src/ui/legal-modal.ts
  */
@@ -24,6 +24,7 @@ import { goalsSystem } from '../systems/goals-system';
 import { soundSystem } from '../core/sound-system';
 import { musicSystem } from '../core/music-system';
 import { CASES_CATALOG } from '../core/config';
+import { getRevalidaQuestions, isRevalidaActive } from '../systems/revalida-system';
 import { getLocale, setLanguage, t, type SupportedLocale } from '../i18n/i18n';
 import { LegalModal } from './legal-modal';
 import { globalBus } from '../core/event-bus';
@@ -76,8 +77,12 @@ export class TitleScreen {
   private render(): void {
     const hasSave = hasSavedGame();
     const savedState = hasSave ? loadGameState() : null;
-    const unlockedCount = goalsSystem.getUnlockedCaseIds().length;
-    const totalCases = CASES_CATALOG.cases.length;
+    const revalida = isRevalidaActive();
+    const unlockedCount = revalida
+      ? (savedState?.masteredCaseIds ?? []).filter((id) => id.startsWith('revalida-')).length
+      : goalsSystem.getUnlockedCaseIds().length;
+    const totalCases = revalida ? getRevalidaQuestions().length : CASES_CATALOG.cases.length;
+    const knowledgeLabel = revalida ? `📚 ${t('menu.questions')}` : `📖 ${t('menu.encyclopedia')}`;
     const currentLang = getLocale();
 
     if (this.isSelectingUnit) {
@@ -120,13 +125,12 @@ export class TitleScreen {
             </button>
 
             <button id="btn-menu-encyclopedia" class="w-full min-h-[44px] px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-between border border-slate-200/60 dark:border-slate-700/60 transition-all">
-              <span class="flex items-center gap-2">📖 ${t('menu.encyclopedia') || 'Enciclopédia SUS'}</span>
+              <span class="flex items-center gap-2">${knowledgeLabel}</span>
               <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 font-extrabold text-[11px]">${unlockedCount}/${totalCases}</span>
             </button>
 
             <button id="btn-menu-ranking" class="w-full min-h-[44px] px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-between border border-slate-200/60 dark:border-slate-700/60 transition-all">
-              <span class="flex items-center gap-2">🏆 ${t('menu.leaderboard') || 'Ranking Global'}</span>
-              <span class="text-xs text-amber-500 font-bold">Top 50</span>
+              <span class="flex items-center gap-2">🏆 ${t('menu.leaderboard')}</span>
             </button>
 
             <div class="grid grid-cols-2 gap-2 pt-1">
@@ -145,7 +149,7 @@ export class TitleScreen {
               ⚖️ Termos de Uso & Privacidade LGPD
             </button>
             <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-tight">
-              Aviso Educativo: Simulação interativa baseada em protocolos abertos do SUS. Não substitui consulta médica nem atendimento emergencial.
+              ${t('legal.susNotice')}
             </p>
           </div>
         </div>
@@ -157,17 +161,16 @@ export class TitleScreen {
 
   private renderLangFlags(current: SupportedLocale): string {
     const list: Array<{ code: SupportedLocale; flag: string; label: string }> = [
-      { code: 'pt', flag: '🇧🇷', label: 'PT' },
-      { code: 'en', flag: '🇺🇸', label: 'EN' },
-      { code: 'es', flag: '🇪🇸', label: 'ES' },
-      { code: 'fr', flag: '🇫🇷', label: 'FR' },
-      { code: 'de', flag: '🇩🇪', label: 'DE' },
-      { code: 'zh', flag: '🇨🇳', label: '中文' },
+      { code: 'pt', flag: 'PT', label: 'Português' },
+      { code: 'en', flag: 'EN', label: 'English' },
+      { code: 'es', flag: 'ES', label: 'Español' },
+      { code: 'fr', flag: 'FR', label: 'Français' },
+      { code: 'de', flag: 'DE', label: 'Deutsch' },
+      { code: 'zh', flag: '中文', label: '中文' },
     ];
     return list.map((item) => `
       <button data-lang="${item.code}" title="${item.label}" class="btn-lang-choice min-w-0 truncate px-1.5 py-1 rounded-lg text-xs font-bold flex items-center justify-center gap-0.5 transition-all ${item.code === current ? 'bg-sky-500/20 ring-1 ring-sky-500 scale-105 text-sky-600 dark:text-sky-300' : 'opacity-70 hover:opacity-100 text-slate-600 dark:text-slate-400'}">
         <span>${item.flag}</span>
-        <span class="hidden md:inline text-[10px] truncate">${item.label}</span>
       </button>
     `).join('');
   }
