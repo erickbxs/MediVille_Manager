@@ -16,7 +16,7 @@ const [, , inepDir, outJson, imgDir] = process.argv;
 const GAB = JSON.parse(fs.readFileSync(path.join(inepDir, 'gabaritos.json'), 'utf8'));
 const EDITIONS = Object.keys(GAB).sort();
 const MARKER = /^QUEST(?:Ã|A)O\s*0*(\d{1,3})(?!\d)\s*(.*)$/;
-const NOISE = [/^ÁREA LIVRE$/i, /^\*?R\d{3,}\S*\*?$/, /^PRIMEIRA EDIÇÃO$/i, /^SEGUNDA EDIÇÃO$/i, /^REVALIDA\s*\d{4}/i, /^\d{4}\s*(PRIMEIRA|SEGUNDA) EDIÇÃO$/i, /^CADERNO\s*\d+/i, /^RASCUNHO$/i, /^\d+\.\s*ITEM\s+\d+/i, /^ITEM\s+\d+/i];
+const NOISE = [/^[A-Z]?\d+\.\s*ITEM\s+\d+/i,/^ÁREA LIVRE$/i, /^\*?R\d{3,}\S*\*?$/, /^PRIMEIRA EDIÇÃO$/i, /^SEGUNDA EDIÇÃO$/i, /^REVALIDA\s*\d{4}/i, /^\d{4}\s*(PRIMEIRA|SEGUNDA) EDIÇÃO$/i, /^CADERNO\s*\d+/i, /^RASCUNHO$/i, /^\d+\.\s*ITEM\s+\d+/i, /^ITEM\s+\d+/i];
 const FIG_GAP = 26;
 const SCALE = 2.2;
 

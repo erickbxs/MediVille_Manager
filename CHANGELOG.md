@@ -2,6 +2,16 @@
 
 Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
+## [3.4.0] - 2026-10-28
+
+### Versão 3.4.0 — Comentários de Todas as Questões do Revalida 2026/1
+- **PARTE 1: Comentários (`public/revalida/comments.json`)**:
+  - Comentário curto, em linguagem simples, para **as 99 questões do Revalida 2026/1** presentes no banco (a questão 72 segue fora por causa da figura). Junto com 2025/1, agora são **196 questões comentadas**.
+  - Escritos com ajuda de inteligência artificial, sem revisão médica; o gabarito oficial do INEP continua sendo a referência.
+- **PARTE 2: Limpeza do banco**:
+  - Removido da questão 28 de 2026/1 um código interno do PDF ("J28. ITEM 169513 - V. 941379") que não faz parte do enunciado; o leitor `scripts/revalida/parse.mjs` passa a ignorar esse padrão.
+- **Testes**: suíte completa com 265 testes aprovados (o teste de comentários valida que todos apontam para questões existentes).
+
 ## [3.3.0] - 2026-10-28
 
 ### Versão 3.3.0 — Cidade Viva: Bairro com Ruas, Quarteirões, Moradores, Carros e Personagens Mais Variados
