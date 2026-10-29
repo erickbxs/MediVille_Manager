@@ -4,6 +4,11 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
 
 ## [3.4.0] - 2026-10-28
 
+### Deploy Online
+- URL de Produção: [https://mediville-manager.pages.dev](https://mediville-manager.pages.dev)
+- Alias da Release: [https://main.mediville-manager.pages.dev](https://main.mediville-manager.pages.dev)
+- Primeira publicação em produção do Modo Revalida (versões 3.0.0 a 3.4.0).
+
 ### Versão 3.4.0 — Comentários de Todas as Questões do Revalida 2026/1
 - **PARTE 1: Comentários (`public/revalida/comments.json`)**:
   - Comentário curto, em linguagem simples, para **as 99 questões do Revalida 2026/1** presentes no banco (a questão 72 segue fora por causa da figura). Junto com 2025/1, agora são **196 questões comentadas**.
